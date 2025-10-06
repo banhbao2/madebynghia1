@@ -1,9 +1,6 @@
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import Specialties from '@/components/Specialties'
-import HowItWorks from '@/components/HowItWorks'
-import About from '@/components/About'
-import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 
 export default function Home() {
@@ -12,9 +9,6 @@ export default function Home() {
       <Header />
       <Hero />
       <Specialties />
-      <HowItWorks />
-      <About />
-      <Contact />
       <Footer />
     </div>
   )
