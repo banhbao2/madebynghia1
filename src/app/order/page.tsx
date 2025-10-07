@@ -1,53 +1,112 @@
+'use client'
+
+import { useState } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import Link from 'next/link'
+import MenuItem from '@/components/MenuItem'
+import CartSidebar from '@/components/CartSidebar'
+import { menuItems, categories } from '@/lib/menuData'
+import { useCart } from '@/context/CartContext'
 
 export default function OrderPage() {
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const { setIsCartOpen, itemCount } = useCart()
+
+  const filteredItems = selectedCategory === 'all'
+    ? menuItems
+    : menuItems.filter(item => item.category === selectedCategory)
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="container mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900">Order Now</h1>
-        <p className="text-center text-gray-600 text-lg mb-8">
-          Online ordering coming soon! Call us or visit our restaurant to place your order.
-        </p>
-        
-        <div className="max-w-2xl mx-auto bg-gray-50 rounded-xl p-8">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">How to Order</h2>
-          <div className="space-y-4 text-gray-600">
-            <div className="flex items-start gap-4">
-              <span className="text-2xl">📞</span>
-              <div>
-                <p className="font-semibold text-gray-900">Call Us</p>
-                <p>(555) 123-4567</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <span className="text-2xl">🏪</span>
-              <div>
-                <p className="font-semibold text-gray-900">Visit Us</p>
-                <p>123 Main Street, Downtown District</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <span className="text-2xl">📧</span>
-              <div>
-                <p className="font-semibold text-gray-900">Email Us</p>
-                <p>hello@phoandsushi.com</p>
-              </div>
-            </div>
+
+      {/* Cart Sidebar */}
+      <CartSidebar />
+
+      {/* Floating Cart Button */}
+      {itemCount > 0 && (
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="fixed bottom-6 right-6 bg-red-600 text-white rounded-full w-16 h-16 shadow-lg hover:bg-red-700 transition-all hover:scale-110 z-30 flex items-center justify-center"
+          aria-label="View cart"
+        >
+          <div className="relative">
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <span className="absolute -top-2 -right-2 bg-white text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {itemCount}
+            </span>
           </div>
-          
-          <div className="mt-8 text-center">
-            <Link 
-              href="/#menu"
-              className="inline-block bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition"
-            >
-              View Menu
-            </Link>
+        </button>
+      )}
+
+      <main className="container mx-auto px-4 py-12 pb-24">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Order Online
+          </h1>
+          <p className="text-lg text-gray-600">
+            Choose from our delicious selection of Vietnamese and Japanese cuisine
+          </p>
+        </div>
+
+        {/* Category Filter */}
+        <div className="mb-8 overflow-x-auto pb-2">
+          <div className="flex gap-3 justify-center min-w-max">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`px-6 py-2.5 rounded-full font-medium transition whitespace-nowrap ${
+                  selectedCategory === category.id
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Menu Items Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredItems.map((item) => (
+            <MenuItem key={item.id} item={item} />
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredItems.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No items found in this category.</p>
+          </div>
+        )}
+
+        {/* Info Banner */}
+        <div className="mt-12 bg-white rounded-xl p-6 shadow-md">
+          <div className="grid md:grid-cols-3 gap-6 text-center">
+            <div>
+              <div className="text-3xl mb-2">🚚</div>
+              <h3 className="font-semibold text-gray-900 mb-1">Free Delivery</h3>
+              <p className="text-sm text-gray-600">On orders over $30</p>
+            </div>
+            <div>
+              <div className="text-3xl mb-2">⏱️</div>
+              <h3 className="font-semibold text-gray-900 mb-1">Fast Preparation</h3>
+              <p className="text-sm text-gray-600">Ready in 20-30 minutes</p>
+            </div>
+            <div>
+              <div className="text-3xl mb-2">✨</div>
+              <h3 className="font-semibold text-gray-900 mb-1">Fresh Ingredients</h3>
+              <p className="text-sm text-gray-600">Made to order daily</p>
+            </div>
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   )

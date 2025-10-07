@@ -2,10 +2,55 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { navLinks } from '@/lib/constants'
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  const smoothScrollTo = (element: HTMLElement) => {
+    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset
+    const startPosition = window.pageYOffset
+    const distance = targetPosition - startPosition
+    const duration = 1200 // milliseconds
+    let start: number | null = null
+
+    // Easing function: ease-in-out-cubic (starts fast, ends slow)
+    const easeInOutCubic = (t: number): number => {
+      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
+    }
+
+    const animation = (currentTime: number) => {
+      if (start === null) start = currentTime
+      const timeElapsed = currentTime - start
+      const progress = Math.min(timeElapsed / duration, 1)
+      const easeProgress = easeInOutCubic(progress)
+
+      window.scrollTo(0, startPosition + distance * easeProgress)
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation)
+      }
+    }
+
+    requestAnimationFrame(animation)
+  }
+
+  const handleScrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Check if it's an anchor link and we're on the home page
+    if (href.startsWith('/#') && pathname === '/') {
+      e.preventDefault()
+      const id = href.substring(2) // Remove '/#'
+      const element = document.getElementById(id)
+      if (element) {
+        smoothScrollTo(element)
+        setMobileMenuOpen(false)
+      }
+    } else if (href.startsWith('/#')) {
+      // If not on home page, let Next.js navigate then scroll
+      setMobileMenuOpen(false)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -17,15 +62,26 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-gray-700 hover:text-gray-900 transition"
-            >
-              {link.name}
-            </Link>
-          ))}
+          <Link
+            href="/menu"
+            className="text-gray-700 hover:text-gray-900 transition"
+          >
+            Menu
+          </Link>
+          <Link
+            href="/#about"
+            onClick={(e) => handleScrollToSection(e, '/#about')}
+            className="text-gray-700 hover:text-gray-900 transition"
+          >
+            About
+          </Link>
+          <Link
+            href="/#contact"
+            onClick={(e) => handleScrollToSection(e, '/#contact')}
+            className="text-gray-700 hover:text-gray-900 transition"
+          >
+            Contact
+          </Link>
           <Link
             href="/order"
             className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
@@ -56,16 +112,27 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t shadow-lg">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-gray-700 hover:text-gray-900 transition py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+            <Link
+              href="/menu"
+              className="text-gray-700 hover:text-gray-900 transition py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Menu
+            </Link>
+            <Link
+              href="/#about"
+              onClick={(e) => handleScrollToSection(e, '/#about')}
+              className="text-gray-700 hover:text-gray-900 transition py-2"
+            >
+              About
+            </Link>
+            <Link
+              href="/#contact"
+              onClick={(e) => handleScrollToSection(e, '/#contact')}
+              className="text-gray-700 hover:text-gray-900 transition py-2"
+            >
+              Contact
+            </Link>
             <Link
               href="/order"
               className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition text-center"
