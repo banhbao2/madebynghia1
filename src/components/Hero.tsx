@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export default function Hero() {
   return (
-    <section className="relative h-[600px] flex items-center justify-center">
+    <section className="relative h-[650px] md:h-[700px] flex items-center justify-center">
       <Image
         src="/hero-placeholder.jpg"
         alt="Pho & Sushi Restaurant"
@@ -11,20 +11,28 @@ export default function Hero() {
         className="object-cover"
         priority
       />
-      <div className="absolute inset-0 bg-black bg-opacity-60" />
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl">
-        <h2 className="text-5xl md:text-6xl font-bold mb-4">
-          Vietnamese Flavors Meet Japanese Artistry
-        </h2>
-        <p className="text-xl md:text-2xl mb-8 text-gray-200">
-          Experience the perfect fusion of authentic pho and expertly crafted sushi
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/60 to-black/70" />
+      <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">
+        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight">
+          Vietnamese Flavors Meet<br />Japanese Artistry
+        </h1>
+        <p className="text-xl md:text-2xl mb-10 text-gray-100 max-w-3xl mx-auto font-medium">
+          Experience authentic pho and expertly crafted sushi at affordable prices
         </p>
-        <Link
-          href="/menu"
-          className="inline-block bg-red-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-700 transition transform hover:scale-105"
-        >
-          Explore Menu
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Link
+            href="/order"
+            className="inline-block bg-red-600 text-white px-10 py-4 rounded-xl text-lg font-bold hover:bg-red-700 transition-all transform hover:scale-105 shadow-2xl hover:shadow-red-500/50 w-full sm:w-auto"
+          >
+            Order Now →
+          </Link>
+          <Link
+            href="/menu"
+            className="inline-block bg-white text-gray-900 px-10 py-4 rounded-xl text-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl w-full sm:w-auto"
+          >
+            View Menu
+          </Link>
+        </div>
       </div>
     </section>
   )

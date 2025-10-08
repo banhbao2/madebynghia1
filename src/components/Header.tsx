@@ -53,40 +53,40 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-md border-b border-orange-100">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo - Clickable to home */}
-        <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-red-600 transition">
-          Pho & Sushi
+        <Link href="/" className="text-2xl font-extrabold text-gray-900 hover:text-red-600 transition">
+          🍜 Pho & Sushi
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/menu"
-            className="text-gray-700 hover:text-gray-900 transition"
+            className="text-gray-700 hover:text-gray-900 font-medium transition"
           >
             Menu
           </Link>
           <Link
             href="/#about"
             onClick={(e) => handleScrollToSection(e, '/#about')}
-            className="text-gray-700 hover:text-gray-900 transition"
+            className="text-gray-700 hover:text-gray-900 font-medium transition"
           >
             About
           </Link>
           <Link
             href="/#contact"
             onClick={(e) => handleScrollToSection(e, '/#contact')}
-            className="text-gray-700 hover:text-gray-900 transition"
+            className="text-gray-700 hover:text-gray-900 font-medium transition"
           >
             Contact
           </Link>
           <Link
             href="/order"
-            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
+            className="bg-red-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-red-500/50"
           >
-            Order Now
+            Order Now →
           </Link>
         </nav>
 
@@ -135,10 +135,10 @@ export default function Header() {
             </Link>
             <Link
               href="/order"
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition text-center"
+              className="bg-red-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-700 transition text-center shadow-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Order Now
+              Order Now →
             </Link>
           </nav>
         </div>

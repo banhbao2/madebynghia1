@@ -2,19 +2,21 @@ import { contactInfo } from '@/lib/constants'
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-24 bg-gradient-to-b from-white to-orange-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-4 text-gray-900">
-          Visit Us
-        </h2>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Come experience authentic Vietnamese and Japanese cuisine
-        </p>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-5">
+            Visit Us
+          </h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            Come experience authentic Vietnamese and Japanese cuisine in a welcoming atmosphere
+          </p>
+        </div>
         
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12">
-          <div>
-            <h3 className="text-2xl font-bold mb-6 text-gray-900">Contact Information</h3>
-            <div className="space-y-4">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-orange-100">
+            <h3 className="text-3xl font-bold mb-8 text-gray-900">Contact Information</h3>
+            <div className="space-y-6">
               <div>
                 <p className="font-semibold text-gray-900 mb-1">Address</p>
                 <a 
@@ -63,13 +65,13 @@ export default function Contact() {
             </div>
           </div>
           
-          <div>
-            <h3 className="text-2xl font-bold mb-6 text-gray-900">Opening Hours</h3>
-            <div className="space-y-3">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-orange-100">
+            <h3 className="text-3xl font-bold mb-8 text-gray-900">Opening Hours</h3>
+            <div className="space-y-4">
               {contactInfo.openingHours.map((hours) => (
-                <div key={hours.days} className="flex justify-between">
-                  <span className="font-semibold text-gray-900">{hours.days}</span>
-                  <span className="text-gray-600">{hours.hours}</span>
+                <div key={hours.days} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
+                  <span className="font-bold text-gray-900 text-lg">{hours.days}</span>
+                  <span className="text-gray-600 font-medium">{hours.hours}</span>
                 </div>
               ))}
             </div>

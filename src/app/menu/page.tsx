@@ -16,44 +16,47 @@ export default function MenuPage() {
   const popularItems = menuItems.filter(item => item.popular)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Header />
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-16">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
             Our Menu
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Explore our delicious selection of authentic Vietnamese Phở and Japanese Sushi,
-            crafted with the freshest ingredients
+            crafted fresh daily with the finest ingredients
           </p>
         </div>
 
         {/* Popular Items Section */}
         {selectedCategory === 'all' && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span>⭐</span> Popular Favorites
+          <div className="mb-20 bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-8 md:p-12 border border-orange-100">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+              <span className="text-4xl">⭐</span> Popular Favorites
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {popularItems.map((item) => (
-                <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition group">
-                  <div className="relative h-48 bg-gray-200">
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                      <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div key={item.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
+                  <div className="relative h-48 bg-gradient-to-br from-orange-100 to-red-100">
+                    <div className="absolute inset-0 flex items-center justify-center text-orange-300">
+                      <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                      Popular
+                    <div className="absolute top-3 right-3 bg-red-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                      ⭐ Popular
                     </div>
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-900 mb-1">{item.name}</h3>
-                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">{item.description}</p>
-                    <p className="text-red-600 font-bold text-lg">${item.price.toFixed(2)}</p>
+                  <div className="p-5">
+                    <h3 className="font-bold text-gray-900 mb-2 text-lg">{item.name}</h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">{item.description}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-red-600 font-extrabold text-2xl">${item.price.toFixed(2)}</p>
+                      <span className="text-red-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -62,16 +65,16 @@ export default function MenuPage() {
         )}
 
         {/* Category Filter */}
-        <div className="mb-8 overflow-x-auto pb-2">
-          <div className="flex gap-3 justify-center min-w-max">
+        <div className="mb-12 overflow-x-auto pb-2">
+          <div className="flex gap-4 justify-center min-w-max">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-6 py-2.5 rounded-full font-medium transition whitespace-nowrap ${
+                className={`px-8 py-3.5 rounded-xl font-bold transition-all whitespace-nowrap text-lg ${
                   selectedCategory === category.id
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm'
+                    ? 'bg-red-600 text-white shadow-xl scale-105'
+                    : 'bg-white text-gray-700 hover:bg-orange-50 shadow-md hover:shadow-lg border border-orange-100'
                 }`}
               >
                 {category.name}
@@ -163,16 +166,16 @@ export default function MenuPage() {
         )}
 
         {/* CTA Section */}
-        <div className="mt-16 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl p-8 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Ready to Order?</h2>
-          <p className="text-lg mb-6 opacity-90">
+        <div className="mt-20 bg-gradient-to-r from-red-600 via-red-500 to-orange-600 rounded-3xl p-12 text-center text-white shadow-2xl">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-6">Ready to Order?</h2>
+          <p className="text-xl md:text-2xl mb-8 opacity-95 max-w-2xl mx-auto">
             Order online for pickup or delivery and enjoy our delicious food at home
           </p>
           <a
             href="/order"
-            className="inline-block bg-white text-red-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition"
+            className="inline-block bg-white text-red-600 px-12 py-5 rounded-xl font-extrabold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-2xl text-xl"
           >
-            Order Now
+            Order Now →
           </a>
         </div>
 

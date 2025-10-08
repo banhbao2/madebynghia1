@@ -3,16 +3,19 @@ import { specialties } from '@/lib/constants'
 
 export default function Specialties() {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-4 text-gray-900">
-          Our Specialties
-        </h2>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Discover our carefully curated menu featuring the best of Vietnamese and Japanese cuisine
-        </p>
-        
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-5">
+            Our Specialties
+          </h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Discover our carefully curated menu featuring the best of Vietnamese and Japanese cuisine,
+            prepared fresh daily with authentic recipes
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
           {specialties.map((specialty) => (
             <SpecialtyCard key={specialty.id} {...specialty} />
           ))}

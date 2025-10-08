@@ -10,29 +10,29 @@ interface SpecialtyCardProps {
 
 export default function SpecialtyCard({ title, description, image, link }: SpecialtyCardProps) {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition">
-      <div className="relative h-64">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover"
-        />
+    <Link href={link}>
+      <div className="bg-gradient-to-br from-white to-orange-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-orange-100">
+        <div className="relative h-72">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        </div>
+        <div className="p-8">
+          <h3 className="text-3xl font-bold mb-4 text-gray-900">
+            {title}
+          </h3>
+          <p className="text-gray-700 mb-6 leading-relaxed text-lg">
+            {description}
+          </p>
+          <div className="inline-flex items-center text-red-600 font-bold text-lg hover:text-red-700 transition">
+            Order Now →
+          </div>
+        </div>
       </div>
-      <div className="p-6">
-        <h3 className="text-2xl font-bold mb-3 text-gray-900">
-          {title}
-        </h3>
-        <p className="text-gray-600 mb-4">
-          {description}
-        </p>
-        <Link 
-          href={link} 
-          className="inline-flex items-center text-red-600 font-semibold hover:text-red-700 transition"
-        >
-          Order →
-        </Link>
-      </div>
-    </div>
+    </Link>
   )
 }
