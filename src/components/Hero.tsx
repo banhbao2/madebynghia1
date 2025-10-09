@@ -27,10 +27,10 @@ export default function Hero() {
             Order Now →
           </Link>
           <Link
-            href="/#about"
+            href="/reservations"
             className="inline-block bg-white text-gray-900 px-10 py-4 rounded-xl text-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl w-full sm:w-auto"
           >
-            Learn More
+            Reserve a Table
           </Link>
         </div>
       </div>

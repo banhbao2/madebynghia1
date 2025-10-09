@@ -69,6 +69,12 @@ export default function Header() {
             Menu
           </Link>
           <Link
+            href="/reservations"
+            className="text-gray-700 hover:text-gray-900 font-medium transition"
+          >
+            Reservations
+          </Link>
+          <Link
             href="/#about"
             onClick={(e) => handleScrollToSection(e, '/#about')}
             className="text-gray-700 hover:text-gray-900 font-medium transition"
@@ -118,6 +124,13 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Menu
+            </Link>
+            <Link
+              href="/reservations"
+              className="text-gray-700 hover:text-gray-900 transition py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Reservations
             </Link>
             <Link
               href="/#about"

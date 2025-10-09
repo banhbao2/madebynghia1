@@ -10,18 +10,6 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
-  const [mounted, setMounted] = useState(false)
-
-  const ADMIN_PASSWORD = typeof window !== 'undefined'
-    ? process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123'
-    : 'admin123'
-
-  // Prevent hydration issues with autofill
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Fetch orders
   const fetchOrders = async () => {
@@ -45,13 +33,11 @@ export default function AdminOrdersPage() {
   }
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchOrders()
-      // Auto-refresh every 30 seconds
-      const interval = setInterval(fetchOrders, 30000)
-      return () => clearInterval(interval)
-    }
-  }, [isAuthenticated])
+    fetchOrders()
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchOrders, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Filter orders by status
   useEffect(() => {
@@ -125,61 +111,6 @@ export default function AdminOrdersPage() {
       console.error('Error deleting order:', err)
       alert(err instanceof Error ? err.message : 'Failed to delete order')
     }
-  }
-
-  // Login handler
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-    } else {
-      alert('Incorrect password')
-    }
-  }
-
-  // Show loading state until mounted to prevent hydration errors
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
-      </div>
-    )
-  }
-
-  // Login screen
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Admin Login
-          </h1>
-          <form onSubmit={handleLogin}>
-            <div className="mb-4">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Enter admin password"
-                autoComplete="current-password"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition font-semibold"
-            >
-              Login
-            </button>
-          </form>
-        </div>
-      </div>
-    )
   }
 
   const statusFilters = [
