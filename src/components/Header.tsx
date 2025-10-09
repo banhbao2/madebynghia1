@@ -83,7 +83,7 @@ export default function Header() {
             Contact
           </Link>
           <Link
-            href="/order"
+            href="/menu"
             className="bg-red-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-red-500/50"
           >
             Order Now →
@@ -134,7 +134,7 @@ export default function Header() {
               Contact
             </Link>
             <Link
-              href="/order"
+              href="/menu"
               className="bg-red-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-700 transition text-center shadow-lg"
               onClick={() => setMobileMenuOpen(false)}
             >

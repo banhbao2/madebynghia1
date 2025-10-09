@@ -15,9 +15,13 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
     name: '',
     phone: '',
     email: '',
-    address: '',
-    notes: ''
+    street: '',
+    houseNumber: '',
+    city: '',
+    notes: '',
+    honeypot: '' // spam prevention
   })
+  const [submissionTime, setSubmissionTime] = useState<number>(0)
   const [orderSubmitted, setOrderSubmitted] = useState(false)
   const [orderId, setOrderId] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -28,6 +32,28 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
     setIsSubmitting(true)
     setError('')
 
+    // Spam prevention checks
+    if (formData.honeypot) {
+      setError('Invalid submission detected.')
+      setIsSubmitting(false)
+      return
+    }
+
+    const timeTaken = Date.now() - submissionTime
+    if (timeTaken < 3000) {
+      setError('Please take your time to fill out the form.')
+      setIsSubmitting(false)
+      return
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address.')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -37,8 +63,10 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
         body: JSON.stringify({
           customer_name: formData.name,
           customer_phone: formData.phone,
-          customer_email: formData.email || undefined,
-          delivery_address: orderType === 'delivery' ? formData.address : undefined,
+          customer_email: formData.email,
+          delivery_address: orderType === 'delivery'
+            ? `${formData.street} ${formData.houseNumber}, ${formData.city}`.trim()
+            : undefined,
           order_type: orderType,
           special_notes: formData.notes || undefined,
           items: items,
@@ -57,12 +85,56 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
       setOrderId(data.order.id)
       setOrderSubmitted(true)
 
-      setTimeout(() => {
-        clearCart()
-        onClose()
-        setOrderSubmitted(false)
-        setOrderId('')
-      }, 3000)
+      // Send confirmation email
+      if (formData.email) {
+        try {
+          const orderDate = new Date().toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          })
+
+          const estimatedTime = new Date(Date.now() + (orderType === 'delivery' ? 45 : 30) * 60000).toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          })
+
+          await fetch('/api/send-order-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              customerEmail: formData.email,
+              customerName: formData.name,
+              orderNumber: data.order.id.slice(-8),
+              orderType,
+              items: items.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+              })),
+              subtotal,
+              tax,
+              total,
+              estimatedTime,
+              deliveryAddress: orderType === 'delivery'
+                ? `${formData.street} ${formData.houseNumber}, ${formData.city}`.trim()
+                : undefined,
+              orderDate
+            })
+          })
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError)
+          // Don't block order completion if email fails
+        }
+      }
+
+      // Don't auto-close anymore - user needs to manually close
 
     } catch (err) {
       console.error('Error submitting order:', err)
@@ -75,6 +147,18 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value.trim()
     setFormData(prev => ({ ...prev, [e.target.name]: value }))
+
+    // Set submission time on first interaction (spam prevention)
+    if (submissionTime === 0) {
+      setSubmissionTime(Date.now())
+    }
+  }
+
+  const handleCloseSuccess = () => {
+    clearCart()
+    onClose()
+    setOrderSubmitted(false)
+    setOrderId('')
   }
 
   if (orderSubmitted) {
@@ -86,14 +170,25 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Order Placed!</h3>
-          <p className="text-gray-600 mb-3">Thank you for your order. We'll contact you shortly to confirm.</p>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Order Accepted!</h3>
+          <p className="text-gray-600 mb-2">
+            Thank you for your order, {formData.name}!
+          </p>
+          <p className="text-gray-600 mb-4">
+            A confirmation email has been sent to <strong>{formData.email}</strong>
+          </p>
           {orderId && (
-            <div className="bg-gray-50 rounded-lg p-3 mt-4">
+            <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <p className="text-sm text-gray-500 mb-1">Order ID</p>
-              <p className="text-xs font-mono text-gray-700 break-all">{orderId}</p>
+              <p className="text-sm font-mono text-gray-700 break-all">{orderId}</p>
             </div>
           )}
+          <button
+            onClick={handleCloseSuccess}
+            className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-semibold"
+          >
+            Close
+          </button>
         </div>
       </div>
     )
@@ -181,33 +276,90 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+                Email *
               </label>
               <input
                 type="email"
                 id="email"
                 name="email"
+                required
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="your@email.com"
               />
             </div>
 
+            {/* Honeypot field - hidden from users, only bots will fill it */}
+            <input
+              type="text"
+              name="honeypot"
+              value={formData.honeypot}
+              onChange={handleInputChange}
+              style={{ display: 'none' }}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+
             {orderType === 'delivery' && (
-              <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                  Delivery Address *
-                </label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  required
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  placeholder="Street address, city, zip code"
-                />
+              <>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-2">
+                    <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
+                      Street *
+                    </label>
+                    <input
+                      type="text"
+                      id="street"
+                      name="street"
+                      required
+                      value={formData.street}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      placeholder="Main Street"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="houseNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                      No. *
+                    </label>
+                    <input
+                      type="text"
+                      id="houseNumber"
+                      name="houseNumber"
+                      required
+                      value={formData.houseNumber}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      placeholder="123"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                    City *
+                  </label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    required
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder="Your City"
+                  />
+                </div>
+              </>
+            )}
+
+            {orderType === 'pickup' && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Pickup Location:</strong><br />
+                  123 Main Street, Your City<br />
+                  We'll notify you when your order is ready!
+                </p>
               </div>
             )}
 

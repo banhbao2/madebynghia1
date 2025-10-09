@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { MenuItem } from '@/lib/menuData'
 
 export interface CartItem extends MenuItem {
@@ -26,10 +26,37 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 const TAX_RATE = 0.0875 // 8.75% tax
+const CART_STORAGE_KEY = 'pho-sushi-cart'
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY)
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart)
+        setItems(parsedCart)
+      }
+    } catch (error) {
+      console.error('Failed to load cart from localStorage:', error)
+    }
+    setIsHydrated(true)
+  }, [])
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (isHydrated) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
+      } catch (error) {
+        console.error('Failed to save cart to localStorage:', error)
+      }
+    }
+  }, [items, isHydrated])
 
   const addToCart = useCallback((item: MenuItem, customizations?: Record<string, string>) => {
     setItems((currentItems) => {

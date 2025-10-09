@@ -21,16 +21,16 @@ export default function Hero() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
-            href="/order"
+            href="/menu"
             className="inline-block bg-red-600 text-white px-10 py-4 rounded-xl text-lg font-bold hover:bg-red-700 transition-all transform hover:scale-105 shadow-2xl hover:shadow-red-500/50 w-full sm:w-auto"
           >
             Order Now →
           </Link>
           <Link
-            href="/menu"
+            href="/#about"
             className="inline-block bg-white text-gray-900 px-10 py-4 rounded-xl text-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl w-full sm:w-auto"
           >
-            View Menu
+            Learn More
           </Link>
         </div>
       </div>

@@ -1,13 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import CartSidebar from '@/components/CartSidebar'
+import MenuItem from '@/components/MenuItem'
 import { menuItems, categories } from '@/lib/menuData'
-import Image from 'next/image'
+import { useCart } from '@/context/CartContext'
 
 export default function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const { setIsCartOpen, itemCount } = useCart()
+  const searchParams = useSearchParams()
+
+  // QR Code support: Get table number from URL
+  const tableNumber = searchParams.get('table')
 
   const filteredItems = selectedCategory === 'all'
     ? menuItems
@@ -15,13 +23,46 @@ export default function MenuPage() {
 
   const popularItems = menuItems.filter(item => item.popular)
 
+  // Store table number for checkout if provided
+  useEffect(() => {
+    if (tableNumber) {
+      sessionStorage.setItem('tableNumber', tableNumber)
+    }
+  }, [tableNumber])
+
   return (
     <div className="min-h-screen">
       <Header />
 
-      <main className="container mx-auto px-4 py-16">
+      {/* Cart Sidebar */}
+      <CartSidebar />
+
+      {/* Floating Cart Button (Mobile & Desktop) */}
+      {itemCount > 0 && (
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="fixed bottom-8 right-8 bg-gradient-to-br from-red-600 to-red-700 text-white rounded-full w-20 h-20 shadow-2xl hover:shadow-red-500/50 hover:scale-110 z-30 flex items-center justify-center transition-all animate-pulse"
+          aria-label="View cart"
+        >
+          <div className="relative">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <span className="absolute -top-3 -right-3 bg-white text-red-600 text-sm font-extrabold rounded-full w-7 h-7 flex items-center justify-center shadow-lg ring-2 ring-white">
+              {itemCount}
+            </span>
+          </div>
+        </button>
+      )}
+
+      <main className="container mx-auto px-4 py-16 pb-32">
         {/* Header */}
         <div className="text-center mb-16">
+          {tableNumber && (
+            <div className="inline-block bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-2 rounded-full font-bold text-lg mb-4 shadow-lg">
+              🍽️ Table {tableNumber}
+            </div>
+          )}
           <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
             Our Menu
           </h1>
@@ -29,43 +70,16 @@ export default function MenuPage() {
             Explore our delicious selection of authentic Vietnamese Phở and Japanese Sushi,
             crafted fresh daily with the finest ingredients
           </p>
+          {!tableNumber && itemCount === 0 && (
+            <div className="mt-6 inline-flex items-center gap-2 text-gray-500 text-sm">
+              <span>💡</span>
+              <span>Tap any item to add it to your cart</span>
+            </div>
+          )}
         </div>
 
-        {/* Popular Items Section */}
-        {selectedCategory === 'all' && (
-          <div className="mb-20 bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-8 md:p-12 border border-orange-100">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <span className="text-4xl">⭐</span> Popular Favorites
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {popularItems.map((item) => (
-                <div key={item.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group">
-                  <div className="relative h-48 bg-gradient-to-br from-orange-100 to-red-100">
-                    <div className="absolute inset-0 flex items-center justify-center text-orange-300">
-                      <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div className="absolute top-3 right-3 bg-red-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                      ⭐ Popular
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-bold text-gray-900 mb-2 text-lg">{item.name}</h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">{item.description}</p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-red-600 font-extrabold text-2xl">${item.price.toFixed(2)}</p>
-                      <span className="text-red-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">→</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Category Filter */}
-        <div className="mb-12 overflow-x-auto pb-2">
+        <div className="mb-12 overflow-x-auto pb-2 sticky top-[73px] z-20 bg-gradient-to-b from-[#FFFBF5] via-[#FFFBF5] to-transparent pt-4 pb-6">
           <div className="flex gap-4 justify-center min-w-max">
             {categories.map((category) => (
               <button
@@ -83,6 +97,20 @@ export default function MenuPage() {
           </div>
         </div>
 
+        {/* Popular Items Section - Now with ordering! */}
+        {selectedCategory === 'all' && popularItems.length > 0 && (
+          <div className="mb-20">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+              <span className="text-4xl">⭐</span> Popular Favorites
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {popularItems.map((item) => (
+                <MenuItem key={item.id} item={item} />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Menu Items by Category */}
         <div className="space-y-12">
           {selectedCategory === 'all' ? (
@@ -91,35 +119,17 @@ export default function MenuPage() {
               const categoryItems = menuItems.filter(item => item.category === category.id)
               return (
                 <section key={category.id}>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-red-600 pb-2">
-                    {category.name}
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex items-center gap-4 mb-8">
+                    <span className="text-5xl">
+                      {category.id === 'pho' ? '🍜' : category.id === 'sushi' ? '🍣' : category.id === 'appetizers' ? '🥟' : '🥤'}
+                    </span>
+                    <h2 className="text-4xl font-bold text-gray-900">
+                      {category.name}
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {categoryItems.map((item) => (
-                      <div key={item.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-xl font-bold text-gray-900">{item.name}</h3>
-                              {item.popular && (
-                                <span className="text-yellow-500 text-sm">⭐</span>
-                              )}
-                            </div>
-                            <p className="text-gray-600 mt-2">{item.description}</p>
-                            {item.customizations && (
-                              <div className="mt-3 text-sm text-gray-500">
-                                <span className="font-semibold">Customizable:</span>{' '}
-                                {item.customizations.map(c => c.label).join(', ')}
-                              </div>
-                            )}
-                          </div>
-                          <div className="ml-4">
-                            <p className="text-red-600 font-bold text-xl whitespace-nowrap">
-                              ${item.price.toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      <MenuItem key={item.id} item={item} />
                     ))}
                   </div>
                 </section>
@@ -127,32 +137,9 @@ export default function MenuPage() {
             })
           ) : (
             // Show selected category
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.map((item) => (
-                <div key={item.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-bold text-gray-900">{item.name}</h3>
-                        {item.popular && (
-                          <span className="text-yellow-500 text-sm">⭐</span>
-                        )}
-                      </div>
-                      <p className="text-gray-600 mt-2">{item.description}</p>
-                      {item.customizations && (
-                        <div className="mt-3 text-sm text-gray-500">
-                          <span className="font-semibold">Customizable:</span>{' '}
-                          {item.customizations.map(c => c.label).join(', ')}
-                        </div>
-                      )}
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-red-600 font-bold text-xl whitespace-nowrap">
-                        ${item.price.toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <MenuItem key={item.id} item={item} />
               ))}
             </div>
           )}
@@ -165,36 +152,24 @@ export default function MenuPage() {
           </div>
         )}
 
-        {/* CTA Section */}
-        <div className="mt-20 bg-gradient-to-r from-red-600 via-red-500 to-orange-600 rounded-3xl p-12 text-center text-white shadow-2xl">
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6">Ready to Order?</h2>
-          <p className="text-xl md:text-2xl mb-8 opacity-95 max-w-2xl mx-auto">
-            Order online for pickup or delivery and enjoy our delicious food at home
-          </p>
-          <a
-            href="/order"
-            className="inline-block bg-white text-red-600 px-12 py-5 rounded-xl font-extrabold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-2xl text-xl"
-          >
-            Order Now →
-          </a>
-        </div>
-
         {/* Info Section */}
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg p-6 text-center shadow-md">
-            <div className="text-3xl mb-2">🚚</div>
-            <h3 className="font-semibold text-gray-900 mb-1">Free Delivery</h3>
-            <p className="text-sm text-gray-600">On orders over $30</p>
-          </div>
-          <div className="bg-white rounded-lg p-6 text-center shadow-md">
-            <div className="text-3xl mb-2">⏱️</div>
-            <h3 className="font-semibold text-gray-900 mb-1">Fast Preparation</h3>
-            <p className="text-sm text-gray-600">Ready in 20-30 minutes</p>
-          </div>
-          <div className="bg-white rounded-lg p-6 text-center shadow-md">
-            <div className="text-3xl mb-2">✨</div>
-            <h3 className="font-semibold text-gray-900 mb-1">Fresh Ingredients</h3>
-            <p className="text-sm text-gray-600">Made to order daily</p>
+        <div className="mt-16 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-10 shadow-lg border border-orange-100">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
+              <div className="text-5xl mb-4">🚚</div>
+              <h3 className="font-bold text-gray-900 mb-2 text-xl">Free Delivery</h3>
+              <p className="text-gray-600">On orders over $30</p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
+              <div className="text-5xl mb-4">⏱️</div>
+              <h3 className="font-bold text-gray-900 mb-2 text-xl">Fast Preparation</h3>
+              <p className="text-gray-600">Ready in 20-30 minutes</p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
+              <div className="text-5xl mb-4">✨</div>
+              <h3 className="font-bold text-gray-900 mb-2 text-xl">Fresh Ingredients</h3>
+              <p className="text-gray-600">Made to order daily</p>
+            </div>
           </div>
         </div>
       </main>
