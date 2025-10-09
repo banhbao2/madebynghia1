@@ -1,4 +1,5 @@
-import menuData from '@/data/menu.json'
+// Type definitions for menu items
+// Menu data is now stored in Supabase database
 
 export interface MenuItem {
   id: string
@@ -12,13 +13,13 @@ export interface MenuItem {
     options: string[]
   }[]
   popular?: boolean
+  is_available?: boolean
+  sort_order?: number
 }
 
 export interface Category {
   id: string
   name: string
+  sort_order?: number
+  is_active?: boolean
 }
-
-// Import from JSON file - edit menu.json to update menu items
-export const menuItems: MenuItem[] = menuData.items as MenuItem[]
-export const categories = menuData.categories as readonly Category[]

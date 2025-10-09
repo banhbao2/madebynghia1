@@ -6,16 +6,59 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CartSidebar from '@/components/CartSidebar'
 import MenuItem from '@/components/MenuItem'
-import { menuItems, categories } from '@/lib/menuData'
+import { MenuItem as MenuItemType, Category } from '@/lib/menuData'
 import { useCart } from '@/context/CartContext'
+import { supabase } from '@/lib/supabase'
 
 export default function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [menuItems, setMenuItems] = useState<MenuItemType[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const { setIsCartOpen, itemCount } = useCart()
   const searchParams = useSearchParams()
 
   // QR Code support: Get table number from URL
   const tableNumber = searchParams.get('table')
+
+  // Fetch menu items and categories from Supabase
+  useEffect(() => {
+    async function fetchMenuData() {
+      try {
+        setLoading(true)
+
+        // Fetch menu items
+        const { data: items, error: itemsError } = await supabase
+          .from('menu_items')
+          .select('*')
+          .eq('is_available', true)
+          .order('sort_order')
+
+        if (itemsError) throw itemsError
+
+        // Fetch categories
+        const { data: cats, error: catsError } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort_order')
+
+        if (catsError) throw catsError
+
+        setMenuItems(items || [])
+        setCategories(cats || [])
+        setError(null)
+      } catch (err) {
+        console.error('Error fetching menu data:', err)
+        setError('Failed to load menu. Please refresh the page.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMenuData()
+  }, [])
 
   const filteredItems = selectedCategory === 'all'
     ? menuItems
@@ -29,6 +72,45 @@ export default function MenuPage() {
       sessionStorage.setItem('tableNumber', tableNumber)
     }
   }, [tableNumber])
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="container mx-auto px-4 py-16">
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-red-600 mb-4"></div>
+            <p className="text-gray-600 text-lg">Loading menu...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="container mx-auto px-4 py-16">
+          <div className="text-center py-20">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition"
+            >
+              Reload Page
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen">
