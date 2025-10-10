@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase-browser'
 import { Order, OrderStatus } from '@/types/order'
 
 export default function AdminOrdersPage() {
@@ -10,6 +11,10 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>('')
+  const [showNewDataBadge, setShowNewDataBadge] = useState(false)
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false)
+
+  const supabase = createClient()
 
   // Fetch orders
   const fetchOrders = async () => {
@@ -34,9 +39,51 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders()
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchOrders, 30000)
-    return () => clearInterval(interval)
+
+    // Set up real-time subscription for orders
+    const channel = supabase
+      .channel('orders-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'orders',
+        },
+        (payload) => {
+          console.log('Order change detected:', payload)
+
+          if (payload.eventType === 'INSERT') {
+            // Add new order to the top of the list
+            setOrders((prev) => [payload.new as Order, ...prev])
+            setShowNewDataBadge(true)
+            showNotification('New order received!')
+          } else if (payload.eventType === 'UPDATE') {
+            // Update existing order
+            setOrders((prev) =>
+              prev.map((o) =>
+                o.id === payload.new.id ? (payload.new as Order) : o
+              )
+            )
+            // Update selected order if it's the one being viewed
+            if (selectedOrder?.id === payload.new.id) {
+              setSelectedOrder(payload.new as Order)
+            }
+          } else if (payload.eventType === 'DELETE') {
+            // Remove deleted order
+            setOrders((prev) => prev.filter((o) => o.id !== payload.old.id))
+            if (selectedOrder?.id === payload.old.id) {
+              setSelectedOrder(null)
+            }
+          }
+        }
+      )
+      .subscribe()
+
+    // Cleanup subscription on unmount
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   // Filter orders by status
@@ -47,6 +94,37 @@ export default function AdminOrdersPage() {
       setFilteredOrders(orders.filter(order => order.status === selectedStatus))
     }
   }, [selectedStatus, orders])
+
+  const showNotification = (message: string) => {
+    // Simple browser notification
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Pho & Sushi - Admin', {
+        body: message,
+        icon: '/favicon.ico',
+      })
+    }
+  }
+
+  const clearNewDataBadge = () => {
+    // Trigger fade-out animation
+    setIsAnimatingOut(true)
+    // After animation completes, remove the badge
+    setTimeout(() => {
+      setShowNewDataBadge(false)
+      setIsAnimatingOut(false)
+    }, 300) // Match this with CSS animation duration
+  }
+
+  // Auto-dismiss badge after 8 seconds
+  useEffect(() => {
+    if (showNewDataBadge) {
+      const timer = setTimeout(() => {
+        clearNewDataBadge()
+      }, 8000) // 8 seconds
+
+      return () => clearTimeout(timer)
+    }
+  }, [showNewDataBadge])
 
   // Update order status
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
@@ -137,14 +215,62 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* New Data Badge */}
+      {showNewDataBadge && (
+        <div
+          className={`fixed top-4 right-4 z-50 transition-all duration-300 ${
+            isAnimatingOut
+              ? 'opacity-0 translate-y-2'
+              : 'opacity-100 translate-y-0 animate-bounce'
+          }`}
+        >
+          <div className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+            <span className="animate-pulse">🔔</span>
+            <span className="font-semibold">New order received!</span>
+            <button
+              onClick={clearNewDataBadge}
+              className="ml-2 text-white hover:text-gray-200 transition-colors"
+              aria-label="Dismiss notification"
+            >
+              ✕
+            </button>
+          </div>
+          {/* Progress bar showing time until auto-dismiss */}
+          <div className="mt-1 h-1 bg-white bg-opacity-30 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-white"
+              style={{ animation: 'shrinkWidth 8s linear forwards' }}
+            />
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes shrinkWidth {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}</style>
+
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-blue-600 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                  Live updates
+                </span>
+              </div>
+            </div>
             <div className="flex items-center gap-4">
               <button
-                onClick={fetchOrders}
+                onClick={() => {
+                  clearNewDataBadge()
+                  fetchOrders()
+                }}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
               >
                 🔄 Refresh
@@ -208,7 +334,13 @@ export default function AdminOrdersPage() {
               filteredOrders.map((order) => (
                 <div
                   key={order.id}
-                  onClick={() => setSelectedOrder(order)}
+                  onClick={() => {
+                    setSelectedOrder(order)
+                    // Dismiss notification when user clicks on an order
+                    if (showNewDataBadge) {
+                      clearNewDataBadge()
+                    }
+                  }}
                   className="bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer p-4 border-l-4 border-red-600"
                 >
                   {/* Order Header */}

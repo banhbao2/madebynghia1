@@ -9,13 +9,19 @@ export default function ReservationsPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  // Get today's date (for default value)
+  const getTodayDate = () => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  }
+
   // Form state
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [formData, setFormData] = useState<ReservationFormData>({
     customer_name: '',
     customer_email: '',
     customer_phone: '',
-    reservation_date: '',
+    reservation_date: getTodayDate(), // Default to today
     reservation_time: '',
     party_size: 2,
     special_requests: '',
@@ -26,11 +32,10 @@ export default function ReservationsPage() {
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  // Get minimum date (tomorrow)
+  // Get minimum date (today)
   const getMinDate = () => {
-    const tomorrow = new Date()
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    return tomorrow.toISOString().split('T')[0]
+    const today = new Date()
+    return today.toISOString().split('T')[0]
   }
 
   // Get maximum date (30 days from now)
@@ -309,7 +314,7 @@ export default function ReservationsPage() {
                       required
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Select a date up to 30 days in advance
+                      📅 You can book from today up to 30 days in advance
                     </p>
                   </div>
 

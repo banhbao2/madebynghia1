@@ -88,9 +88,9 @@ function ConfirmationContent() {
         <div className="max-w-2xl mx-auto">
           {/* Success Message */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
               <svg
-                className="w-12 h-12 text-green-600"
+                className="w-12 h-12 text-blue-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -99,16 +99,15 @@ function ConfirmationContent() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M5 13l4 4L19 7"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Reservation Confirmed!
+              Reservation Request Received!
             </h1>
-            <p className="text-gray-600">
-              We've sent a confirmation email to{' '}
-              <span className="font-medium">{reservation.customer_email}</span>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Thank you! Your reservation request has been submitted successfully.
             </p>
           </div>
 
@@ -218,17 +217,70 @@ function ConfirmationContent() {
                 </div>
               )}
 
+              {/* Email Notification Info */}
+              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
+                    <span className="text-xl">📧</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-yellow-900 mb-2">
+                      ⏳ Pending Restaurant Confirmation
+                    </p>
+                    <div className="text-sm text-yellow-800 space-y-2">
+                      <p>
+                        <strong>What happens next:</strong>
+                      </p>
+                      <ul className="space-y-1 ml-4">
+                        <li>• You will receive an <strong>email confirmation</strong> once the restaurant accepts your reservation</li>
+                        <li>• If we cannot accommodate your request, you'll receive a notification with the reason</li>
+                        <li>• This typically takes <strong>a few hours</strong>, but may be faster during business hours</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Support */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <span className="text-xl">📞</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-gray-900 mb-2">
+                      Need Immediate Assistance?
+                    </p>
+                    <p className="text-sm text-gray-700 mb-2">
+                      For urgent requests or same-day reservations, please contact us directly:
+                    </p>
+                    <div className="space-y-1 text-sm">
+                      <p className="text-gray-900">
+                        <span className="font-semibold">Phone:</span>{' '}
+                        <a href="tel:+15551234567" className="text-red-600 hover:text-red-700 font-medium">
+                          (555) 123-4567
+                        </a>
+                      </p>
+                      <p className="text-gray-900">
+                        <span className="font-semibold">Email:</span>{' '}
+                        <a href="mailto:reservations@phosushi.com" className="text-red-600 hover:text-red-700 font-medium">
+                          reservations@phosushi.com
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Important Info */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800 font-medium mb-2">
-                  📌 Important Information
+                  📌 Reservation Policy
                 </p>
                 <ul className="text-xs text-blue-700 space-y-1">
                   <li>• Please arrive 10 minutes before your reservation time</li>
                   <li>• Your table will be held for 15 minutes past reservation time</li>
-                  <li>
-                    • To cancel or modify, please call us at least 2 hours in advance
-                  </li>
+                  <li>• To cancel or modify, please contact us at least 2 hours in advance</li>
                 </ul>
               </div>
             </div>

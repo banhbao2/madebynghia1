@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 import Link from 'next/link'
+import { useNotification } from '@/hooks/useNotification'
 
 export default function AdminLayout({
   children,
@@ -16,6 +17,8 @@ export default function AdminLayout({
   const [adminData, setAdminData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const { permission, requestPermission, isSupported } = useNotification()
+  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false)
 
   // Don't show layout on login page
   const isLoginPage = pathname === '/admin/login'
@@ -57,6 +60,22 @@ export default function AdminLayout({
     return () => subscription.unsubscribe()
   }, [])
 
+  // Check notification permission and prompt if needed
+  useEffect(() => {
+    if (isSupported && permission === 'default' && !isLoginPage) {
+      // Show prompt after a short delay
+      const timer = setTimeout(() => {
+        setShowNotificationPrompt(true)
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [permission, isSupported, isLoginPage])
+
+  const handleEnableNotifications = async () => {
+    await requestPermission()
+    setShowNotificationPrompt(false)
+  }
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -87,6 +106,43 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Notification Permission Prompt */}
+      {showNotificationPrompt && (
+        <div className="fixed top-4 right-4 z-50 max-w-md">
+          <div className="bg-blue-500 text-white p-4 rounded-lg shadow-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">🔔</span>
+              <div className="flex-1">
+                <h3 className="font-semibold mb-1">Enable Notifications</h3>
+                <p className="text-sm text-blue-100 mb-3">
+                  Get instant alerts for new orders and reservations
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleEnableNotifications}
+                    className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition font-semibold text-sm"
+                  >
+                    Enable
+                  </button>
+                  <button
+                    onClick={() => setShowNotificationPrompt(false)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                  >
+                    Later
+                  </button>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowNotificationPrompt(false)}
+                className="text-white hover:text-blue-100"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Logo */}
