@@ -38,3 +38,129 @@ h1, h2, h3, h4, h5, h6 {
 h1 { font-size: clamp(2.25rem, 5vw, 3.5rem); }
 h2 { font-size: clamp(1.875rem, 4vw, 2.75rem); }
 h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+
+/* Custom Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.6s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s ease-out;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+  animation-fill-mode: backwards;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+  animation-fill-mode: backwards;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+  animation-fill-mode: backwards;
+}
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-text {
+  height: 1rem;
+  border-radius: 0.25rem;
+}
+
+.skeleton-title {
+  height: 1.5rem;
+  border-radius: 0.25rem;
+}
+
+.skeleton-image {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}

@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CartSidebar from '@/components/CartSidebar'
 import MenuItem from '@/components/MenuItem'
+import { MenuGridSkeleton } from '@/components/MenuItemSkeleton'
 import { MenuItem as MenuItemType, Category } from '@/lib/menuData'
 import { useCart } from '@/context/CartContext'
 import { supabase } from '@/lib/supabase'
@@ -16,6 +17,8 @@ export default function MenuPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [priceFilter, setPriceFilter] = useState<'all' | 'under10' | 'under15' | 'under20'>('all')
   const { setIsCartOpen, itemCount } = useCart()
   const searchParams = useSearchParams()
 
@@ -60,11 +63,42 @@ export default function MenuPage() {
     fetchMenuData()
   }, [])
 
-  const filteredItems = selectedCategory === 'all'
-    ? menuItems
-    : menuItems.filter(item => item.category === selectedCategory)
+  // Advanced filtering with search and price
+  const filteredItems = useMemo(() => {
+    let items = menuItems
 
-  const popularItems = menuItems.filter(item => item.popular)
+    // Category filter
+    if (selectedCategory !== 'all') {
+      items = items.filter(item => item.category === selectedCategory)
+    }
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      items = items.filter(item =>
+        item.name.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+      )
+    }
+
+    // Price filter
+    if (priceFilter !== 'all') {
+      const priceRanges = {
+        under10: [0, 10],
+        under15: [0, 15],
+        under20: [0, 20],
+      }
+      const [min, max] = priceRanges[priceFilter]
+      items = items.filter(item => item.price >= min && item.price <= max)
+    }
+
+    return items
+  }, [menuItems, selectedCategory, searchQuery, priceFilter])
+
+  const popularItems = useMemo(() =>
+    menuItems.filter(item => item.popular),
+    [menuItems]
+  )
 
   // Store table number for checkout if provided
   useEffect(() => {
@@ -73,16 +107,27 @@ export default function MenuPage() {
     }
   }, [tableNumber])
 
-  // Show loading state
+  // Show loading state with skeleton
   if (loading) {
     return (
       <div className="min-h-screen">
         <Header />
         <main className="container mx-auto px-4 py-16">
-          <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-red-600 mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading menu...</p>
+          {/* Header Skeleton */}
+          <div className="text-center mb-16">
+            <div className="h-12 bg-gray-200 rounded-lg w-1/2 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded w-2/3 mx-auto animate-pulse"></div>
           </div>
+
+          {/* Category Skeleton */}
+          <div className="mb-12 flex gap-4 justify-center">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-12 w-32 bg-gray-200 rounded-xl animate-pulse"></div>
+            ))}
+          </div>
+
+          {/* Menu Items Skeleton */}
+          <MenuGridSkeleton count={6} />
         </main>
         <Footer />
       </div>
@@ -139,7 +184,7 @@ export default function MenuPage() {
 
       <main className="container mx-auto px-4 py-16 pb-32">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           {tableNumber && (
             <div className="inline-block bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-2 rounded-full font-bold text-lg mb-4 shadow-lg">
               🍽️ Table {tableNumber}
@@ -152,12 +197,101 @@ export default function MenuPage() {
             Explore our delicious selection of authentic Vietnamese Phở and Japanese Sushi,
             crafted fresh daily with the finest ingredients
           </p>
-          {!tableNumber && itemCount === 0 && (
-            <div className="mt-6 inline-flex items-center gap-2 text-gray-500 text-sm">
-              <span>💡</span>
-              <span>Tap any item to add it to your cart</span>
+        </div>
+
+        {/* Search and Filter Bar */}
+        <div className="mb-8 max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search Input */}
+            <div className="flex-1 relative">
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search menu items..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Price Filter */}
+            <select
+              value={priceFilter}
+              onChange={(e) => setPriceFilter(e.target.value as 'all' | 'under10' | 'under15' | 'under20')}
+              className="px-6 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-medium bg-white transition"
+            >
+              <option value="all">All Prices</option>
+              <option value="under10">Under $10</option>
+              <option value="under15">Under $15</option>
+              <option value="under20">Under $20</option>
+            </select>
+          </div>
+
+          {/* Active Filters Display */}
+          {(searchQuery || priceFilter !== 'all') && (
+            <div className="mt-4 flex flex-wrap gap-2 items-center">
+              <span className="text-sm text-gray-600 font-medium">Active filters:</span>
+              {searchQuery && (
+                <span className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
+                  Search: &quot;{searchQuery}&quot;
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="hover:text-red-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {priceFilter !== 'all' && (
+                <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                  Price: {priceFilter.replace('under', 'Under $')}
+                  <button
+                    onClick={() => setPriceFilter('all')}
+                    className="hover:text-blue-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSearchQuery('')
+                  setPriceFilter('all')
+                }}
+                className="text-sm text-gray-600 hover:text-gray-900 underline"
+              >
+                Clear all
+              </button>
             </div>
           )}
+        </div>
+
+        {/* Results Count */}
+        <div className="mb-4 text-center text-sm text-gray-600">
+          Showing <strong>{filteredItems.length}</strong> {filteredItems.length === 1 ? 'item' : 'items'}
         </div>
 
         {/* Category Filter */}
