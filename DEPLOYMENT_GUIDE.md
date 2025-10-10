@@ -327,6 +327,160 @@ Result: `phosushi.com` → redirects to → `www.phosushi.com`
 
 ---
 
+## 📧 Custom Email Domain Setup (Resend)
+
+### **Prerequisites:**
+- Domain purchased on Namecheap
+- Resend account created (free tier: 3,000 emails/month)
+
+### **Step 1: Add Domain to Resend**
+
+1. **Go to Resend Dashboard**
+   - Visit: https://resend.com/domains
+   - Click "Add Domain"
+   - Enter your domain: `yourdomain.com`
+
+2. **Copy DNS Records**
+
+   Resend will provide 3 DNS records:
+
+   ```
+   SPF Record:
+   Type: TXT
+   Name: @
+   Value: v=spf1 include:resend.com ~all
+
+   DKIM Record:
+   Type: TXT
+   Name: resend._domainkey
+   Value: [long string provided by Resend]
+
+   DMARC Record (optional):
+   Type: TXT
+   Name: _dmarc
+   Value: v=DMARC1; p=none; rua=mailto:dmarc@yourdomain.com
+   ```
+
+### **Step 2: Configure DNS in Namecheap**
+
+1. **Login to Namecheap**
+   - Go to Domain List → Your domain → "Advanced DNS"
+
+2. **Add Email DNS Records**
+
+   **SPF Record:**
+   - Click "Add New Record"
+   - Type: `TXT Record`
+   - Host: `@`
+   - Value: `v=spf1 include:resend.com ~all`
+   - TTL: `Automatic`
+
+   **DKIM Record:**
+   - Click "Add New Record"
+   - Type: `TXT Record`
+   - Host: `resend._domainkey` (copy exactly from Resend)
+   - Value: [paste the long string from Resend]
+   - TTL: `Automatic`
+
+   **DMARC Record (optional):**
+   - Click "Add New Record"
+   - Type: `TXT Record`
+   - Host: `_dmarc`
+   - Value: `v=DMARC1; p=none; rua=mailto:dmarc@yourdomain.com`
+   - TTL: `Automatic`
+
+3. **Save All Changes**
+
+### **Step 3: Verify Domain in Resend**
+
+1. Wait 5-15 minutes for DNS propagation
+2. Go back to Resend → Domains
+3. Click "Verify" on your domain
+4. Should show green checkmark ✓ when verified
+
+### **Step 4: Create Production API Key**
+
+1. **In Resend Dashboard:**
+   - Go to: https://resend.com/api-keys
+   - Click "Create API Key"
+
+2. **Configure API Key:**
+   - Name: `Production - Restaurant Name`
+   - Permission: **Sending access** (not Full access)
+   - Domain: Select your verified domain
+   - Click "Add"
+
+3. **Copy the API Key**
+   - It will look like: `re_xxxxxxxxxxxx`
+   - **Copy it immediately** - you can't see it again!
+
+### **Step 5: Update Environment Variables**
+
+#### **Local Development (.env.local):**
+
+```env
+RESEND_API_KEY=re_your_production_api_key_here
+RESEND_FROM_EMAIL=Restaurant Name <info@yourdomain.com>
+RESEND_REPLY_TO_EMAIL=info@yourdomain.com
+```
+
+#### **Vercel Production:**
+
+1. Go to Vercel → Your Project → Settings → Environment Variables
+2. Add/Update:
+   ```
+   RESEND_API_KEY = re_your_production_api_key_here
+   RESEND_FROM_EMAIL = Restaurant Name <info@yourdomain.com>
+   RESEND_REPLY_TO_EMAIL = info@yourdomain.com
+   ```
+3. Click "Save"
+4. Redeploy your application
+
+### **Step 6: Set Up Email Inbox for Replies**
+
+Customers can reply to `info@yourdomain.com`. You have two options:
+
+#### **Option A: Email Forwarding (Free)**
+
+1. In Namecheap → Domain → Mail Settings → Email Forwarding
+2. Forward `info@yourdomain.com` → `your-personal@gmail.com`
+3. **Result:** Replies arrive in your Gmail
+
+#### **Option B: Email Hosting (Professional)**
+
+Get email hosting:
+- **Namecheap Private Email** ($1.18/month)
+- **Google Workspace** ($6/month)
+- **Zoho Mail** (Free tier available)
+
+Set up `info@yourdomain.com` as a real mailbox.
+
+### **Step 7: Test Email Sending**
+
+1. Place a test order or reservation
+2. Check that email arrives
+3. Try replying to the email
+4. Verify reply arrives at your inbox
+
+### **Common Issues:**
+
+**"API key is invalid" (401 error):**
+- You must create a NEW API key (can't reuse old keys)
+- Make sure API key is from the correct Resend account
+- Check for extra spaces in `.env.local`
+
+**"Domain not verified" (403 error):**
+- Wait for DNS propagation (up to 24 hours)
+- Use Resend's verification tool
+- Check DNS records in Namecheap are correct
+
+**Emails going to spam:**
+- Make sure all 3 DNS records are added (SPF, DKIM, DMARC)
+- Domain must be fully verified in Resend
+- Use a professional "from" name (not "noreply")
+
+---
+
 ## 💰 Costs After Deployment
 
 ### **Monthly Costs:**

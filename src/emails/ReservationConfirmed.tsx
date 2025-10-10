@@ -64,6 +64,14 @@ export default function ReservationConfirmedEmail({
           <Text style={footerText}>
             See you soon at Pho & Sushi!
           </Text>
+
+          <Section style={footer}>
+            <Text style={footerSmallText}>
+              Pho & Sushi Restaurant<br />
+              Questions? Reply to this email or call us.<br />
+              © {new Date().getFullYear()} Pho & Sushi. All rights reserved.
+            </Text>
+          </Section>
         </Container>
       </Body>
     </Html>
@@ -116,4 +124,18 @@ const footerText = {
   margin: '24px 48px',
   textAlign: 'center' as const,
   fontStyle: 'italic',
+};
+
+const footer = {
+  borderTop: '1px solid #e5e7eb',
+  marginTop: '32px',
+  paddingTop: '24px',
+};
+
+const footerSmallText = {
+  color: '#9ca3af',
+  fontSize: '12px',
+  lineHeight: '1.5',
+  textAlign: 'center' as const,
+  margin: '0 48px',
 };

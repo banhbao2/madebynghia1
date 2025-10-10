@@ -231,7 +231,13 @@ export default function AdminReservationsPage() {
       const displayHour = hour % 12 || 12
       const formattedTime = `${displayHour}:${minutes} ${ampm}`
 
-      await fetch('/api/send-reservation-email', {
+      console.log('📧 Sending reservation email:', {
+        type,
+        to: reservation.customer_email,
+        name: reservation.customer_name,
+      })
+
+      const response = await fetch('/api/send-reservation-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -245,9 +251,19 @@ export default function AdminReservationsPage() {
           reason,
         }),
       })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        console.error('❌ Email API error:', result)
+        throw new Error(`Email API returned ${response.status}: ${JSON.stringify(result)}`)
+      }
+
+      console.log('✅ Email sent successfully:', result)
     } catch (error) {
-      console.error('Failed to send email:', error)
-      // Don't throw - email failure shouldn't block the status update
+      console.error('❌ Failed to send email:', error)
+      // Re-throw so the caller knows it failed
+      throw error
     }
   }
 

@@ -39,10 +39,15 @@ export async function POST(req: NextRequest) {
         deliveryAddress,
         orderDate,
       }),
+      replyTo: process.env.RESEND_REPLY_TO_EMAIL || process.env.RESEND_FROM_EMAIL!,
     });
 
     if (error) {
-      console.error('Resend error:', error);
+      console.error('========== RESEND ERROR ==========');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      console.error('From email:', process.env.RESEND_FROM_EMAIL);
+      console.error('Reply-to email:', process.env.RESEND_REPLY_TO_EMAIL);
+      console.error('==================================');
       return NextResponse.json({ error }, { status: 400 });
     }
 

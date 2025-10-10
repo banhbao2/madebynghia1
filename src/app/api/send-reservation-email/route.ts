@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       to: customerEmail,
       subject,
       react: emailTemplate,
+      replyTo: process.env.RESEND_REPLY_TO_EMAIL || process.env.RESEND_FROM_EMAIL!,
     });
 
     if (error) {
