@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -11,7 +11,7 @@ import { MenuItem as MenuItemType, Category } from '@/lib/menuData'
 import { useCart } from '@/context/CartContext'
 import { supabase } from '@/lib/supabase'
 
-export default function MenuPage() {
+function MenuPageContent() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [menuItems, setMenuItems] = useState<MenuItemType[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -392,5 +392,21 @@ export default function MenuPage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function MenuPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen">
+        <Header />
+        <main className="container mx-auto px-4 py-16">
+          <MenuGridSkeleton count={6} />
+        </main>
+        <Footer />
+      </div>
+    }>
+      <MenuPageContent />
+    </Suspense>
   )
 }
