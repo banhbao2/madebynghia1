@@ -34,14 +34,14 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
 
     // Spam prevention checks
     if (formData.honeypot) {
-      setError('Invalid submission detected.')
+      setError('Ungültige Übermittlung erkannt.')
       setIsSubmitting(false)
       return
     }
 
     const timeTaken = Date.now() - submissionTime
     if (timeTaken < 3000) {
-      setError('Please take your time to fill out the form.')
+      setError('Bitte nehmen Sie sich Zeit, um das Formular auszufüllen.')
       setIsSubmitting(false)
       return
     }
@@ -49,7 +49,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address.')
+      setError('Bitte geben Sie eine gültige E-Mail-Adresse ein.')
       setIsSubmitting(false)
       return
     }
@@ -79,7 +79,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to place order')
+        throw new Error(data.error || 'Bestellung konnte nicht aufgegeben werden')
       }
 
       setOrderId(data.order.id)
@@ -138,7 +138,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
 
     } catch (err) {
       console.error('Error submitting order:', err)
-      setError(err instanceof Error ? err.message : 'Failed to place order. Please try again.')
+      setError(err instanceof Error ? err.message : 'Bestellung konnte nicht aufgegeben werden. Bitte versuchen Sie es erneut.')
     } finally {
       setIsSubmitting(false)
     }
@@ -170,16 +170,16 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">Order Accepted!</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Bestellung angenommen!</h3>
           <p className="text-gray-600 mb-2">
-            Thank you for your order, {formData.name}!
+            Vielen Dank für Ihre Bestellung, {formData.name}!
           </p>
           <p className="text-gray-600 mb-4">
-            A confirmation email has been sent to <strong>{formData.email}</strong>
+            Eine Bestätigungs-E-Mail wurde an <strong>{formData.email}</strong> gesendet
           </p>
           {orderId && (
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <p className="text-sm text-gray-500 mb-1">Order ID</p>
+              <p className="text-sm text-gray-500 mb-1">Bestellnummer</p>
               <p className="text-sm font-mono text-gray-700 break-all">{orderId}</p>
             </div>
           )}
@@ -187,7 +187,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
             onClick={handleCloseSuccess}
             className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-semibold"
           >
-            Close
+            Schließen
           </button>
         </div>
       </div>
@@ -198,11 +198,11 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-xl p-6 max-w-2xl w-full my-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Checkout</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Zur Kasse</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
-            aria-label="Close checkout"
+            aria-label="Kasse schließen"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -213,7 +213,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
         <form onSubmit={handleSubmit}>
           {/* Order Type Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">Order Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">Bestellart</label>
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
@@ -225,7 +225,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                 }`}
               >
                 <div className="text-2xl mb-2">🚚</div>
-                <div className="font-semibold">Delivery</div>
+                <div className="font-semibold">Lieferung</div>
               </button>
               <button
                 type="button"
@@ -237,7 +237,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                 }`}
               >
                 <div className="text-2xl mb-2">🏪</div>
-                <div className="font-semibold">Pickup</div>
+                <div className="font-semibold">Abholung</div>
               </button>
             </div>
           </div>
@@ -261,7 +261,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
 
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number *
+                Telefonnummer *
               </label>
               <input
                 type="tel"
@@ -276,7 +276,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email *
+                E-Mail *
               </label>
               <input
                 type="email"
@@ -286,7 +286,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="your@email.com"
+                placeholder="ihre@email.de"
               />
             </div>
 
@@ -306,7 +306,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2">
                     <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
-                      Street *
+                      Straße *
                     </label>
                     <input
                       type="text"
@@ -316,12 +316,12 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                       value={formData.street}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                      placeholder="Main Street"
+                      placeholder="Hauptstraße"
                     />
                   </div>
                   <div>
                     <label htmlFor="houseNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                      No. *
+                      Nr. *
                     </label>
                     <input
                       type="text"
@@ -337,7 +337,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                 </div>
                 <div>
                   <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                    City *
+                    Stadt *
                   </label>
                   <input
                     type="text"
@@ -347,7 +347,7 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                     value={formData.city}
                     onChange={handleInputChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Your City"
+                    placeholder="Ihre Stadt"
                   />
                 </div>
               </>
@@ -356,16 +356,16 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
             {orderType === 'pickup' && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>Pickup Location:</strong><br />
-                  123 Main Street, Your City<br />
-                  We'll notify you when your order is ready!
+                  <strong>Abholort:</strong><br />
+                  Hauptstraße 123, Ihre Stadt<br />
+                  Wir benachrichtigen Sie, sobald Ihre Bestellung fertig ist!
                 </p>
               </div>
             )}
 
             <div>
               <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-                Special Instructions
+                Besondere Anweisungen
               </label>
               <textarea
                 id="notes"
@@ -374,17 +374,17 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                 value={formData.notes}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Any special requests or dietary restrictions?"
+                placeholder="Spezielle Wünsche oder Ernährungseinschränkungen?"
               />
             </div>
           </div>
 
           {/* Order Summary */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-2">Order Summary</h3>
+            <h3 className="font-semibold text-gray-900 mb-2">Bestellübersicht</h3>
             <div className="flex justify-between text-lg font-bold text-gray-900">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>Gesamt</span>
+              <span>{total.toFixed(2)}€</span>
             </div>
           </div>
 
@@ -407,10 +407,10 @@ export default function CheckoutModal({ onClose, total }: CheckoutModalProps) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Placing Order...
+                Bestellung wird aufgegeben...
               </>
             ) : (
-              'Place Order'
+              'Bestellung aufgeben'
             )}
           </button>
         </form>

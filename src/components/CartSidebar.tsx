@@ -86,12 +86,12 @@ export default function CartSidebar() {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <h2 className="text-xl font-bold text-gray-900">
-              Your Cart ({itemCount})
+              Ihr Warenkorb ({itemCount})
             </h2>
             <button
               onClick={() => setIsCartOpen(false)}
               className="text-gray-500 hover:text-gray-700 transition p-2 hover:bg-gray-100 rounded-lg"
-              aria-label="Close cart"
+              aria-label="Warenkorb schließen"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -106,8 +106,8 @@ export default function CartSidebar() {
                 <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <p className="text-lg font-medium">Your cart is empty</p>
-                <p className="text-sm mt-1">Add some delicious items to get started!</p>
+                <p className="text-lg font-medium">Ihr Warenkorb ist leer</p>
+                <p className="text-sm mt-1">Fügen Sie leckere Artikel hinzu, um zu beginnen!</p>
               </div>
             ) : (
               <div className="space-y-0">
@@ -123,16 +123,16 @@ export default function CartSidebar() {
             <div className="border-t p-4 bg-gradient-to-b from-gray-50 to-white">
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-gray-700">
-                  <span>Subtotal</span>
-                  <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                  <span>Zwischensumme</span>
+                  <span className="font-semibold">{subtotal.toFixed(2)}€</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
-                  <span>Tax (8.75%)</span>
-                  <span className="font-semibold">${tax.toFixed(2)}</span>
+                  <span>MwSt (8,75%)</span>
+                  <span className="font-semibold">{tax.toFixed(2)}€</span>
                 </div>
                 <div className="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t-2">
-                  <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>Gesamt</span>
+                  <span>{total.toFixed(2)}€</span>
                 </div>
               </div>
 
@@ -143,7 +143,7 @@ export default function CartSidebar() {
                 }}
                 className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                Proceed to Checkout →
+                Zur Kasse →
               </button>
             </div>
           )}

@@ -54,7 +54,7 @@ function MenuPageContent() {
         setError(null)
       } catch (err) {
         console.error('Error fetching menu data:', err)
-        setError('Failed to load menu. Please refresh the page.')
+        setError('Fehler beim Laden des Menüs. Bitte laden Sie die Seite neu.')
       } finally {
         setLoading(false)
       }
@@ -142,13 +142,13 @@ function MenuPageContent() {
         <main className="container mx-auto px-4 py-16">
           <div className="text-center py-20">
             <div className="text-6xl mb-4">⚠️</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Hoppla!</h2>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition"
             >
-              Reload Page
+              Seite neu laden
             </button>
           </div>
         </main>
@@ -169,7 +169,7 @@ function MenuPageContent() {
         <button
           onClick={() => setIsCartOpen(true)}
           className="fixed bottom-8 right-8 bg-gradient-to-br from-red-600 to-red-700 text-white rounded-full w-20 h-20 shadow-2xl hover:shadow-red-500/50 hover:scale-110 z-30 flex items-center justify-center transition-all animate-pulse"
-          aria-label="View cart"
+          aria-label="Warenkorb ansehen"
         >
           <div className="relative">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,15 +187,15 @@ function MenuPageContent() {
         <div className="text-center mb-12">
           {tableNumber && (
             <div className="inline-block bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-2 rounded-full font-bold text-lg mb-4 shadow-lg">
-              🍽️ Table {tableNumber}
+              🍽️ Tisch {tableNumber}
             </div>
           )}
           <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
-            Our Menu
+            Unsere Speisekarte
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore our demo menu showcasing a full-featured restaurant ordering system
-            with search, filters, and cart functionality
+            Entdecken Sie unsere Demo-Speisekarte mit einem vollwertigen Restaurant-Bestellsystem
+            mit Suche, Filtern und Warenkorbfunktion
           </p>
         </div>
 
@@ -219,7 +219,7 @@ function MenuPageContent() {
               </svg>
               <input
                 type="text"
-                placeholder="Search menu items..."
+                placeholder="Menüartikel suchen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
@@ -228,7 +228,7 @@ function MenuPageContent() {
                 <button
                   onClick={() => setSearchQuery('')}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  aria-label="Clear search"
+                  aria-label="Suche löschen"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -243,20 +243,20 @@ function MenuPageContent() {
               onChange={(e) => setPriceFilter(e.target.value as 'all' | 'under10' | 'under15' | 'under20')}
               className="px-6 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-medium bg-white transition"
             >
-              <option value="all">All Prices</option>
-              <option value="under10">Under $10</option>
-              <option value="under15">Under $15</option>
-              <option value="under20">Under $20</option>
+              <option value="all">Alle Preise</option>
+              <option value="under10">Unter 10€</option>
+              <option value="under15">Unter 15€</option>
+              <option value="under20">Unter 20€</option>
             </select>
           </div>
 
           {/* Active Filters Display */}
           {(searchQuery || priceFilter !== 'all') && (
             <div className="mt-4 flex flex-wrap gap-2 items-center">
-              <span className="text-sm text-gray-600 font-medium">Active filters:</span>
+              <span className="text-sm text-gray-600 font-medium">Aktive Filter:</span>
               {searchQuery && (
                 <span className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
-                  Search: &quot;{searchQuery}&quot;
+                  Suche: &quot;{searchQuery}&quot;
                   <button
                     onClick={() => setSearchQuery('')}
                     className="hover:text-red-900"
@@ -267,7 +267,7 @@ function MenuPageContent() {
               )}
               {priceFilter !== 'all' && (
                 <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                  Price: {priceFilter.replace('under', 'Under $')}
+                  Preis: {priceFilter.replace('under', 'Unter ').replace('10', '10€').replace('15', '15€').replace('20', '20€')}
                   <button
                     onClick={() => setPriceFilter('all')}
                     className="hover:text-blue-900"
@@ -283,7 +283,7 @@ function MenuPageContent() {
                 }}
                 className="text-sm text-gray-600 hover:text-gray-900 underline"
               >
-                Clear all
+                Alle löschen
               </button>
             </div>
           )}
@@ -291,7 +291,7 @@ function MenuPageContent() {
 
         {/* Results Count */}
         <div className="mb-4 text-center text-sm text-gray-600">
-          Showing <strong>{filteredItems.length}</strong> {filteredItems.length === 1 ? 'item' : 'items'}
+          <strong>{filteredItems.length}</strong> {filteredItems.length === 1 ? 'Artikel' : 'Artikel'} angezeigt
         </div>
 
         {/* Category Filter */}
@@ -317,7 +317,7 @@ function MenuPageContent() {
         {selectedCategory === 'all' && popularItems.length > 0 && (
           <div className="mb-20">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <span className="text-4xl">⭐</span> Popular Favorites
+              <span className="text-4xl">⭐</span> Beliebte Gerichte
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularItems.map((item) => (
@@ -364,7 +364,7 @@ function MenuPageContent() {
         {/* Empty State */}
         {filteredItems.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No items found in this category.</p>
+            <p className="text-gray-500 text-lg">Keine Artikel gefunden.</p>
           </div>
         )}
 
@@ -373,18 +373,18 @@ function MenuPageContent() {
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
               <div className="text-5xl mb-4">🚚</div>
-              <h3 className="font-bold text-gray-900 mb-2 text-xl">Free Delivery</h3>
-              <p className="text-gray-600">On orders over $30</p>
+              <h3 className="font-bold text-gray-900 mb-2 text-xl">Kostenlose Lieferung</h3>
+              <p className="text-gray-600">Bei Bestellungen über 30€</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
               <div className="text-5xl mb-4">⏱️</div>
-              <h3 className="font-bold text-gray-900 mb-2 text-xl">Fast Preparation</h3>
-              <p className="text-gray-600">Ready in 20-30 minutes</p>
+              <h3 className="font-bold text-gray-900 mb-2 text-xl">Schnelle Zubereitung</h3>
+              <p className="text-gray-600">Fertig in 20-30 Minuten</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
               <div className="text-5xl mb-4">✨</div>
-              <h3 className="font-bold text-gray-900 mb-2 text-xl">Fresh Ingredients</h3>
-              <p className="text-gray-600">Made to order daily</p>
+              <h3 className="font-bold text-gray-900 mb-2 text-xl">Frische Zutaten</h3>
+              <p className="text-gray-600">Täglich frisch zubereitet</p>
             </div>
           </div>
         </div>

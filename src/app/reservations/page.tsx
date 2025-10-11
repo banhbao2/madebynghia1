@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import { createClient } from '@/lib/supabase-browser'
 import { ReservationFormData, TimeSlot } from '@/types/reservation'
 
@@ -16,7 +18,6 @@ export default function ReservationsPage() {
   }
 
   // Form state
-  const [step, setStep] = useState<1 | 2 | 3>(1)
   const [formData, setFormData] = useState<ReservationFormData>({
     customer_name: '',
     customer_email: '',
@@ -31,6 +32,7 @@ export default function ReservationsPage() {
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [showTimeSlots, setShowTimeSlots] = useState(false)
 
   // Get minimum date (today)
   const getMinDate = () => {
@@ -45,6 +47,28 @@ export default function ReservationsPage() {
     return maxDate.toISOString().split('T')[0]
   }
 
+  // Check if a time slot is in the future
+  const isTimeInFuture = (timeString: string) => {
+    const selectedDate = formData.reservation_date
+    const today = getTodayDate()
+
+    // If not today, all times are valid
+    if (selectedDate !== today) {
+      return true
+    }
+
+    // If today, check if time is at least 30 minutes from now
+    const now = new Date()
+    const [hours, minutes] = timeString.split(':').map(Number)
+    const slotTime = new Date()
+    slotTime.setHours(hours, minutes, 0, 0)
+
+    // Add 30 minute buffer
+    const minTime = new Date(now.getTime() + 30 * 60000)
+
+    return slotTime >= minTime
+  }
+
   // Fetch available time slots when date changes
   useEffect(() => {
     if (formData.reservation_date) {
@@ -55,24 +79,27 @@ export default function ReservationsPage() {
   const fetchAvailableSlots = async () => {
     setLoading(true)
     try {
-      console.log('Fetching slots for date:', formData.reservation_date)
       const response = await fetch(
         `/api/reservations/availability?date=${formData.reservation_date}`
       )
       const data = await response.json()
 
-      console.log('API Response:', { ok: response.ok, status: response.status, data })
-
       if (response.ok) {
-        console.log('Setting available slots:', data.slots?.length || 0, 'slots')
-        setAvailableSlots(data.slots || [])
+        // Filter slots to only show future times if today is selected
+        let slots = data.slots || []
+        if (formData.reservation_date === getTodayDate()) {
+          slots = slots.filter((slot: TimeSlot) => isTimeInFuture(slot.time))
+        }
+
+        setAvailableSlots(slots)
+        setShowTimeSlots(true)
       } else {
         console.error('API Error:', data.error)
-        alert(`Error loading time slots: ${data.error || 'Unknown error'}`)
+        alert(`Fehler beim Laden der Zeitfenster: ${data.error || 'Unbekannter Fehler'}`)
       }
     } catch (error) {
       console.error('Error fetching slots:', error)
-      alert('Failed to load available time slots. Please try again.')
+      alert('Verfügbare Zeitfenster konnten nicht geladen werden. Bitte versuchen Sie es erneut.')
     } finally {
       setLoading(false)
     }
@@ -81,8 +108,14 @@ export default function ReservationsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (step < 3) {
-      setStep((step + 1) as 1 | 2 | 3)
+    // Validation
+    if (!formData.reservation_date || !formData.reservation_time || !formData.party_size) {
+      alert('Bitte füllen Sie alle erforderlichen Felder aus.')
+      return
+    }
+
+    if (!formData.customer_name || !formData.customer_email || !formData.customer_phone) {
+      alert('Bitte geben Sie Ihre Kontaktdaten ein.')
       return
     }
 
@@ -97,43 +130,22 @@ export default function ReservationsPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create reservation')
+        throw new Error(data.error || 'Fehler beim Erstellen der Reservierung')
       }
 
       // Redirect to confirmation page
       router.push(`/reservations/confirmation?id=${data.reservation.id}`)
     } catch (error) {
       console.error('Error creating reservation:', error)
-      alert(error instanceof Error ? error.message : 'Failed to create reservation')
+      alert(error instanceof Error ? error.message : 'Fehler beim Erstellen der Reservierung')
     } finally {
       setSubmitting(false)
     }
   }
 
-  const canProceed = () => {
-    if (step === 1) {
-      return formData.reservation_date && formData.party_size > 0
-    }
-    if (step === 2) {
-      return formData.reservation_time
-    }
-    if (step === 3) {
-      return (
-        formData.customer_name &&
-        formData.customer_email &&
-        formData.customer_phone
-      )
-    }
-    return false
-  }
-
-  // Helper: Format time for display (12-hour format)
+  // Helper: Format time for display (24-hour format for German)
   const formatTimeDisplay = (time: string) => {
-    const [hours, minutes] = time.split(':')
-    const hour = parseInt(hours)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour % 12 || 12
-    return `${displayHour}:${minutes} ${ampm}`
+    return `${time} Uhr`
   }
 
   // Helper: Get meal period
@@ -168,9 +180,9 @@ export default function ReservationsPage() {
     const groups = groupSlotsByPeriod(slots)
 
     const periodLabels = {
-      lunch: { icon: '🌤️', label: 'Lunch', color: 'amber' },
-      afternoon: { icon: '☕', label: 'Afternoon', color: 'orange' },
-      dinner: { icon: '🌙', label: 'Dinner', color: 'indigo' },
+      lunch: { icon: '🌤️', label: 'Mittagessen', color: 'amber' },
+      afternoon: { icon: '☕', label: 'Nachmittag', color: 'orange' },
+      dinner: { icon: '🌙', label: 'Abendessen', color: 'indigo' },
     }
 
     return (
@@ -178,7 +190,7 @@ export default function ReservationsPage() {
         {Object.entries(groups).map(([period, periodSlots]) => {
           if (periodSlots.length === 0) return null
 
-          const { icon, label, color } = periodLabels[period as keyof typeof periodLabels]
+          const { icon, label } = periodLabels[period as keyof typeof periodLabels]
 
           return (
             <div key={period}>
@@ -188,7 +200,7 @@ export default function ReservationsPage() {
                 <div className="flex-1 h-px bg-gray-200"></div>
               </div>
 
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {periodSlots.map((slot) => (
                   <button
                     key={slot.time}
@@ -197,11 +209,11 @@ export default function ReservationsPage() {
                       slot.available && setFormData({ ...formData, reservation_time: slot.time })
                     }
                     disabled={!slot.available}
-                    className={`py-3 px-2 rounded-lg font-medium text-sm transition-all ${
+                    className={`py-3.5 sm:py-3 px-2 rounded-lg font-medium text-sm transition-all touch-manipulation ${
                       formData.reservation_time === slot.time
                         ? 'bg-red-600 text-white shadow-lg scale-105 ring-2 ring-red-300'
                         : slot.available
-                        ? 'bg-white border-2 border-gray-200 text-gray-700 hover:border-red-500 hover:text-red-600 hover:shadow-md'
+                        ? 'bg-white border-2 border-gray-200 text-gray-700 active:border-red-500 active:text-red-600 hover:shadow-md'
                         : 'bg-gray-50 border border-gray-100 text-gray-400 cursor-not-allowed'
                     }`}
                   >
@@ -217,121 +229,68 @@ export default function ReservationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Reserve a Table</h1>
-              <p className="text-gray-600 mt-1">Book your dining experience with us</p>
-            </div>
-            <button
-              onClick={() => router.push('/')}
-              className="text-gray-600 hover:text-gray-900 transition"
-            >
-              ← Back to Home
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen">
+      <Header />
 
-      {/* Progress Indicator */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-center gap-4">
-            {[1, 2, 3].map((s) => (
-              <div key={s} className="flex items-center">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition ${
-                    step >= s
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-200 text-gray-500'
-                  }`}
-                >
-                  {s}
-                </div>
-                {s < 3 && (
-                  <div
-                    className={`w-16 h-1 mx-2 transition ${
-                      step > s ? 'bg-red-600' : 'bg-gray-200'
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center gap-4 mt-3">
-            <span
-              className={`text-sm font-medium ${
-                step === 1 ? 'text-red-600' : 'text-gray-500'
-              }`}
-            >
-              Date & Party
-            </span>
-            <span className="text-gray-300">|</span>
-            <span
-              className={`text-sm font-medium ${
-                step === 2 ? 'text-red-600' : 'text-gray-500'
-              }`}
-            >
-              Time
-            </span>
-            <span className="text-gray-300">|</span>
-            <span
-              className={`text-sm font-medium ${
-                step === 3 ? 'text-red-600' : 'text-gray-500'
-              }`}
-            >
-              Your Info
-            </span>
-          </div>
+      {/* Hero Section - Mobile optimized */}
+      <section className="relative bg-gradient-to-br from-red-600 to-orange-600 text-white py-12 sm:py-16 md:py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6">
+            Tisch reservieren
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-50 max-w-2xl mx-auto px-2">
+            Buchen Sie Ihren Platz und genießen Sie ein unvergessliches kulinarisches Erlebnis
+          </p>
         </div>
-      </div>
+      </section>
 
-      {/* Form */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-8">
-            <form onSubmit={handleSubmit} suppressHydrationWarning>
-              {/* Step 1: Date & Party Size */}
-              {step === 1 && (
-                <div className="space-y-6">
+      {/* Main Content */}
+      <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+              {/* Step 1: Date & Party Size - Mobile optimized */}
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border border-gray-100">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                  <span className="bg-red-600 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-bold flex-shrink-0">1</span>
+                  <span>Datum & Personenanzahl</span>
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Reservation Date *
+                      Reservierungsdatum *
                     </label>
                     <input
                       type="date"
                       value={formData.reservation_date}
-                      suppressHydrationWarning
                       onChange={(e) =>
-                        setFormData({ ...formData, reservation_date: e.target.value })
+                        setFormData({ ...formData, reservation_date: e.target.value, reservation_time: '' })
                       }
                       min={getMinDate()}
                       max={getMaxDate()}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-lg"
+                      className="w-full px-4 py-3.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base sm:text-lg transition touch-manipulation"
                       required
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      📅 You can book from today up to 30 days in advance
+                    <p className="text-xs text-gray-500 mt-1.5">
+                      📅 Sie können ab heute bis zu 30 Tage im Voraus buchen
                     </p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Party Size *
+                      Anzahl der Personen *
                     </label>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-4 gap-2">
                       {[2, 3, 4, 5, 6, 8, 10, 12].map((size) => (
                         <button
                           key={size}
                           type="button"
                           onClick={() => setFormData({ ...formData, party_size: size })}
-                          className={`py-3 rounded-lg font-semibold transition ${
+                          className={`py-3.5 sm:py-3 rounded-xl font-semibold text-base sm:text-lg transition-all touch-manipulation active:scale-95 ${
                             formData.party_size === size
-                              ? 'bg-red-600 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              ? 'bg-red-600 text-white shadow-lg scale-105'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
                           }`}
                         >
                           {size}
@@ -339,62 +298,61 @@ export default function ReservationsPage() {
                       ))}
                     </div>
                     <p className="text-xs text-gray-500 mt-2">
-                      For parties larger than 12, please call us directly
+                      Für Gruppen größer als 12 Personen rufen Sie uns bitte direkt an
                     </p>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {/* Step 2: Time Selection */}
-              {step === 2 && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-lg font-semibold text-gray-900 mb-4">
-                      What time would you like to dine? ⏰
-                    </label>
+              {/* Step 2: Time Selection - Mobile optimized */}
+              {showTimeSlots && (
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border border-gray-100">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                    <span className="bg-red-600 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-bold flex-shrink-0">2</span>
+                    <span>Wählen Sie Ihre Uhrzeit</span>
+                  </h2>
 
-                    {loading ? (
-                      <div className="text-center py-12">
-                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-red-600"></div>
-                        <p className="text-gray-600 mt-2">Loading available times...</p>
-                      </div>
-                    ) : availableSlots.length === 0 ? (
-                      <div className="text-center py-12 bg-gray-50 rounded-lg">
-                        <div className="text-4xl mb-2">📅</div>
-                        <p className="text-gray-700 font-medium">No available time slots</p>
-                        <p className="text-gray-500 text-sm mt-1">Please try a different date</p>
-                      </div>
-                    ) : (
-                      renderTimeSlotsByPeriod(availableSlots)
-                    )}
-                  </div>
-
-                  {formData.reservation_time && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <p className="text-sm text-green-800 font-medium mb-1">
-                        ✓ Reservation Details
-                      </p>
-                      <p className="text-green-700">
-                        {new Date(formData.reservation_date).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          month: 'long',
-                          day: 'numeric',
-                        })}{' '}
-                        at <strong>{formatTimeDisplay(formData.reservation_time)}</strong> for{' '}
-                        <strong>{formData.party_size}</strong>{' '}
-                        {formData.party_size === 1 ? 'guest' : 'guests'}
-                      </p>
+                  {loading ? (
+                    <div className="text-center py-12">
+                      <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600 mb-4"></div>
+                      <p className="text-gray-600">Verfügbare Zeiten werden geladen...</p>
                     </div>
+                  ) : availableSlots.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-xl">
+                      <div className="text-6xl mb-4">📅</div>
+                      <p className="text-gray-700 font-medium text-lg">Keine verfügbaren Zeitfenster</p>
+                      <p className="text-gray-500 text-sm mt-2">Bitte wählen Sie ein anderes Datum</p>
+                    </div>
+                  ) : (
+                    <>
+                      {renderTimeSlotsByPeriod(availableSlots)}
+
+                      {formData.reservation_time && (
+                        <div className="mt-6 bg-green-50 border-2 border-green-200 rounded-xl p-4">
+                          <p className="text-sm text-green-800 font-medium mb-1">
+                            ✓ Ausgewählte Zeit
+                          </p>
+                          <p className="text-green-700 font-semibold text-lg">
+                            {formatTimeDisplay(formData.reservation_time)}
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
 
-              {/* Step 3: Contact Information */}
-              {step === 3 && (
-                <div className="space-y-6">
-                  <div>
+              {/* Step 3: Contact Information - Mobile optimized */}
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border border-gray-100">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                  <span className="bg-red-600 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-bold flex-shrink-0">3</span>
+                  <span>Ihre Kontaktdaten</span>
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
+                      Vollständiger Name *
                     </label>
                     <input
                       type="text"
@@ -402,15 +360,15 @@ export default function ReservationsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, customer_name: e.target.value })
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      placeholder="John Doe"
+                      className="w-full px-4 py-3.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition touch-manipulation text-base"
+                      placeholder="Max Mustermann"
                       required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
+                      E-Mail-Adresse *
                     </label>
                     <input
                       type="email"
@@ -418,15 +376,16 @@ export default function ReservationsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, customer_email: e.target.value })
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      placeholder="john@example.com"
+                      className="w-full px-4 py-3.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition touch-manipulation text-base"
+                      placeholder="max@beispiel.de"
+                      inputMode="email"
                       required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number *
+                      Telefonnummer *
                     </label>
                     <input
                       type="tel"
@@ -434,79 +393,88 @@ export default function ReservationsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, customer_phone: e.target.value })
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      placeholder="(555) 123-4567"
+                      className="w-full px-4 py-3.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition touch-manipulation text-base"
+                      placeholder="+49 30 12345678"
+                      inputMode="tel"
                       required
                     />
                   </div>
 
-                  <div>
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Special Requests (Optional)
+                      Besondere Wünsche (Optional)
                     </label>
                     <textarea
                       value={formData.special_requests}
                       onChange={(e) =>
                         setFormData({ ...formData, special_requests: e.target.value })
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      className="w-full px-4 py-3.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition touch-manipulation text-base"
                       rows={3}
-                      placeholder="Allergies, dietary restrictions, special occasions..."
+                      placeholder="Allergien, Ernährungseinschränkungen, besondere Anlässe..."
                     />
                   </div>
+                </div>
+              </div>
 
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <p className="text-sm text-green-800 font-medium mb-2">
-                      📋 Reservation Summary
-                    </p>
-                    <div className="text-sm text-green-700 space-y-1">
-                      <p>
-                        <strong>Date:</strong>{' '}
-                        {new Date(formData.reservation_date).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          month: 'long',
-                          day: 'numeric',
+              {/* Summary & Submit - Mobile optimized */}
+              {formData.reservation_time && (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border-2 border-green-200">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="text-xl sm:text-2xl">📋</span>
+                    <span>Reservierungszusammenfassung</span>
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-5 sm:mb-6">
+                    <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+                      <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-1">DATUM</p>
+                      <p className="text-gray-900 font-bold text-sm sm:text-base">
+                        {new Date(formData.reservation_date).toLocaleDateString('de-DE', {
+                          weekday: 'short',
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
                         })}
                       </p>
-                      <p>
-                        <strong>Time:</strong> {formatTimeDisplay(formData.reservation_time)}
-                      </p>
-                      <p>
-                        <strong>Party Size:</strong> {formData.party_size}{' '}
-                        {formData.party_size === 1 ? 'guest' : 'guests'}
+                    </div>
+                    <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+                      <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-1">UHRZEIT</p>
+                      <p className="text-gray-900 font-bold text-sm sm:text-base">{formatTimeDisplay(formData.reservation_time)}</p>
+                    </div>
+                    <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+                      <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-1">PERSONEN</p>
+                      <p className="text-gray-900 font-bold text-sm sm:text-base">
+                        {formData.party_size} {formData.party_size === 1 ? 'Person' : 'Personen'}
                       </p>
                     </div>
                   </div>
+
+                  <button
+                    type="submit"
+                    disabled={submitting || !formData.customer_name || !formData.customer_email || !formData.customer_phone}
+                    className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 sm:px-8 py-4 sm:py-4 rounded-xl text-base sm:text-lg font-bold hover:from-red-700 hover:to-red-800 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2 touch-manipulation"
+                  >
+                    {submitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                        Wird gesendet...
+                      </>
+                    ) : (
+                      <>
+                        <span>Reservierung bestätigen</span>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
-
-              {/* Navigation Buttons */}
-              <div className="flex gap-3 mt-8">
-                {step > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setStep((step - 1) as 1 | 2 | 3)}
-                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-semibold"
-                  >
-                    ← Back
-                  </button>
-                )}
-                <button
-                  type="submit"
-                  disabled={!canProceed() || submitting}
-                  className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  {submitting
-                    ? 'Submitting...'
-                    : step === 3
-                    ? 'Confirm Reservation'
-                    : 'Continue →'}
-                </button>
-              </div>
             </form>
           </div>
         </div>
-      </div>
+      </section>
+
+      <Footer />
     </div>
   )
 }

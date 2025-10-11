@@ -6,20 +6,20 @@ export default function Contact() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-5">
-            Visit Us
+            Besuchen Sie uns
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Get in touch - this is a demo project showcasing modern web development
+            Kontaktieren Sie uns - dies ist ein Demo-Projekt, das moderne Webentwicklung präsentiert
           </p>
         </div>
-        
+
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-orange-100">
-            <h3 className="text-3xl font-bold mb-8 text-gray-900">Contact Information</h3>
+            <h3 className="text-3xl font-bold mb-8 text-gray-900">Kontaktinformationen</h3>
             <div className="space-y-6">
               <div>
-                <p className="font-semibold text-gray-900 mb-1">Address</p>
-                <a 
+                <p className="font-semibold text-gray-900 mb-1">Adresse</p>
+                <a
                   href={contactInfo.addressLink}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -29,8 +29,8 @@ export default function Contact() {
                 </a>
               </div>
               <div>
-                <p className="font-semibold text-gray-900 mb-1">Phone</p>
-                <a 
+                <p className="font-semibold text-gray-900 mb-1">Telefon</p>
+                <a
                   href={`tel:${contactInfo.phone}`}
                   className="text-gray-600 hover:text-red-600 transition"
                 >
@@ -38,8 +38,8 @@ export default function Contact() {
                 </a>
               </div>
               <div>
-                <p className="font-semibold text-gray-900 mb-1">Email</p>
-                <a 
+                <p className="font-semibold text-gray-900 mb-1">E-Mail</p>
+                <a
                   href={`mailto:${contactInfo.email}`}
                   className="text-gray-600 hover:text-red-600 transition"
                 >
@@ -47,7 +47,7 @@ export default function Contact() {
                 </a>
               </div>
               <div>
-                <p className="font-semibold text-gray-900 mb-1">Follow Us</p>
+                <p className="font-semibold text-gray-900 mb-1">Folgen Sie uns</p>
                 <div className="flex gap-4 mt-2">
                   {contactInfo.social.map((link) => (
                     <a
@@ -64,9 +64,9 @@ export default function Contact() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-orange-100">
-            <h3 className="text-3xl font-bold mb-8 text-gray-900">Opening Hours</h3>
+            <h3 className="text-3xl font-bold mb-8 text-gray-900">Öffnungszeiten</h3>
             <div className="space-y-4">
               {contactInfo.openingHours.map((hours) => (
                 <div key={hours.days} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">

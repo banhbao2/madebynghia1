@@ -41,54 +41,54 @@ export default function OrderConfirmationEmail({
   return (
     <Html>
       <Head />
-      <Preview>Order Confirmation #{orderNumber}</Preview>
+      <Preview>Bestellbestätigung #{orderNumber}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Thank you for your order!</Heading>
-          <Text style={text}>Hi {customerName},</Text>
+          <Heading style={h1}>Vielen Dank für Ihre Bestellung!</Heading>
+          <Text style={text}>Hallo {customerName},</Text>
           <Text style={text}>
-            Your order has been confirmed and is being prepared.
+            Ihre Bestellung wurde bestätigt und wird gerade zubereitet.
           </Text>
 
           <Section style={infoBox}>
             <Text style={infoText}>
-              <strong>Order Number:</strong> #{orderNumber}
+              <strong>Bestellnummer:</strong> #{orderNumber}
             </Text>
             <Text style={infoText}>
-              <strong>Order Type:</strong> {orderType === 'delivery' ? 'Delivery' : 'Pickup'}
+              <strong>Bestellart:</strong> {orderType === 'delivery' ? 'Lieferung' : 'Abholung'}
             </Text>
             <Text style={infoText}>
-              <strong>Order Date:</strong> {orderDate}
+              <strong>Bestelldatum:</strong> {orderDate}
             </Text>
             <Text style={infoText}>
-              <strong>Estimated {orderType === 'delivery' ? 'Delivery' : 'Pickup'} Time:</strong> {estimatedTime}
+              <strong>Voraussichtliche {orderType === 'delivery' ? 'Lieferzeit' : 'Abholzeit'}:</strong> {estimatedTime}
             </Text>
             {deliveryAddress && (
               <Text style={infoText}>
-                <strong>Delivery Address:</strong> {deliveryAddress}
+                <strong>Lieferadresse:</strong> {deliveryAddress}
               </Text>
             )}
           </Section>
 
           <Section style={orderDetails}>
-            <Heading as="h2" style={h2}>Order Items</Heading>
+            <Heading as="h2" style={h2}>Bestellte Artikel</Heading>
             {items.map((item, index) => (
               <Text key={index} style={itemText}>
-                {item.quantity}x {item.name} - ${(item.price * item.quantity).toFixed(2)}
+                {item.quantity}x {item.name} - {(item.price * item.quantity).toFixed(2)}€
               </Text>
             ))}
             <div style={divider}></div>
-            <Text style={itemText}>Subtotal: ${subtotal.toFixed(2)}</Text>
-            <Text style={itemText}>Tax (8.75%): ${tax.toFixed(2)}</Text>
-            <Text style={totalText}>Total: ${total.toFixed(2)}</Text>
+            <Text style={itemText}>Zwischensumme: {subtotal.toFixed(2)}€</Text>
+            <Text style={itemText}>MwSt (19%): {tax.toFixed(2)}€</Text>
+            <Text style={totalText}>Gesamt: {total.toFixed(2)}€</Text>
           </Section>
 
           <Text style={text}>
-            If you have any questions about your order, please contact us at your convenience.
+            Wenn Sie Fragen zu Ihrer Bestellung haben, kontaktieren Sie uns bitte jederzeit.
           </Text>
 
           <Text style={footerText}>
-            Thank you for choosing Nghia Demo!
+            Vielen Dank, dass Sie sich für Nghia Demo entschieden haben!
           </Text>
         </Container>
       </Body>

@@ -27,43 +27,43 @@ export default function ReservationDeclinedEmail({
   return (
     <Html>
       <Head />
-      <Preview>Update about your reservation request</Preview>
+      <Preview>Update zu Ihrer Reservierungsanfrage</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Reservation Update</Heading>
-          <Text style={text}>Hi {customerName},</Text>
+          <Heading style={h1}>Reservierungsaktualisierung</Heading>
+          <Text style={text}>Hallo {customerName},</Text>
           <Text style={text}>
-            We're sorry, but we are unable to accommodate your reservation request at this time.
+            Es tut uns leid, aber wir können Ihre Reservierungsanfrage zu diesem Zeitpunkt leider nicht berücksichtigen.
           </Text>
 
           <Section style={infoBox}>
             <Text style={infoText}>
-              <strong>Date:</strong> {reservationDate}
+              <strong>Datum:</strong> {reservationDate}
             </Text>
             <Text style={infoText}>
-              <strong>Time:</strong> {reservationTime}
+              <strong>Uhrzeit:</strong> {reservationTime}
             </Text>
             <Text style={infoText}>
-              <strong>Party Size:</strong> {partySize} {partySize === 1 ? 'guest' : 'guests'}
+              <strong>Personenanzahl:</strong> {partySize} {partySize === 1 ? 'Person' : 'Personen'}
             </Text>
             {reason && (
               <Text style={reasonText}>
-                <strong>Reason:</strong> {reason}
+                <strong>Grund:</strong> {reason}
               </Text>
             )}
           </Section>
 
           <Text style={text}>
-            We apologize for any inconvenience. Please feel free to contact us directly to discuss alternative dates or times that might work better.
+            Wir entschuldigen uns für die Unannehmlichkeiten. Bitte kontaktieren Sie uns direkt, um alternative Daten oder Uhrzeiten zu besprechen, die besser passen könnten.
           </Text>
 
           <Text style={text}>
-            We'd love to serve you another time!
+            Wir würden uns freuen, Sie zu einem anderen Zeitpunkt zu bewirten!
           </Text>
 
           <Text style={footerText}>
-            Thank you for your understanding,<br />
-            Nghia Demo Team
+            Vielen Dank für Ihr Verständnis,<br />
+            Ihr Nghia Demo Team
           </Text>
         </Container>
       </Body>

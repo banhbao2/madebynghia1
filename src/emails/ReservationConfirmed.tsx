@@ -27,49 +27,49 @@ export default function ReservationConfirmedEmail({
   return (
     <Html>
       <Head />
-      <Preview>Your reservation has been confirmed!</Preview>
+      <Preview>Ihre Reservierung wurde bestätigt!</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Reservation Confirmed! ✓</Heading>
-          <Text style={text}>Hi {customerName},</Text>
+          <Heading style={h1}>Reservierung bestätigt! ✓</Heading>
+          <Text style={text}>Hallo {customerName},</Text>
           <Text style={text}>
-            Great news! Your reservation at Nghia Demo has been confirmed.
+            Gute Nachrichten! Ihre Reservierung bei Nghia Demo wurde bestätigt.
           </Text>
 
           <Section style={infoBox}>
             <Text style={infoText}>
-              <strong>Date:</strong> {reservationDate}
+              <strong>Datum:</strong> {reservationDate}
             </Text>
             <Text style={infoText}>
-              <strong>Time:</strong> {reservationTime}
+              <strong>Uhrzeit:</strong> {reservationTime}
             </Text>
             <Text style={infoText}>
-              <strong>Party Size:</strong> {partySize} {partySize === 1 ? 'guest' : 'guests'}
+              <strong>Personenanzahl:</strong> {partySize} {partySize === 1 ? 'Person' : 'Personen'}
             </Text>
             {specialRequests && (
               <Text style={infoText}>
-                <strong>Special Requests:</strong> {specialRequests}
+                <strong>Besondere Wünsche:</strong> {specialRequests}
               </Text>
             )}
           </Section>
 
           <Text style={text}>
-            We look forward to serving you! Please arrive on time to ensure your table is ready.
+            Wir freuen uns darauf, Sie zu bewirten! Bitte kommen Sie pünktlich, um sicherzustellen, dass Ihr Tisch bereit ist.
           </Text>
 
           <Text style={text}>
-            If you need to cancel or modify your reservation, please contact us as soon as possible.
+            Wenn Sie Ihre Reservierung stornieren oder ändern müssen, kontaktieren Sie uns bitte so schnell wie möglich.
           </Text>
 
           <Text style={footerText}>
-            See you soon at Nghia Demo!
+            Bis bald bei Nghia Demo!
           </Text>
 
           <Section style={footer}>
             <Text style={footerSmallText}>
               Nghia Demo Restaurant<br />
-              Questions? Reply to this email or call us.<br />
-              © {new Date().getFullYear()} Nghia Demo. All rights reserved.
+              Fragen? Antworten Sie auf diese E-Mail oder rufen Sie uns an.<br />
+              © {new Date().getFullYear()} Nghia Demo. Alle Rechte vorbehalten.
             </Text>
           </Section>
         </Container>

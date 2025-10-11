@@ -69,7 +69,7 @@ export default function MenuItem({ item }: MenuItemProps) {
           />
           {item.popular && (
             <div className="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
-              ⭐ Popular
+              ⭐ Beliebt
             </div>
           )}
         </div>
@@ -83,13 +83,13 @@ export default function MenuItem({ item }: MenuItemProps) {
               <h3 className="text-xl font-bold text-gray-900">{item.name}</h3>
               {item.popular && !item.image && (
                 <span className="inline-block mt-1 bg-red-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
-                  ⭐ Popular
+                  ⭐ Beliebt
                 </span>
               )}
             </div>
           </div>
           <span className="text-2xl font-extrabold text-red-600">
-            ${item.price.toFixed(2)}
+            {item.price.toFixed(2)}€
           </span>
         </div>
 
@@ -103,7 +103,7 @@ export default function MenuItem({ item }: MenuItemProps) {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Add to Cart
+            In den Warenkorb
           </button>
         ) : null}
 
@@ -111,7 +111,7 @@ export default function MenuItem({ item }: MenuItemProps) {
         {showCustomizations && item.customizations && (
           <div className="mt-4 pt-4 border-t-2 border-white/50 space-y-4">
             <h4 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-              <span>⚙️</span> Customize Your Order
+              <span>⚙️</span> Bestellung anpassen
             </h4>
 
             {item.customizations.map((custom) => (
@@ -141,13 +141,13 @@ export default function MenuItem({ item }: MenuItemProps) {
                 }}
                 className="flex-1 border-2 border-white bg-white/80 text-gray-700 px-5 py-3 rounded-xl hover:bg-white transition font-bold shadow-md"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 onClick={handleAddToCart}
                 className="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition font-bold shadow-lg"
               >
-                Add to Cart
+                In den Warenkorb
               </button>
             </div>
           </div>

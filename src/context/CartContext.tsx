@@ -25,7 +25,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-const TAX_RATE = 0.0875 // 8.75% tax
+const TAX_RATE = 0.19 // 19% MwSt (German VAT for restaurant services)
 const CART_STORAGE_KEY = 'nghia-demo-cart'
 
 export function CartProvider({ children }: { children: React.ReactNode }) {

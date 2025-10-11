@@ -7,11 +7,12 @@ export default function Specialties() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-5">
-            Our Specialties
+            Unsere Spezialitäten
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Discover our carefully curated demo menu showcasing modern web development features,
-            with examples of how to display and organize restaurant offerings
+            Entdecken Sie unser sorgfältig kuratiertes Demo-Menü, das moderne
+            Webentwicklungsfunktionen präsentiert und zeigt, wie Restaurantangebote
+            angezeigt und organisiert werden können
           </p>
         </div>
 

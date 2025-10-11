@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <h3 className="text-2xl font-extrabold mb-4">🍜 Nghia Demo</h3>
             <p className="text-gray-400 leading-relaxed mb-4">
-              Demo restaurant website showcasing modern web development.
+              Demo-Restaurant-Website mit modernen Web-Entwicklungsfeatures.
             </p>
             <div className="flex gap-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
@@ -32,53 +32,53 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-bold mb-4">Quick Links</h4>
+            <h4 className="text-lg font-bold mb-4">Schnellzugriff</h4>
             <ul className="space-y-2">
-              <li><Link href="/" className="text-gray-400 hover:text-white transition">Home</Link></li>
-              <li><Link href="/menu" className="text-gray-400 hover:text-white transition">Menu & Order</Link></li>
-              <li><Link href="/#about" className="text-gray-400 hover:text-white transition">About Us</Link></li>
-              <li><Link href="/#contact" className="text-gray-400 hover:text-white transition">Contact</Link></li>
+              <li><Link href="/" className="text-gray-400 hover:text-white transition">Startseite</Link></li>
+              <li><Link href="/menu" className="text-gray-400 hover:text-white transition">Speisekarte & Bestellen</Link></li>
+              <li><Link href="/#about" className="text-gray-400 hover:text-white transition">Über uns</Link></li>
+              <li><Link href="/#contact" className="text-gray-400 hover:text-white transition">Kontakt</Link></li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-bold mb-4">Contact Us</h4>
+            <h4 className="text-lg font-bold mb-4">Kontakt</h4>
             <ul className="space-y-3 text-gray-400">
               <li className="flex items-start gap-2">
                 <span>📍</span>
-                <span>123 Main Street<br/>San Francisco, CA 94102</span>
+                <span>Hauptstraße 123<br/>10115 Berlin</span>
               </li>
               <li className="flex items-center gap-2">
                 <span>📞</span>
-                <a href="tel:+14155551234" className="hover:text-white transition">(415) 555-1234</a>
+                <a href="tel:+493012345678" className="hover:text-white transition">+49 30 12345678</a>
               </li>
               <li className="flex items-center gap-2">
                 <span>✉️</span>
-                <a href="mailto:hello@nghiademo.com" className="hover:text-white transition">hello@nghiademo.com</a>
+                <a href="mailto:hallo@nghiademo.com" className="hover:text-white transition">hallo@nghiademo.com</a>
               </li>
             </ul>
           </div>
 
           {/* Hours */}
           <div>
-            <h4 className="text-lg font-bold mb-4">Business Hours</h4>
+            <h4 className="text-lg font-bold mb-4">Öffnungszeiten</h4>
             <ul className="space-y-2 text-gray-400">
               <li className="flex justify-between">
-                <span className="font-semibold text-white">Mon-Fri</span>
-                <span>11:00 AM - 10:00 PM</span>
+                <span className="font-semibold text-white">Mo-Fr</span>
+                <span>11:00 - 22:00 Uhr</span>
               </li>
               <li className="flex justify-between">
-                <span className="font-semibold text-white">Saturday</span>
-                <span>12:00 PM - 11:00 PM</span>
+                <span className="font-semibold text-white">Samstag</span>
+                <span>12:00 - 23:00 Uhr</span>
               </li>
               <li className="flex justify-between">
-                <span className="font-semibold text-white">Sunday</span>
-                <span>12:00 PM - 9:00 PM</span>
+                <span className="font-semibold text-white">Sonntag</span>
+                <span>12:00 - 21:00 Uhr</span>
               </li>
             </ul>
             <div className="mt-6">
-              <h5 className="text-sm font-bold mb-2">We Accept</h5>
+              <h5 className="text-sm font-bold mb-2">Zahlungsmethoden</h5>
               <div className="flex gap-2 text-2xl">
                 💳 💰 📱
               </div>
@@ -88,7 +88,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <p>© {new Date().getFullYear()} Nghia Demo. All rights reserved. Made with ❤️ in San Francisco</p>
+          <p>© {new Date().getFullYear()} Nghia Demo. Alle Rechte vorbehalten. Mit ❤️ in Berlin erstellt</p>
         </div>
       </div>
     </footer>
