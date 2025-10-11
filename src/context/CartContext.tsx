@@ -26,7 +26,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 const TAX_RATE = 0.0875 // 8.75% tax
-const CART_STORAGE_KEY = 'pho-sushi-cart'
+const CART_STORAGE_KEY = 'nghia-demo-cart'
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])

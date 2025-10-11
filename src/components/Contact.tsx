@@ -9,7 +9,7 @@ export default function Contact() {
             Visit Us
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Come experience authentic Vietnamese and Japanese cuisine in a welcoming atmosphere
+            Get in touch - this is a demo project showcasing modern web development
           </p>
         </div>
         

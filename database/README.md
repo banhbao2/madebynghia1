@@ -17,12 +17,12 @@ Run `supabase-setup.sql` in your Supabase SQL Editor to:
 3. Changes are instantly reflected on the website
 
 ### Menu Item Fields
-- `id` - Unique identifier (e.g., "pho-tai")
+- `id` - Unique identifier (e.g., "demo-item")
 - `name` - Display name
 - `description` - Item description
 - `price` - Price (decimal)
-- `category` - One of: pho, sushi, appetizers, drinks
-- `image` - Image path (e.g., "/pho-tai.jpg")
+- `category` - Category slug (e.g., "demo-category")
+- `image` - Image path (e.g., "/demo-item.jpg")
 - `customizations` - JSON array of customization options
 - `popular` - Boolean, shows "Popular" badge
 - `is_available` - Boolean, hide/show item
@@ -37,7 +37,7 @@ VALUES (
   'New Dish',
   'Delicious new item',
   12.99,
-  'pho',
+  'demo-category',
   '/new-item.jpg',
   false,
   '[]'::jsonb,
@@ -47,9 +47,4 @@ VALUES (
 
 ## Categories
 
-Categories are managed in the `categories` table. Default categories:
-- All Items
-- Phở
-- Sushi
-- Appetizers
-- Drinks
+Categories are managed in the `categories` table. You can customize these based on your menu structure.

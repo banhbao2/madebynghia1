@@ -10,8 +10,8 @@ export default function Specialties() {
             Our Specialties
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Discover our carefully curated menu featuring the best of Vietnamese and Japanese cuisine,
-            prepared fresh daily with authentic recipes
+            Discover our carefully curated demo menu showcasing modern web development features,
+            with examples of how to display and organize restaurant offerings
           </p>
         </div>
 

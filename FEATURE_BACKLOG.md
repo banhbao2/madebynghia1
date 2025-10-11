@@ -38,8 +38,8 @@ This document tracks all planned features, improvements, and ideas for the resta
 - [ ] Add alt text for accessibility
 
 **Resources:**
-- Pexels: https://www.pexels.com/search/pho/
-- Unsplash: https://unsplash.com/s/photos/sushi
+- Pexels: https://www.pexels.com/search/food/
+- Unsplash: https://unsplash.com/s/photos/restaurant
 - TinyPNG for compression: https://tinypng.com/
 
 ---

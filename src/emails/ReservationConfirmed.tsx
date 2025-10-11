@@ -33,7 +33,7 @@ export default function ReservationConfirmedEmail({
           <Heading style={h1}>Reservation Confirmed! ✓</Heading>
           <Text style={text}>Hi {customerName},</Text>
           <Text style={text}>
-            Great news! Your reservation at Pho & Sushi has been confirmed.
+            Great news! Your reservation at Nghia Demo has been confirmed.
           </Text>
 
           <Section style={infoBox}>
@@ -62,14 +62,14 @@ export default function ReservationConfirmedEmail({
           </Text>
 
           <Text style={footerText}>
-            See you soon at Pho & Sushi!
+            See you soon at Nghia Demo!
           </Text>
 
           <Section style={footer}>
             <Text style={footerSmallText}>
-              Pho & Sushi Restaurant<br />
+              Nghia Demo Restaurant<br />
               Questions? Reply to this email or call us.<br />
-              © {new Date().getFullYear()} Pho & Sushi. All rights reserved.
+              © {new Date().getFullYear()} Nghia Demo. All rights reserved.
             </Text>
           </Section>
         </Container>

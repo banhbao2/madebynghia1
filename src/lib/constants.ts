@@ -1,17 +1,17 @@
 export const specialties = [
   {
-    id: 'vietnamese',
-    title: 'Vietnamese Kitchen',
-    description: 
-      'Savor the rich, aromatic flavors of traditional Vietnamese cuisine. From our signature pho with slow-simmered broth to authentic bun cha and fresh spring rolls, every dish tells a story of heritage and passion.',
+    id: 'demo-feature-1',
+    title: 'Demo Feature 1',
+    description:
+      'This is a demonstration of a specialty section. In a real restaurant website, this would showcase signature dishes and unique offerings with beautiful imagery and compelling descriptions.',
     image: '/vietnamese-placeholder.jpg',
     link: '/order',
   },
   {
-    id: 'sushi',
-    title: 'Fresh Sushi',
-    description: 
-      'Experience the art of Japanese cuisine with our premium sushi selection. Featuring the freshest fish, creative specialty rolls, and traditional sashimi prepared by our master chefs with precision and care.',
+    id: 'demo-feature-2',
+    title: 'Demo Feature 2',
+    description:
+      'Another demonstration section showcasing how specialty items can be displayed. This template can be easily customized for any type of restaurant or food service business.',
     image: '/sushi-placeholder.jpg',
     link: '/order',
   },
@@ -27,7 +27,7 @@ export const contactInfo = {
   address: '123 Main Street, Downtown District, City, State 12345',
   addressLink: 'https://maps.google.com/?q=123+Main+Street',
   phone: '(555) 123-4567',
-  email: 'hello@phoandsushi.com',
+  email: 'hello@nghiademo.com',
   social: [
     { name: 'Facebook', url: 'https://facebook.com' },
     { name: 'Instagram', url: 'https://instagram.com' },
@@ -44,16 +44,16 @@ export const howItWorksSteps = [
   {
     id: 'browse',
     title: 'Browse Menu',
-    description: 'Explore our extensive selection of authentic Vietnamese and Japanese dishes, from traditional pho to premium sushi rolls.',
+    description: 'Explore the demo menu section showcasing how items can be organized, displayed, and added to cart.',
   },
   {
     id: 'order',
     title: 'Place Order',
-    description: 'Choose your favorites and place your order online, by phone, or visit us in person for dine-in service.',
+    description: 'Test the ordering flow from cart management to checkout, demonstrating modern e-commerce patterns.',
   },
   {
     id: 'enjoy',
     title: 'Enjoy',
-    description: 'Sit back and savor the authentic flavors prepared fresh by our expert chefs using traditional methods.',
+    description: 'Experience a complete restaurant ordering system with reservations, admin panel, and email notifications.',
   },
 ]

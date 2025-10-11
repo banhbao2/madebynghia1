@@ -1,6 +1,6 @@
-# Pho & Sushi - Restaurant Management System
+# Nghia Demo - Restaurant Management System
 
-A modern, full-featured restaurant website with online ordering and reservation management.
+A modern, full-featured restaurant website demo showcasing online ordering and reservation management built with Next.js.
 
 ## 🚀 Features
 
@@ -48,7 +48,7 @@ A modern, full-featured restaurant website with online ordering and reservation 
 1. **Clone the repository**
 ```bash
 git clone <your-repo-url>
-cd pho-sushi
+cd nghia-demo
 ```
 
 2. **Install dependencies**
@@ -90,7 +90,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 Update menu items in Supabase Table Editor or via SQL:
 ```sql
 INSERT INTO menu_items (id, name, description, price, category, image, popular)
-VALUES ('pho-tai', 'Pho Tai', 'Beef pho with rare steak', 12.99, 'pho', 'https://...jpg', true);
+VALUES ('demo-item', 'Demo Item', 'Sample menu item description', 12.99, 'demo-category', 'https://...jpg', true);
 ```
 
 ### Update Restaurant Info
@@ -124,7 +124,7 @@ npm start
 ## 📊 Admin Access
 
 Default admin credentials (change after first login):
-- Email: `admin@phosushi.com`
+- Email: `admin@nghiademo.com`
 - Password: `admin123`
 
 Access at: `/admin/login`
@@ -141,7 +141,7 @@ npm run lint      # Run ESLint
 ## 📁 Project Structure
 
 ```
-pho-sushi/
+nghia-demo/
 ├── src/
 │   ├── app/              # Next.js app router pages
 │   │   ├── admin/        # Admin dashboard
@@ -167,7 +167,7 @@ pho-sushi/
 
 ## 📄 License
 
-This project is a template for building restaurant websites. Feel free to use and customize.
+This is a demonstration project showcasing modern web development. Feel free to use and customize.
 
 ## 🤝 Support
 
@@ -175,4 +175,4 @@ For issues or questions, check the documentation files or create an issue in the
 
 ---
 
-**Built with ❤️ for restaurant owners**
+**Built with ❤️ as a demonstration project**

@@ -13,9 +13,9 @@ ESLint errors are now **non-blocking** for production builds. The fix has been c
 Open Terminal and run:
 
 ```bash
-cd /Users/nghia/Desktop/website-projects/pho-sushi
+cd /Users/nghia/Desktop/website-projects/nghia-demo
 
-# Push the ESLint fix to GitHub
+# Push the changes to GitHub
 git push origin main
 ```
 
@@ -34,7 +34,7 @@ If you get authentication error, you may need to use SSH or Personal Access Toke
 
 2. **Import Project**
    - Click "Add New..." → "Project"
-   - Find your repository: `madebynghia1/pho-sushi` (or whatever your repo is called)
+   - Find your repository: `madebynghia1/nghia-demo` (or whatever your repo is called)
    - Click "Import"
 
 3. **Configure Project**
@@ -62,7 +62,7 @@ If you get authentication error, you may need to use SSH or Personal Access Toke
 5. **Deploy**
    - Click "Deploy"
    - Wait 2-3 minutes
-   - You'll get a URL like: `https://pho-sushi-xyz.vercel.app`
+   - You'll get a URL like: `https://nghia-demo-xyz.vercel.app`
 
 #### **Option B: Deploy via CLI** (Alternative)
 
@@ -84,7 +84,7 @@ vercel --prod
 
 ### **Step 3: Test Your Deployment** (5 minutes)
 
-Visit your Vercel URL (e.g., `https://pho-sushi-xyz.vercel.app`)
+Visit your Vercel URL (e.g., `https://nghia-demo-xyz.vercel.app`)
 
 **Test Checklist:**
 - [ ] Homepage loads
@@ -107,7 +107,7 @@ Visit your Vercel URL (e.g., `https://pho-sushi-xyz.vercel.app`)
    - Visit: https://www.namecheap.com
 
 2. **Search for Domain**
-   - Enter your desired domain (e.g., `phosushi`)
+   - Enter your desired domain (e.g., `your-restaurant-name`)
    - Select `.com` (recommended) or other TLD
    - Add to cart
 
@@ -133,7 +133,7 @@ Visit your Vercel URL (e.g., `https://pho-sushi-xyz.vercel.app`)
 
 2. **Add Domain**
    - Click "Domains" tab
-   - Enter your domain: `phosushi.com` (without www)
+   - Enter your domain: `your-domain.com` (without www)
    - Click "Add"
 
 3. **Copy DNS Records**
@@ -211,14 +211,14 @@ DNS changes need to propagate across the internet. This usually takes 15-60 minu
 
 2. **Check DNS Propagation**
    - Visit: https://dnschecker.org/
-   - Enter your domain: `phosushi.com`
+   - Enter your domain: `your-domain.com`
    - Select type: `A`
    - Click "Search"
    - Should show `76.76.21.21` globally (green checkmarks)
 
 3. **Test Your Domain**
-   - Try visiting `https://phosushi.com` (may not work yet)
-   - Try visiting `https://www.phosushi.com`
+   - Try visiting `https://your-domain.com` (may not work yet)
+   - Try visiting `https://www.your-domain.com`
    - If you see "DNS_PROBE_FINISHED_NXDOMAIN" → Still propagating, wait more
 
 ---
@@ -228,10 +228,10 @@ DNS changes need to propagate across the internet. This usually takes 15-60 minu
 Once DNS propagates, test:
 
 **✅ Domain Access:**
-- [ ] `https://phosushi.com` loads
-- [ ] `https://www.phosushi.com` loads
+- [ ] `https://your-domain.com` loads
+- [ ] `https://www.your-domain.com` loads
 - [ ] Both show 🔒 (SSL certificate)
-- [ ] Original Vercel URL still works: `pho-sushi-xyz.vercel.app`
+- [ ] Original Vercel URL still works: `nghia-demo-xyz.vercel.app`
 
 **✅ Functionality:**
 - [ ] Menu loads with items from database
@@ -254,18 +254,18 @@ Once DNS propagates, test:
 
 In Vercel:
 1. Settings → Domains
-2. Find `phosushi.com`
+2. Find `your-domain.com`
 3. Click "Edit"
-4. Enable "Redirect www.phosushi.com to phosushi.com"
+4. Enable "Redirect www.your-domain.com to your-domain.com"
 5. Save
 
-Result: `www.phosushi.com` → redirects to → `phosushi.com`
+Result: `www.your-domain.com` → redirects to → `your-domain.com`
 
 **Option 2: Redirect non-www to www**
 
-Same process, but enable "Redirect phosushi.com to www.phosushi.com"
+Same process, but enable "Redirect your-domain.com to www.your-domain.com"
 
-Result: `phosushi.com` → redirects to → `www.phosushi.com`
+Result: `your-domain.com` → redirects to → `www.your-domain.com`
 
 **Recommendation:** Use non-www (Option 1) - it's cleaner and modern
 
@@ -599,7 +599,7 @@ Every time you push to GitHub `main` branch, Vercel will:
 For branches other than `main`:
 1. Create a new branch: `git checkout -b feature/new-feature`
 2. Make changes and push: `git push origin feature/new-feature`
-3. Vercel creates preview URL: `pho-sushi-git-feature-new-feature.vercel.app`
+3. Vercel creates preview URL: `nghia-demo-git-feature-new-feature.vercel.app`
 4. Test on preview
 5. Merge to main when ready → Auto-deploys to production
 

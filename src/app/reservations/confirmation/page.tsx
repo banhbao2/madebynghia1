@@ -263,8 +263,8 @@ function ConfirmationContent() {
                       </p>
                       <p className="text-gray-900">
                         <span className="font-semibold">Email:</span>{' '}
-                        <a href="mailto:reservations@phosushi.com" className="text-red-600 hover:text-red-700 font-medium">
-                          reservations@phosushi.com
+                        <a href="mailto:reservations@nghiademo.com" className="text-red-600 hover:text-red-700 font-medium">
+                          reservations@nghiademo.com
                         </a>
                       </p>
                     </div>

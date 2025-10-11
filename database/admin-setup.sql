@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS admin_users (
 -- 2. Create restaurant_settings table
 CREATE TABLE IF NOT EXISTS restaurant_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  restaurant_name TEXT NOT NULL DEFAULT 'Pho & Sushi',
-  restaurant_description TEXT DEFAULT 'Authentic Vietnamese Pho and Japanese Sushi',
+  restaurant_name TEXT NOT NULL DEFAULT 'Nghia Demo',
+  restaurant_description TEXT DEFAULT 'Demo Restaurant Website',
   phone TEXT,
   email TEXT,
   address TEXT,

@@ -88,7 +88,7 @@ export default function OrderConfirmationEmail({
           </Text>
 
           <Text style={footerText}>
-            Thank you for choosing Pho & Sushi!
+            Thank you for choosing Nghia Demo!
           </Text>
         </Container>
       </Body>

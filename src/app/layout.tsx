@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pho & Sushi - Authentic Vietnamese & Japanese Cuisine",
-  description: "Experience the perfect blend of Vietnamese pho and Japanese sushi. Order online for delivery or pickup.",
+  title: "Nghia Demo - Restaurant Website Demo",
+  description: "A demo restaurant website showcasing modern web development with Next.js. Features online ordering, reservations, and admin management.",
 };
 
 export default function RootLayout({

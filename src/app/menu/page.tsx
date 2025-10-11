@@ -194,8 +194,8 @@ function MenuPageContent() {
             Our Menu
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore our delicious selection of authentic Vietnamese Phở and Japanese Sushi,
-            crafted fresh daily with the finest ingredients
+            Explore our demo menu showcasing a full-featured restaurant ordering system
+            with search, filters, and cart functionality
           </p>
         </div>
 

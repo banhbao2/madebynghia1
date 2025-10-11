@@ -63,7 +63,7 @@ export default function ReservationDeclinedEmail({
 
           <Text style={footerText}>
             Thank you for your understanding,<br />
-            Pho & Sushi Team
+            Nghia Demo Team
           </Text>
         </Container>
       </Body>

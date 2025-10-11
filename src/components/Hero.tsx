@@ -6,7 +6,7 @@ export default function Hero() {
     <section className="relative h-[700px] md:h-[750px] flex items-center justify-center overflow-hidden">
       <Image
         src="/hero-placeholder.jpg"
-        alt="Pho & Sushi Restaurant"
+        alt="Nghia Demo Restaurant"
         fill
         className="object-cover"
         priority
@@ -21,14 +21,14 @@ export default function Hero() {
         </div>
 
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 leading-tight tracking-tight animate-fade-in-up">
-          Vietnamese Flavors Meet<br />
+          Welcome to<br />
           <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-            Japanese Artistry
+            Nghia Demo
           </span>
         </h1>
 
         <p className="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto font-medium animate-fade-in-up animation-delay-200">
-          Experience authentic pho and expertly crafted sushi made fresh daily with premium ingredients
+          A demo restaurant website showcasing modern web development with Next.js
         </p>
 
         {/* Stats Bar */}

@@ -7,9 +7,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Section */}
           <div>
-            <h3 className="text-2xl font-extrabold mb-4">🍜 Pho & Sushi</h3>
+            <h3 className="text-2xl font-extrabold mb-4">🍜 Nghia Demo</h3>
             <p className="text-gray-400 leading-relaxed mb-4">
-              Authentic Vietnamese & Japanese cuisine delivered fresh to your door.
+              Demo restaurant website showcasing modern web development.
             </p>
             <div className="flex gap-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
@@ -55,7 +55,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <span>✉️</span>
-                <a href="mailto:hello@phosushi.com" className="hover:text-white transition">hello@phosushi.com</a>
+                <a href="mailto:hello@nghiademo.com" className="hover:text-white transition">hello@nghiademo.com</a>
               </li>
             </ul>
           </div>
@@ -88,7 +88,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <p>© {new Date().getFullYear()} Pho & Sushi. All rights reserved. Made with ❤️ in San Francisco</p>
+          <p>© {new Date().getFullYear()} Nghia Demo. All rights reserved. Made with ❤️ in San Francisco</p>
         </div>
       </div>
     </footer>

@@ -57,7 +57,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo - Clickable to home */}
         <Link href="/" className="text-2xl font-extrabold text-gray-900 hover:text-red-600 transition">
-          🍜 Pho & Sushi
+          🍜 Nghia Demo
         </Link>
 
         {/* Desktop Navigation */}

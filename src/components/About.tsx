@@ -16,25 +16,25 @@ export default function About() {
             <div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Story</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Founded with a passion for bringing the best of Asian cuisine to your table, 
-                Pho & Sushi combines the aromatic depths of Vietnamese cooking with the refined 
-                artistry of Japanese sushi preparation.
+                Founded as a demonstration project, Nghia Demo showcases modern web development
+                capabilities with a full-featured restaurant website built using Next.js and
+                contemporary web technologies.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                Our chefs bring decades of experience from Hanoi to Tokyo, ensuring every dish 
-                honors its cultural roots while delighting modern palates.
+                This project demonstrates real-world applications of modern frameworks, responsive
+                design, and user-friendly interfaces.
               </p>
             </div>
             
             <div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Philosophy</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                We believe in using only the freshest ingredients, traditional cooking methods, 
-                and authentic recipes passed down through generations. Every bowl of pho is 
-                simmered for hours, and every piece of sushi is crafted with precision.
+                We believe in creating clean, efficient, and user-friendly web applications
+                that demonstrate best practices in modern web development. This demo showcases
+                features like online ordering, reservations, and admin management.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                Quality, authenticity, and hospitality are at the heart of everything we do.
+                Quality code, modern design, and excellent user experience are at the heart of this project.
               </p>
             </div>
           </div>
