@@ -6,7 +6,18 @@ import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
+
+  // Track scroll position for enhanced sticky behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -65,7 +76,11 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-md border-b border-orange-100">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled
+        ? 'bg-white/98 backdrop-blur-lg shadow-lg border-b border-orange-200'
+        : 'bg-white/95 backdrop-blur-md shadow-md border-b border-orange-100'
+    }`}>
       <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
         {/* Logo - Mobile optimized */}
         <Link href="/" className="text-xl md:text-2xl font-extrabold text-gray-900 hover:text-red-600 transition touch-manipulation">
@@ -128,75 +143,83 @@ export default function Header() {
       </div>
 
       {/* Mobile Menu - Full screen overlay */}
-      {mobileMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+      <>
+        {/* Backdrop with fade animation */}
+        <div
+          className={`fixed inset-0 bg-black/60 z-40 md:hidden transition-opacity duration-300 ${
+            mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={() => setMobileMenuOpen(false)}
+        />
 
-          {/* Menu Panel */}
-          <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-50 md:hidden overflow-y-auto">
-            <div className="flex flex-col h-full">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <span className="text-xl font-bold text-gray-900">Menü</span>
+        {/* Menu Panel with slide-in animation - Full Width */}
+        <div
+          className={`fixed inset-0 bg-white z-50 md:hidden transition-transform duration-300 ease-in-out ${
+            mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+            <div className="flex flex-col h-full bg-white">
+              {/* Header with gradient */}
+              <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-red-600 to-orange-500 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🍜</span>
+                  <span className="text-xl font-bold text-white">Menü</span>
+                </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 text-gray-600 hover:text-gray-900 touch-manipulation active:scale-95 transition"
+                  className="p-2.5 text-white/90 hover:text-white touch-manipulation active:scale-95 transition rounded-lg hover:bg-white/10"
                   aria-label="Close menu"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
 
-              {/* Navigation Links - Larger touch targets */}
-              <nav className="flex-1 flex flex-col p-4 space-y-2">
+              {/* Navigation Links - Spacious */}
+              <nav className="flex flex-col justify-center flex-1 px-6 py-8 space-y-3 bg-white">
                 <Link
                   href="/menu"
-                  className="flex items-center gap-3 text-gray-900 font-semibold py-4 px-4 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation"
+                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span className="text-2xl">🍽️</span>
-                  <span className="text-lg">Speisekarte</span>
+                  <span className="text-3xl">🍽️</span>
+                  <span className="text-xl">Speisekarte</span>
                 </Link>
                 <Link
                   href="/reservations"
-                  className="flex items-center gap-3 text-gray-900 font-semibold py-4 px-4 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation"
+                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span className="text-2xl">📅</span>
-                  <span className="text-lg">Reservierung</span>
+                  <span className="text-3xl">📅</span>
+                  <span className="text-xl">Reservierung</span>
                 </Link>
                 <Link
                   href="/#about"
                   onClick={(e) => handleScrollToSection(e, '/#about')}
-                  className="flex items-center gap-3 text-gray-900 font-semibold py-4 px-4 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation"
+                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
                 >
-                  <span className="text-2xl">ℹ️</span>
-                  <span className="text-lg">Über uns</span>
+                  <span className="text-3xl">ℹ️</span>
+                  <span className="text-xl">Über uns</span>
                 </Link>
                 <Link
                   href="/#contact"
                   onClick={(e) => handleScrollToSection(e, '/#contact')}
-                  className="flex items-center gap-3 text-gray-900 font-semibold py-4 px-4 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation"
+                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
                 >
-                  <span className="text-2xl">📞</span>
-                  <span className="text-lg">Kontakt</span>
+                  <span className="text-3xl">📞</span>
+                  <span className="text-xl">Kontakt</span>
                 </Link>
 
                 {/* Primary CTA */}
-                <div className="pt-4 mt-auto">
+                <div className="pt-4">
                   <Link
                     href="/menu"
-                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-xl active:scale-95 transition-transform touch-manipulation"
+                    className="flex items-center justify-center gap-3 bg-gradient-to-r from-red-600 to-orange-500 text-white py-5 px-6 rounded-xl font-bold text-xl shadow-xl active:scale-[0.98] transition-transform touch-manipulation"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <span>Jetzt bestellen</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </Link>
@@ -204,21 +227,20 @@ export default function Header() {
               </nav>
 
               {/* Contact Info */}
-              <div className="border-t border-gray-200 p-4 bg-gray-50">
-                <p className="text-sm text-gray-600 mb-2 font-medium">Kontakt</p>
-                <a href="tel:+493012345678" className="flex items-center gap-2 text-sm text-gray-900 mb-2 touch-manipulation">
-                  <span>📞</span>
+              <div className="border-t-2 border-gray-200 px-6 py-5 bg-gray-50 flex-shrink-0">
+                <p className="text-xs uppercase tracking-wide text-gray-500 font-bold mb-3">Kontakt</p>
+                <a href="tel:+493012345678" className="flex items-center gap-3 text-base text-gray-900 mb-3 font-semibold touch-manipulation py-2">
+                  <span className="text-2xl">📞</span>
                   <span>+49 30 12345678</span>
                 </a>
-                <a href="mailto:hallo@nghiademo.com" className="flex items-center gap-2 text-sm text-gray-900 touch-manipulation">
-                  <span>✉️</span>
+                <a href="mailto:hallo@nghiademo.com" className="flex items-center gap-3 text-base text-gray-900 font-semibold touch-manipulation py-2">
+                  <span className="text-2xl">✉️</span>
                   <span>hallo@nghiademo.com</span>
                 </a>
               </div>
             </div>
           </div>
-        </>
-      )}
+      </>
     </header>
   )
 }

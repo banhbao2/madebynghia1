@@ -20,6 +20,8 @@ This document tracks all planned features, improvements, and ideas for the resta
 - [x] **Enhanced Hero Section** - Stats, trust badges, glassmorphism design
 - [x] **Skeleton Loading Screens** - Professional loading states instead of spinners
 - [x] **Search & Filter** - Real-time menu search and price filtering
+- [x] **Smooth Scrolling Navigation** - Custom cubic easing for anchor links
+- [x] **Mobile-Optimized Menu** - Full-screen mobile navigation with large touch targets
 
 ---
 
@@ -858,11 +860,270 @@ Every time you:
 
 ---
 
-**Last Updated:** 2025-10-10
+**Last Updated:** 2025-10-18
 **Total Features:** 60+
-**Completed:** 12
+**Completed:** 14
 **In Progress:** 0
-**Remaining:** 48+
+**Remaining:** 46+
+
+---
+
+## 💎 Priority 10: New Feature Ideas (Added Oct 2025)
+
+### **P10-1: Order Customization Templates**
+**What:** Save common customizations as presets (e.g., "Extra Spicy", "No Onions")
+**Why:** Faster ordering for regulars, consistent customizations
+**Effort:** Low (2 hours)
+**Tasks:**
+- [ ] Add customization_presets table
+- [ ] UI to save/load presets
+- [ ] Quick apply buttons on menu items
+- [ ] Admin interface to manage common presets
+
+---
+
+### **P10-2: Daily Specials Banner**
+**What:** Rotating banner showing daily specials with countdown timer
+**Why:** Drive sales of specific items, create urgency
+**Effort:** Low (2-3 hours)
+**Tasks:**
+- [ ] Create daily_specials table with start/end dates
+- [ ] Animated banner component on homepage and menu page
+- [ ] Admin interface to manage specials
+- [ ] Countdown timer for time-limited deals
+- [ ] Auto-hide when special expires
+
+---
+
+### **P10-3: Allergen Information System**
+**What:** Comprehensive allergen labels (nuts, dairy, gluten, etc.)
+**Why:** Safety, legal compliance, customer trust
+**Effort:** Medium (3 hours)
+**Tasks:**
+- [ ] Add allergen fields to menu_items (14 major allergens)
+- [ ] Warning icons on menu items
+- [ ] Allergen filter in search
+- [ ] Allergen detail modal
+- [ ] Admin checklist for setting allergens
+- [ ] Disclaimer footer
+
+**Major Allergens:**
+- Peanuts, Tree Nuts, Milk, Eggs, Fish, Shellfish, Soy, Wheat, Sesame
+
+---
+
+### **P10-4: Multi-Language Support (German + English)**
+**What:** Toggle between German and English for international customers
+**Why:** Broader customer base, tourist-friendly
+**Effort:** Medium (4-6 hours)
+**Tasks:**
+- [ ] Implement next-intl or react-i18next
+- [ ] Create translation files (de.json, en.json)
+- [ ] Language switcher in header
+- [ ] Translate all UI text
+- [ ] Store menu item translations in database
+- [ ] Remember language preference in localStorage
+
+---
+
+### **P10-5: Smart Order Recommendations**
+**What:** "Complete your meal" suggestions based on cart contents
+**Why:** Increase average order value, better customer experience
+**Effort:** Medium (4 hours)
+**Tasks:**
+- [ ] Define item pairing rules (appetizers + mains + drinks)
+- [ ] Recommendation engine based on cart
+- [ ] Display in cart sidebar
+- [ ] Track recommendation conversion rate
+- [ ] A/B test different recommendation strategies
+
+**Example Rules:**
+- If cart has Pho → Suggest spring rolls
+- If cart has Sushi → Suggest miso soup + sake
+- No drinks → Suggest beverages
+
+---
+
+### **P10-6: Kitchen Prep Time Management**
+**What:** Admin sets prep time per item, shows estimated ready time to customer
+**Why:** Set accurate expectations, reduce complaints
+**Effort:** Medium (3 hours)
+**Tasks:**
+- [ ] Add prep_time_minutes to menu_items
+- [ ] Calculate total order prep time
+- [ ] Show "Ready in X minutes" at checkout
+- [ ] Factor in current order queue
+- [ ] Admin dashboard shows kitchen load
+
+---
+
+### **P10-7: Customer Reviews & Ratings**
+**What:** Let customers rate and review individual menu items
+**Why:** Social proof, identify popular/unpopular items
+**Effort:** High (8 hours)
+**Tasks:**
+- [ ] Create reviews table (item_id, rating, comment, customer_email)
+- [ ] Review submission form after order completion
+- [ ] Display average rating on menu items
+- [ ] Filter by rating in search
+- [ ] Admin moderation interface
+- [ ] Email verification to prevent spam
+- [ ] Featured reviews section
+
+---
+
+### **P10-8: Waitlist for Reservations**
+**What:** Join waitlist if desired time slot is full
+**Why:** Capture demand, fill last-minute cancellations
+**Effort:** Medium (5 hours)
+**Tasks:**
+- [ ] Add waitlist table
+- [ ] Waitlist signup flow on reservations page
+- [ ] Auto-notify when slot opens up
+- [ ] SMS notification (optional)
+- [ ] Admin interface to manage waitlist
+- [ ] Auto-expire waitlist entries after 24h
+
+---
+
+### **P10-9: Group Order Splitting**
+**What:** Split payment among multiple people for table orders
+**Why:** Convenience for groups, better UX
+**Effort:** High (10 hours)
+**Tasks:**
+- [ ] Multi-customer cart system
+- [ ] Each person selects their items
+- [ ] Individual payment links
+- [ ] Group order coordinator dashboard
+- [ ] Payment tracking (who paid, who didn't)
+- [ ] Send order when all paid
+
+---
+
+### **P10-10: Ingredient Availability Tracking**
+**What:** Mark ingredients as out of stock, auto-disable affected menu items
+**Why:** Prevent ordering unavailable items, save time
+**Effort:** Medium (6 hours)
+**Tasks:**
+- [ ] Create ingredients table
+- [ ] Link ingredients to menu_items (junction table)
+- [ ] Admin interface to mark ingredient unavailable
+- [ ] Auto-hide affected menu items
+- [ ] Show "Temporarily Unavailable" badge
+- [ ] Notification to customers if item in cart becomes unavailable
+
+---
+
+### **P10-11: QR Code Menu for Dine-In**
+**What:** Generate printable QR codes for each table, customers scan to view menu
+**Why:** Contactless, reduce printed menu costs
+**Effort:** Low (2 hours)
+**Tasks:**
+- [ ] QR code generator for each table (already have table param)
+- [ ] Printable table cards with QR codes
+- [ ] Special dine-in menu view (no delivery options)
+- [ ] "Call server" button
+- [ ] Order sends to kitchen instantly
+- [ ] Admin downloads all QR codes as PDF
+
+---
+
+### **P10-12: Video Content for Menu Items**
+**What:** Short videos showing dish preparation or presentation
+**Why:** Visual appeal, engagement, authenticity
+**Effort:** Medium (3 hours for feature, more for content)
+**Tasks:**
+- [ ] Add video_url field to menu_items
+- [ ] Video player in menu item modal
+- [ ] Auto-play on hover (optional)
+- [ ] Use YouTube or Vimeo embed
+- [ ] Admin interface to add video URLs
+- [ ] Lazy load videos for performance
+
+**Content Ideas:**
+- Chef preparing signature dish
+- Plating demonstration
+- Customer reactions
+- Behind-the-scenes kitchen
+
+---
+
+### **P10-13: Peak Hour Pricing (Surge Pricing)**
+**What:** Dynamic pricing during busy hours (e.g., lunch rush, dinner)
+**Why:** Manage demand, increase revenue during peak times
+**Effort:** Medium (4 hours)
+**Tasks:**
+- [ ] Define peak hours in settings
+- [ ] Peak hour multiplier (e.g., 1.2x)
+- [ ] Show "Peak Hour Pricing" badge
+- [ ] Calculate prices dynamically
+- [ ] Admin interface to configure peak hours
+- [ ] Optional: surge pricing for delivery zones
+
+**Considerations:**
+- May upset customers if not communicated well
+- Show clear messaging: "Lunch Rush - Slightly higher prices"
+
+---
+
+### **P10-14: Feedback & Survey System**
+**What:** Post-order survey to collect feedback
+**Why:** Improve service, identify issues, gather testimonials
+**Effort:** Medium (4 hours)
+**Tasks:**
+- [ ] Create surveys table (questions, responses)
+- [ ] Survey templates (order experience, food quality, delivery speed)
+- [ ] Send survey link via email after order delivered
+- [ ] Admin dashboard to view responses
+- [ ] Analytics: satisfaction scores over time
+- [ ] Auto-request permission to use positive feedback as testimonials
+
+---
+
+### **P10-15: Subscription Meal Plans**
+**What:** Weekly meal plan subscription (e.g., lunch every weekday)
+**Why:** Recurring revenue, customer loyalty
+**Effort:** Very High (15-20 hours)
+**Tasks:**
+- [ ] Create subscription_plans table
+- [ ] Meal plan builder (select days, items)
+- [ ] Recurring billing (Stripe Subscriptions)
+- [ ] Auto-generate orders for subscribers
+- [ ] Skip/pause/cancel functionality
+- [ ] Subscription management dashboard for customers
+- [ ] Admin analytics for subscription revenue
+
+**Example Plans:**
+- "Lunch Pass" - 5 lunches/week for $50
+- "Dinner Subscription" - 3 dinners/week for $90
+- "Sushi Lover" - Weekly sushi box delivered Friday
+
+---
+
+## 📈 ROI Analysis for Top Recommendations
+
+Based on impact vs. effort, here's the recommended implementation order:
+
+### **Immediate (This Week):**
+1. **P1-1: Real Food Photography** ⚡ Highest impact
+2. **P1-5: Promo Banner** ⚡ Quick win
+3. **P10-2: Daily Specials Banner** ⚡ Drive sales
+
+### **Week 2-3:**
+4. **P1-3: Testimonials Section** 🎯 Social proof
+5. **P1-4: Dietary Icons & Filters** 🎯 Customer convenience
+6. **P10-3: Allergen Information** 🎯 Safety + trust
+7. **P2-4: Google Maps Integration** 🎯 Easy to find
+
+### **Month 2:**
+8. **P3-1: Payment Integration (Stripe)** 💰 Enable online payment
+9. **P2-7: Order Tracking Page** 📊 Reduce support calls
+10. **P10-7: Customer Reviews & Ratings** 📊 Social proof
+
+### **Month 3:**
+11. **P3-2: Loyalty Program** 🎁 Customer retention
+12. **P3-5: Advanced Analytics** 📈 Data insights
+13. **P10-5: Smart Order Recommendations** 💡 Increase AOV
 
 ---
 

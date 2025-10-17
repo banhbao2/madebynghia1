@@ -232,6 +232,7 @@ export default function ReservationsPage() {
     <div className="min-h-screen">
       <Header />
 
+      <div className="pt-[60px] md:pt-[68px]">
       {/* Hero Section - Mobile optimized */}
       <section className="relative bg-gradient-to-br from-red-600 to-orange-600 text-white py-12 sm:py-16 md:py-20">
         <div className="container mx-auto px-4 text-center">
@@ -475,6 +476,7 @@ export default function ReservationsPage() {
       </section>
 
       <Footer />
+      </div>
     </div>
   )
 }

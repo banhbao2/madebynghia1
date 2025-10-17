@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export default function Hero() {
   return (
-    <section className="relative h-[600px] sm:h-[650px] md:h-[750px] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[calc(100svh-60px)] sm:min-h-[650px] md:min-h-[750px] flex items-center justify-center overflow-hidden -mt-[60px] md:-mt-[68px] pt-[60px] md:pt-[68px]">
       <Image
         src="/hero-placeholder.jpg"
         alt="Nghia Demo Restaurant"

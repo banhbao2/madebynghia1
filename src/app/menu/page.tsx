@@ -112,6 +112,7 @@ function MenuPageContent() {
     return (
       <div className="min-h-screen">
         <Header />
+        <div className="pt-[60px] md:pt-[68px]">
         <main className="container mx-auto px-4 py-16">
           {/* Header Skeleton */}
           <div className="text-center mb-16">
@@ -130,6 +131,7 @@ function MenuPageContent() {
           <MenuGridSkeleton count={6} />
         </main>
         <Footer />
+        </div>
       </div>
     )
   }
@@ -139,6 +141,7 @@ function MenuPageContent() {
     return (
       <div className="min-h-screen">
         <Header />
+        <div className="pt-[60px] md:pt-[68px]">
         <main className="container mx-auto px-4 py-16">
           <div className="text-center py-20">
             <div className="text-6xl mb-4">⚠️</div>
@@ -153,6 +156,7 @@ function MenuPageContent() {
           </div>
         </main>
         <Footer />
+        </div>
       </div>
     )
   }
@@ -163,6 +167,8 @@ function MenuPageContent() {
 
       {/* Cart Sidebar */}
       <CartSidebar />
+
+      <div className="pt-[60px] md:pt-[68px]">
 
       {/* Floating Cart Button (Mobile & Desktop) */}
       {itemCount > 0 && (
@@ -391,6 +397,7 @@ function MenuPageContent() {
       </main>
 
       <Footer />
+      </div>
     </div>
   )
 }
@@ -400,10 +407,12 @@ export default function MenuPage() {
     <Suspense fallback={
       <div className="min-h-screen">
         <Header />
-        <main className="container mx-auto px-4 py-16">
-          <MenuGridSkeleton count={6} />
-        </main>
-        <Footer />
+        <div className="pt-[60px] md:pt-[68px]">
+          <main className="container mx-auto px-4 py-16">
+            <MenuGridSkeleton count={6} />
+          </main>
+          <Footer />
+        </div>
       </div>
     }>
       <MenuPageContent />
