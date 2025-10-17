@@ -11,13 +11,18 @@ export default function Hero() {
         className="object-cover"
         priority
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/60 to-black/70" />
+      <div className="absolute inset-0 bg-gradient-to-br from-red-900/60 via-black/70 to-orange-900/60" />
+
+      {/* Decorative floating elements */}
+      <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full blur-xl animate-float" />
+      <div className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-orange-500/20 to-yellow-500/20 rounded-full blur-xl animate-float animation-delay-300" />
+      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-br from-pink-500/20 to-red-500/20 rounded-full blur-xl animate-float animation-delay-500" />
 
       <div className="relative z-10 text-center text-white px-4 sm:px-6 max-w-6xl mx-auto">
-        {/* Trust Badge - Mobile optimized */}
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-4 sm:mb-6 shadow-xl animate-fade-in">
-          <span className="text-yellow-400 text-base sm:text-lg">⭐⭐⭐⭐⭐</span>
-          <span className="text-xs sm:text-sm font-semibold">4,9/5 von über 500 Kunden</span>
+        {/* Trust Badge - Mobile optimized with enhanced design */}
+        <div className="inline-flex items-center gap-2 glass border border-white/30 rounded-full px-5 py-2.5 mb-4 sm:mb-6 shadow-2xl animate-fade-in hover-lift">
+          <span className="text-yellow-400 text-base sm:text-lg drop-shadow-lg">⭐⭐⭐⭐⭐</span>
+          <span className="text-xs sm:text-sm font-bold text-white/95">4,9/5 von über 500 Kunden</span>
         </div>
 
         {/* Heading - Better mobile sizing */}
@@ -51,41 +56,42 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* CTA Buttons - Mobile first with larger touch targets */}
+        {/* CTA Buttons - Enhanced with gradients and glow effects */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center animate-fade-in-up animation-delay-400 max-w-lg mx-auto sm:max-w-none">
           <Link
             href="/menu"
-            className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-8 sm:px-10 py-4 rounded-xl text-base sm:text-lg font-bold hover:from-red-700 hover:to-red-800 active:scale-95 transition-all shadow-2xl touch-manipulation"
+            className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white px-8 sm:px-10 py-4 rounded-xl text-base sm:text-lg font-bold hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] active:scale-95 transition-all shadow-2xl touch-manipulation overflow-hidden"
           >
-            Jetzt bestellen
-            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <span className="relative">Jetzt bestellen</span>
+            <svg className="relative w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </Link>
           <Link
             href="/reservations"
-            className="group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border-2 border-white/30 text-white px-8 sm:px-10 py-4 rounded-xl text-base sm:text-lg font-bold hover:bg-white/20 active:scale-95 transition-all shadow-xl touch-manipulation"
+            className="group inline-flex items-center justify-center gap-2 glass border-2 border-white/40 text-white px-8 sm:px-10 py-4 rounded-xl text-base sm:text-lg font-bold hover:bg-white/25 hover:border-white/60 active:scale-95 transition-all shadow-xl touch-manipulation"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Tisch reservieren
+            <span>Tisch reservieren</span>
           </Link>
         </div>
 
-        {/* Feature cards - Show on mobile as grid */}
+        {/* Feature cards - Enhanced with hover effects */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-8 sm:mt-12 animate-fade-in animation-delay-500 max-w-3xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 flex items-center justify-center gap-2 shadow-xl">
-            <span className="text-xl sm:text-2xl">🚚</span>
-            <span className="text-xs sm:text-sm font-semibold">Kostenlose Lieferung ab 30€</span>
+          <div className="glass border border-white/30 rounded-xl px-4 py-3.5 flex items-center justify-center gap-2.5 shadow-xl hover-lift group cursor-default">
+            <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform">🚚</span>
+            <span className="text-xs sm:text-sm font-bold text-white/95">Kostenlose Lieferung ab 30€</span>
           </div>
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 flex items-center justify-center gap-2 shadow-xl">
-            <span className="text-xl sm:text-2xl">⏱️</span>
-            <span className="text-xs sm:text-sm font-semibold">Fertig in 20-30 Min.</span>
+          <div className="glass border border-white/30 rounded-xl px-4 py-3.5 flex items-center justify-center gap-2.5 shadow-xl hover-lift group cursor-default">
+            <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform">⏱️</span>
+            <span className="text-xs sm:text-sm font-bold text-white/95">Fertig in 20-30 Min.</span>
           </div>
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 flex items-center justify-center gap-2 shadow-xl">
-            <span className="text-xl sm:text-2xl">✨</span>
-            <span className="text-xs sm:text-sm font-semibold">Täglich frisch zubereitet</span>
+          <div className="glass border border-white/30 rounded-xl px-4 py-3.5 flex items-center justify-center gap-2.5 shadow-xl hover-lift group cursor-default">
+            <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform">✨</span>
+            <span className="text-xs sm:text-sm font-bold text-white/95">Täglich frisch zubereitet</span>
           </div>
         </div>
       </div>

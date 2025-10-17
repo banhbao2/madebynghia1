@@ -88,7 +88,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <p>© {new Date().getFullYear()} Nghia Demo. Alle Rechte vorbehalten. Mit ❤️ in Berlin erstellt</p>
+          <p>© {new Date().getFullYear()} Nghia Demo. Alle Rechte vorbehalten. Mit ❤️ erstellt</p>
         </div>
       </div>
     </footer>
