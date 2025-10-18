@@ -5,56 +5,115 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { CartIcon } from './Icons'
 
+/**
+ * Floating cart button that stays fixed on screen
+ * Positioned at bottom-right on both mobile and desktop
+ * Shows cart item count and total price
+ */
 export default function FloatingCartButton() {
   const { itemCount, total } = useCart()
   const router = useRouter()
-  const [justAdded, setJustAdded] = useState(false)
-  const [prevItemCount, setPrevItemCount] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [prevCount, setPrevCount] = useState(0)
 
-  // Show animation when item is added
+  // Animate when items are added
   useEffect(() => {
-    if (itemCount > prevItemCount && itemCount > 0) {
-      setJustAdded(true)
-      const timer = setTimeout(() => setJustAdded(false), 1000)
+    if (itemCount > prevCount && itemCount > 0) {
+      setIsAnimating(true)
+      const timer = setTimeout(() => setIsAnimating(false), 600)
       return () => clearTimeout(timer)
     }
-    setPrevItemCount(itemCount)
-  }, [itemCount, prevItemCount])
+    setPrevCount(itemCount)
+  }, [itemCount, prevCount])
 
-  if (itemCount === 0) {
-    return null
-  }
+  // Don't render if cart is empty
+  if (itemCount === 0) return null
 
-  const handleCartClick = () => {
-    router.push('/cart')
-  }
+  const handleClick = () => router.push('/cart')
 
   return (
     <>
-      {/* Mobile Floating Button */}
+      {/* Mobile Button - Compact circular */}
       <button
-        onClick={handleCartClick}
-        className="md:hidden fixed bottom-24 right-4 z-[9999] w-14 h-14 bg-gradient-to-br from-red-600 to-orange-500 text-white rounded-full shadow-lg flex items-center justify-center"
-        style={{ transform: justAdded ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s ease' }}
-        aria-label="Warenkorb öffnen"
+        onClick={handleClick}
+        className={`
+          md:hidden
+          fixed
+          bottom-6
+          right-4
+          z-[9999]
+          w-14
+          h-14
+          rounded-full
+          bg-gradient-to-br
+          from-red-600
+          to-orange-500
+          text-white
+          shadow-lg
+          hover:shadow-xl
+          flex
+          items-center
+          justify-center
+          transition-transform
+          duration-200
+          ${isAnimating ? 'scale-110' : 'scale-100'}
+        `}
+        aria-label={`Warenkorb mit ${itemCount} ${itemCount === 1 ? 'Artikel' : 'Artikeln'}`}
       >
         <div className="relative">
           <CartIcon />
           <span
-            className="absolute -top-2 -right-2 bg-white text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg"
-            style={{ transform: justAdded ? 'scale(1.25)' : 'scale(1)', transition: 'transform 0.2s ease' }}
+            className={`
+              absolute
+              -top-2
+              -right-2
+              bg-white
+              text-red-600
+              text-xs
+              font-bold
+              rounded-full
+              w-5
+              h-5
+              flex
+              items-center
+              justify-center
+              shadow-md
+              transition-transform
+              duration-200
+              ${isAnimating ? 'scale-125' : 'scale-100'}
+            `}
           >
             {itemCount}
           </span>
         </div>
       </button>
 
-      {/* Desktop/Tablet Floating Button */}
+      {/* Desktop Button - Expanded with price */}
       <button
-        onClick={handleCartClick}
-        className="hidden md:flex fixed bottom-8 right-8 z-[9999] items-center gap-3 bg-gradient-to-r from-red-600 to-orange-500 text-white px-6 py-4 rounded-2xl shadow-2xl hover:shadow-xl transition-all"
-        style={{ transform: justAdded ? 'scale(1.1)' : 'scale(1)' }}
-        aria-label="Warenkorb öffnen"
+        onClick={handleClick}
+        className={`
+          hidden
+          md:flex
+          fixed
+          bottom-6
+          right-6
+          z-[9999]
+          items-center
+          gap-3
+          px-6
+          py-4
+          rounded-2xl
+          bg-gradient-to-r
+          from-red-600
+          to-orange-500
+          text-white
+          shadow-2xl
+          hover:shadow-3xl
+          transition-transform
+          duration-200
+          ${isAnimating ? 'scale-105' : 'scale-100'}
+        `}
+        aria-label={`Warenkorb mit ${itemCount} ${itemCount === 1 ? 'Artikel' : 'Artikeln'} - ${total.toFixed(2)}€`}
       >
         <div className="relative">
           <CartIcon />
@@ -62,7 +121,7 @@ export default function FloatingCartButton() {
             {itemCount}
           </span>
         </div>
-        <span className="font-bold">{total.toFixed(2)}€</span>
+        <span className="font-bold text-lg">{total.toFixed(2)}€</span>
       </button>
     </>
   )

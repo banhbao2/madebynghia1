@@ -4,12 +4,19 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import TimeSlotPicker from '@/components/TimeSlotPicker'
 import { createClient } from '@/lib/supabase-browser'
 import { ReservationFormData, TimeSlot } from '@/types/reservation'
 
 export default function ReservationsPage() {
   const router = useRouter()
   const supabase = createClient()
+  const [mounted, setMounted] = useState(false)
+
+  // Fix hydration by only rendering date formatting on client
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Get today's date (for default value)
   const getTodayDate = () => {
@@ -148,92 +155,26 @@ export default function ReservationsPage() {
     return `${time} Uhr`
   }
 
-  // Helper: Get meal period
-  const getMealPeriod = (time: string) => {
-    const hour = parseInt(time.split(':')[0])
-    if (hour >= 11 && hour < 15) return 'lunch'
-    if (hour >= 15 && hour < 17) return 'afternoon'
-    if (hour >= 17 && hour < 22) return 'dinner'
-    return 'other'
-  }
+  // Helper: Format date safely (avoid hydration errors)
+  const formatDateDisplay = (dateString: string) => {
+    if (!mounted) return '' // Return empty during SSR
 
-  // Helper: Group slots by meal period
-  const groupSlotsByPeriod = (slots: TimeSlot[]) => {
-    const groups: { [key: string]: TimeSlot[] } = {
-      lunch: [],
-      afternoon: [],
-      dinner: [],
-    }
-
-    slots.forEach((slot) => {
-      const period = getMealPeriod(slot.time)
-      if (groups[period]) {
-        groups[period].push(slot)
-      }
+    const date = new Date(dateString)
+    return date.toLocaleDateString('de-DE', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     })
-
-    return groups
-  }
-
-  // Render time slots grouped by period
-  const renderTimeSlotsByPeriod = (slots: TimeSlot[]) => {
-    const groups = groupSlotsByPeriod(slots)
-
-    const periodLabels = {
-      lunch: { icon: '🌤️', label: 'Mittagessen', color: 'amber' },
-      afternoon: { icon: '☕', label: 'Nachmittag', color: 'orange' },
-      dinner: { icon: '🌙', label: 'Abendessen', color: 'indigo' },
-    }
-
-    return (
-      <div className="space-y-6">
-        {Object.entries(groups).map(([period, periodSlots]) => {
-          if (periodSlots.length === 0) return null
-
-          const { icon, label } = periodLabels[period as keyof typeof periodLabels]
-
-          return (
-            <div key={period}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">{icon}</span>
-                <h3 className="font-semibold text-gray-900">{label}</h3>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                {periodSlots.map((slot) => (
-                  <button
-                    key={slot.time}
-                    type="button"
-                    onClick={() =>
-                      slot.available && setFormData({ ...formData, reservation_time: slot.time })
-                    }
-                    disabled={!slot.available}
-                    className={`py-3.5 sm:py-3 px-2 rounded-lg font-medium text-sm transition-all touch-manipulation ${
-                      formData.reservation_time === slot.time
-                        ? 'bg-red-600 text-white shadow-lg scale-105 ring-2 ring-red-300'
-                        : slot.available
-                        ? 'bg-white border-2 border-gray-200 text-gray-700 active:border-red-500 active:text-red-600 hover:shadow-md'
-                        : 'bg-gray-50 border border-gray-100 text-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    {formatTimeDisplay(slot.time)}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    )
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <Header />
 
       <div className="pt-[60px] md:pt-[68px]">
       {/* Hero Section - Mobile optimized */}
-      <section className="relative bg-gradient-to-br from-red-600 to-orange-600 text-white py-12 sm:py-16 md:py-20">
+      <section className="relative bg-gradient-to-br from-red-600 to-orange-600 text-white py-12 sm:py-16 md:py-20 overflow-hidden">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6">
             Tisch reservieren
@@ -245,10 +186,10 @@ export default function ReservationsPage() {
       </section>
 
       {/* Main Content */}
-      <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-white to-gray-50">
+      <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 overflow-x-hidden">
               {/* Step 1: Date & Party Size - Mobile optimized */}
               <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border border-gray-100">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-5 sm:mb-6 flex items-center gap-2 sm:gap-3">
@@ -312,33 +253,12 @@ export default function ReservationsPage() {
                     <span>Wählen Sie Ihre Uhrzeit</span>
                   </h2>
 
-                  {loading ? (
-                    <div className="text-center py-12">
-                      <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600 mb-4"></div>
-                      <p className="text-gray-600">Verfügbare Zeiten werden geladen...</p>
-                    </div>
-                  ) : availableSlots.length === 0 ? (
-                    <div className="text-center py-12 bg-gray-50 rounded-xl">
-                      <div className="text-6xl mb-4">📅</div>
-                      <p className="text-gray-700 font-medium text-lg">Keine verfügbaren Zeitfenster</p>
-                      <p className="text-gray-500 text-sm mt-2">Bitte wählen Sie ein anderes Datum</p>
-                    </div>
-                  ) : (
-                    <>
-                      {renderTimeSlotsByPeriod(availableSlots)}
-
-                      {formData.reservation_time && (
-                        <div className="mt-6 bg-green-50 border-2 border-green-200 rounded-xl p-4">
-                          <p className="text-sm text-green-800 font-medium mb-1">
-                            ✓ Ausgewählte Zeit
-                          </p>
-                          <p className="text-green-700 font-semibold text-lg">
-                            {formatTimeDisplay(formData.reservation_time)}
-                          </p>
-                        </div>
-                      )}
-                    </>
-                  )}
+                  <TimeSlotPicker
+                    slots={availableSlots}
+                    selectedTime={formData.reservation_time}
+                    onSelectTime={(time) => setFormData({ ...formData, reservation_time: time })}
+                    loading={loading}
+                  />
                 </div>
               )}
 
@@ -417,58 +337,74 @@ export default function ReservationsPage() {
                 </div>
               </div>
 
-              {/* Summary & Submit - Mobile optimized */}
-              {formData.reservation_time && (
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border-2 border-green-200">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="text-xl sm:text-2xl">📋</span>
-                    <span>Reservierungszusammenfassung</span>
-                  </h3>
-                  <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-5 sm:mb-6">
-                    <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
-                      <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-1">DATUM</p>
-                      <p className="text-gray-900 font-bold text-sm sm:text-base">
-                        {new Date(formData.reservation_date).toLocaleDateString('de-DE', {
-                          weekday: 'short',
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </p>
-                    </div>
-                    <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
-                      <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-1">UHRZEIT</p>
-                      <p className="text-gray-900 font-bold text-sm sm:text-base">{formatTimeDisplay(formData.reservation_time)}</p>
-                    </div>
-                    <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
-                      <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-1">PERSONEN</p>
-                      <p className="text-gray-900 font-bold text-sm sm:text-base">
-                        {formData.party_size} {formData.party_size === 1 ? 'Person' : 'Personen'}
-                      </p>
-                    </div>
+              {/* Summary & Submit - Always visible, updates dynamically */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border-2 border-green-200">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="text-xl sm:text-2xl">📋</span>
+                  <span>Reservierungszusammenfassung</span>
+                </h3>
+
+                {/* Summary Cards - Stack on mobile to prevent horizontal scroll */}
+                <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-3 md:gap-4 mb-5 sm:mb-6">
+                  {/* Date Card */}
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+                    <p className="text-xs text-gray-500 font-medium mb-1">DATUM</p>
+                    <p className="text-gray-900 font-bold text-sm sm:text-base break-words">
+                      {mounted ? formatDateDisplay(formData.reservation_date) : formData.reservation_date}
+                    </p>
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={submitting || !formData.customer_name || !formData.customer_email || !formData.customer_phone}
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 sm:px-8 py-4 sm:py-4 rounded-xl text-base sm:text-lg font-bold hover:from-red-700 hover:to-red-800 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2 touch-manipulation"
-                  >
-                    {submitting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                        Wird gesendet...
-                      </>
-                    ) : (
-                      <>
-                        <span>Reservierung bestätigen</span>
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
+                  {/* Time Card */}
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+                    <p className="text-xs text-gray-500 font-medium mb-1">UHRZEIT</p>
+                    <p className="text-gray-900 font-bold text-sm sm:text-base">
+                      {formData.reservation_time ? formatTimeDisplay(formData.reservation_time) : '–'}
+                    </p>
+                  </div>
+
+                  {/* Party Size Card */}
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+                    <p className="text-xs text-gray-500 font-medium mb-1">PERSONEN</p>
+                    <p className="text-gray-900 font-bold text-sm sm:text-base">
+                      {formData.party_size} {formData.party_size === 1 ? 'Person' : 'Personen'}
+                    </p>
+                  </div>
                 </div>
-              )}
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={
+                    submitting ||
+                    !formData.reservation_time ||
+                    !formData.customer_name ||
+                    !formData.customer_email ||
+                    !formData.customer_phone
+                  }
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 sm:px-8 py-4 rounded-xl text-base sm:text-lg font-bold hover:from-red-700 hover:to-red-800 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2 touch-manipulation"
+                >
+                  {submitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                      Wird gesendet...
+                    </>
+                  ) : (
+                    <>
+                      <span>Reservierung bestätigen</span>
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+
+                {/* Helper text */}
+                {!formData.reservation_time && (
+                  <p className="text-sm text-gray-600 text-center mt-3">
+                    Bitte wählen Sie eine Uhrzeit aus
+                  </p>
+                )}
+              </div>
             </form>
           </div>
         </div>
