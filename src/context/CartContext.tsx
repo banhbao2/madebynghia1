@@ -89,7 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         ]
       }
     })
-    setIsCartOpen(true) // Open cart when item is added
+    // Don't auto-open cart - let user decide when to view it
   }, [])
 
   const removeFromCart = useCallback((cartItemId: string) => {

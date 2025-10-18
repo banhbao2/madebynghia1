@@ -4,11 +4,10 @@ import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import CartSidebar from '@/components/CartSidebar'
+import FloatingCartButton from '@/components/FloatingCartButton'
 import MenuItem from '@/components/MenuItem'
 import { MenuGridSkeleton } from '@/components/MenuItemSkeleton'
 import { MenuItem as MenuItemType, Category } from '@/lib/menuData'
-import { useCart } from '@/context/CartContext'
 import { supabase } from '@/lib/supabase'
 
 function MenuPageContent() {
@@ -18,8 +17,6 @@ function MenuPageContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [priceFilter, setPriceFilter] = useState<'all' | 'under10' | 'under15' | 'under20'>('all')
-  const { setIsCartOpen, itemCount } = useCart()
   const searchParams = useSearchParams()
 
   // QR Code support: Get table number from URL
@@ -63,7 +60,7 @@ function MenuPageContent() {
     fetchMenuData()
   }, [])
 
-  // Advanced filtering with search and price
+  // Advanced filtering with search
   const filteredItems = useMemo(() => {
     let items = menuItems
 
@@ -81,19 +78,8 @@ function MenuPageContent() {
       )
     }
 
-    // Price filter
-    if (priceFilter !== 'all') {
-      const priceRanges = {
-        under10: [0, 10],
-        under15: [0, 15],
-        under20: [0, 20],
-      }
-      const [min, max] = priceRanges[priceFilter]
-      items = items.filter(item => item.price >= min && item.price <= max)
-    }
-
     return items
-  }, [menuItems, selectedCategory, searchQuery, priceFilter])
+  }, [menuItems, selectedCategory, searchQuery])
 
   const popularItems = useMemo(() =>
     menuItems.filter(item => item.popular),
@@ -165,28 +151,10 @@ function MenuPageContent() {
     <div className="min-h-screen">
       <Header />
 
-      {/* Cart Sidebar */}
-      <CartSidebar />
+      {/* Floating Cart Button */}
+      <FloatingCartButton />
 
       <div className="pt-[60px] md:pt-[68px]">
-
-      {/* Floating Cart Button (Mobile & Desktop) */}
-      {itemCount > 0 && (
-        <button
-          onClick={() => setIsCartOpen(true)}
-          className="fixed bottom-8 right-8 bg-gradient-to-br from-red-600 to-red-700 text-white rounded-full w-20 h-20 shadow-2xl hover:shadow-red-500/50 hover:scale-110 z-30 flex items-center justify-center transition-all animate-pulse"
-          aria-label="Warenkorb ansehen"
-        >
-          <div className="relative">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            <span className="absolute -top-3 -right-3 bg-white text-red-600 text-sm font-extrabold rounded-full w-7 h-7 flex items-center justify-center shadow-lg ring-2 ring-white">
-              {itemCount}
-            </span>
-          </div>
-        </button>
-      )}
 
       <main className="container mx-auto px-4 py-16 pb-32">
         {/* Header */}
@@ -205,99 +173,41 @@ function MenuPageContent() {
           </p>
         </div>
 
-        {/* Search and Filter Bar */}
-        <div className="mb-8 max-w-4xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search Input */}
-            <div className="flex-1 relative">
-              <svg
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <input
-                type="text"
-                placeholder="Menüartikel suchen..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  aria-label="Suche löschen"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {/* Price Filter */}
-            <select
-              value={priceFilter}
-              onChange={(e) => setPriceFilter(e.target.value as 'all' | 'under10' | 'under15' | 'under20')}
-              className="px-6 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-medium bg-white transition"
+        {/* Search Bar */}
+        <div className="mb-8 max-w-2xl mx-auto">
+          <div className="relative">
+            <svg
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <option value="all">Alle Preise</option>
-              <option value="under10">Unter 10€</option>
-              <option value="under15">Unter 15€</option>
-              <option value="under20">Unter 20€</option>
-            </select>
-          </div>
-
-          {/* Active Filters Display */}
-          {(searchQuery || priceFilter !== 'all') && (
-            <div className="mt-4 flex flex-wrap gap-2 items-center">
-              <span className="text-sm text-gray-600 font-medium">Aktive Filter:</span>
-              {searchQuery && (
-                <span className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
-                  Suche: &quot;{searchQuery}&quot;
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="hover:text-red-900"
-                  >
-                    ×
-                  </button>
-                </span>
-              )}
-              {priceFilter !== 'all' && (
-                <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                  Preis: {priceFilter.replace('under', 'Unter ').replace('10', '10€').replace('15', '15€').replace('20', '20€')}
-                  <button
-                    onClick={() => setPriceFilter('all')}
-                    className="hover:text-blue-900"
-                  >
-                    ×
-                  </button>
-                </span>
-              )}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              placeholder="Menüartikel suchen..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+            />
+            {searchQuery && (
               <button
-                onClick={() => {
-                  setSearchQuery('')
-                  setPriceFilter('all')
-                }}
-                className="text-sm text-gray-600 hover:text-gray-900 underline"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label="Suche löschen"
               >
-                Alle löschen
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            </div>
-          )}
-        </div>
-
-        {/* Results Count */}
-        <div className="mb-4 text-center text-sm text-gray-600">
-          <strong>{filteredItems.length}</strong> {filteredItems.length === 1 ? 'Artikel' : 'Artikel'} angezeigt
+            )}
+          </div>
         </div>
 
         {/* Category Filter */}
@@ -319,13 +229,13 @@ function MenuPageContent() {
           </div>
         </div>
 
-        {/* Popular Items Section - Now with ordering! */}
+        {/* Popular Items Section */}
         {selectedCategory === 'all' && popularItems.length > 0 && (
-          <div className="mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <span className="text-4xl">⭐</span> Beliebte Gerichte
+          <div className="mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="text-2xl">⭐</span> Beliebte Gerichte
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-2">
               {popularItems.map((item) => (
                 <MenuItem key={item.id} item={item} />
               ))}
@@ -334,22 +244,22 @@ function MenuPageContent() {
         )}
 
         {/* Menu Items by Category */}
-        <div className="space-y-12">
+        <div className="space-y-8">
           {selectedCategory === 'all' ? (
             // Show all categories
             categories.slice(1).map((category) => {
               const categoryItems = menuItems.filter(item => item.category === category.id)
               return (
                 <section key={category.id}>
-                  <div className="flex items-center gap-4 mb-8">
-                    <span className="text-5xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-3xl">
                       {category.id === 'pho' ? '🍜' : category.id === 'sushi' ? '🍣' : category.id === 'appetizers' ? '🥟' : '🥤'}
                     </span>
-                    <h2 className="text-4xl font-bold text-gray-900">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
                       {category.name}
                     </h2>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="space-y-2">
                     {categoryItems.map((item) => (
                       <MenuItem key={item.id} item={item} />
                     ))}
@@ -359,7 +269,7 @@ function MenuPageContent() {
             })
           ) : (
             // Show selected category
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-2">
               {filteredItems.map((item) => (
                 <MenuItem key={item.id} item={item} />
               ))}

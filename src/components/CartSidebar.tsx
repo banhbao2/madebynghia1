@@ -66,35 +66,37 @@ export default function CartSidebar() {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Bottom sheet on mobile, side panel on desktop */}
       <div
         ref={cartRef}
-        className={`fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
-          isCartOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed bg-white shadow-2xl z-50 transition-transform duration-300 ease-in-out
+          md:right-0 md:top-0 md:h-full md:w-96
+          left-0 right-0 bottom-0 rounded-t-3xl md:rounded-none
+          ${isCartOpen ? 'translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-y-0 md:translate-x-full'}`}
         style={{
           transform: isDragging && isCartOpen
             ? `translateY(${dragOffset}px)`
             : undefined,
+          maxHeight: 'calc(100vh - 60px)', // Leave space for status bar on mobile
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full max-h-full">
           {/* Swipe Indicator (Mobile) */}
-          <div className="md:hidden flex justify-center py-2 bg-gray-50">
-            <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+          <div className="md:hidden flex justify-center py-3 bg-gray-50 rounded-t-3xl flex-shrink-0">
+            <div className="w-16 h-1.5 bg-gray-400 rounded-full"></div>
           </div>
 
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-xl font-bold text-gray-900">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b flex-shrink-0">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
               Ihr Warenkorb ({itemCount})
             </h2>
             <button
               onClick={() => setIsCartOpen(false)}
-              className="text-gray-500 hover:text-gray-700 transition p-2 hover:bg-gray-100 rounded-lg"
+              className="text-gray-500 hover:text-gray-700 transition p-2 hover:bg-gray-100 rounded-lg touch-manipulation active:scale-95"
               aria-label="Warenkorb schließen"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,18 +105,18 @@ export default function CartSidebar() {
             </button>
           </div>
 
-          {/* Cart items */}
-          <div className="flex-1 overflow-y-auto p-4">
+          {/* Cart items - Scrollable area */}
+          <div className="flex-1 overflow-y-auto overscroll-contain p-4 md:p-5" style={{ WebkitOverflowScrolling: 'touch' }}>
             {items.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+              <div className="flex flex-col items-center justify-center h-full text-gray-500 py-8">
                 <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 <p className="text-lg font-medium">Ihr Warenkorb ist leer</p>
-                <p className="text-sm mt-1">Fügen Sie leckere Artikel hinzu, um zu beginnen!</p>
+                <p className="text-sm mt-1 text-center px-4">Fügen Sie leckere Artikel hinzu, um zu beginnen!</p>
               </div>
             ) : (
-              <div className="space-y-0">
+              <div className="space-y-0 pb-4">
                 {items.map((item) => (
                   <CartItem key={item.cartItemId} item={item} />
                 ))}
@@ -122,19 +124,19 @@ export default function CartSidebar() {
             )}
           </div>
 
-          {/* Footer - Totals and Checkout */}
+          {/* Footer - Totals and Checkout - Fixed at bottom */}
           {items.length > 0 && (
-            <div className="border-t p-4 bg-gradient-to-b from-gray-50 to-white">
+            <div className="border-t p-4 md:p-5 bg-gradient-to-b from-gray-50 to-white flex-shrink-0 safe-bottom">
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-gray-700">
                   <span>Zwischensumme</span>
                   <span className="font-semibold">{subtotal.toFixed(2)}€</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
-                  <span>MwSt (8,75%)</span>
+                  <span>MwSt (19%)</span>
                   <span className="font-semibold">{tax.toFixed(2)}€</span>
                 </div>
-                <div className="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t-2">
+                <div className="flex justify-between text-xl md:text-2xl font-bold text-gray-900 pt-3 border-t-2">
                   <span>Gesamt</span>
                   <span>{total.toFixed(2)}€</span>
                 </div>
@@ -142,7 +144,7 @@ export default function CartSidebar() {
 
               <button
                 onClick={handleCheckout}
-                className="w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white py-4 rounded-xl hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] active:scale-95 transition-all font-bold text-lg shadow-lg flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white py-4 md:py-5 rounded-xl hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] active:scale-95 transition-all font-bold text-lg md:text-xl shadow-lg flex items-center justify-center gap-2 touch-manipulation"
               >
                 <span>Zur Kasse</span>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

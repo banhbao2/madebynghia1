@@ -13,6 +13,7 @@ export default function MenuItem({ item }: MenuItemProps) {
   const [showCustomizations, setShowCustomizations] = useState(false)
   const [customizations, setCustomizations] = useState<Record<string, string>>({})
   const [imageError, setImageError] = useState(false)
+  const [justAdded, setJustAdded] = useState(false)
 
   const handleAddToCart = () => {
     // Check if item has customizations AND they are not empty
@@ -32,6 +33,10 @@ export default function MenuItem({ item }: MenuItemProps) {
       addToCart(item, Object.keys(customizations).length > 0 ? customizations : undefined)
       setShowCustomizations(false)
       setCustomizations({})
+
+      // Show success feedback (1.5s is optimal - noticeable but not blocking)
+      setJustAdded(true)
+      setTimeout(() => setJustAdded(false), 1500)
     }
   }
 
@@ -60,102 +65,136 @@ export default function MenuItem({ item }: MenuItemProps) {
   }
 
   return (
-    <div className={`bg-gradient-to-br ${getCategoryColor(item.category)} rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-l-4 overflow-hidden`}>
-      {/* Image Section */}
-      {item.image && !imageError && (
-        <div className="relative h-48 w-full overflow-hidden bg-gray-200">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-            onError={() => setImageError(true)}
-          />
-          {item.popular && (
-            <div className="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
-              ⭐ Beliebt
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-3 flex-1">
-            <span className="text-3xl">{getCategoryIcon(item.category)}</span>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-gray-900">{item.name}</h3>
-              {item.popular && !item.image && (
-                <span className="inline-block mt-1 bg-red-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
-                  ⭐ Beliebt
-                </span>
-              )}
-            </div>
-          </div>
-          <span className="text-2xl font-extrabold text-red-600">
-            {item.price.toFixed(2)}€
-          </span>
-        </div>
-
-        <p className="text-gray-700 leading-relaxed mb-4 text-sm">{item.description}</p>
-
-        {!showCustomizations ? (
-          <button
-            onClick={handleAddToCart}
-            className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition-all flex items-center justify-center gap-2 font-bold shadow-lg hover:shadow-xl hover:scale-105"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            In den Warenkorb
-          </button>
-        ) : null}
-
-        {/* Customization Options */}
-        {showCustomizations && item.customizations && (
-          <div className="mt-4 pt-4 border-t-2 border-white/50 space-y-4">
-            <h4 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-              <span>⚙️</span> Bestellung anpassen
-            </h4>
-
-            {item.customizations.map((custom) => (
-              <div key={custom.label}>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  {custom.label}
-                </label>
-                <select
-                  value={customizations[custom.label] || custom.options[0]}
-                  onChange={(e) => handleCustomizationChange(custom.label, e.target.value)}
-                  className="w-full border-2 border-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white shadow-md"
-                >
-                  {custom.options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 overflow-hidden">
+      <div className="flex gap-3 p-3">
+        {/* Image Section - Compact square on left */}
+        {item.image && !imageError ? (
+          <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+            <img
+              src={item.image}
+              alt={item.name}
+              className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+            />
+            {item.popular && (
+              <div className="absolute top-1 left-1 bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">
+                ⭐
               </div>
-            ))}
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowCustomizations(false)
-                  setCustomizations({})
-                }}
-                className="flex-1 border-2 border-white bg-white/80 text-gray-700 px-5 py-3 rounded-xl hover:bg-white transition font-bold shadow-md"
-              >
-                Abbrechen
-              </button>
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition font-bold shadow-lg"
-              >
-                In den Warenkorb
-              </button>
-            </div>
+            )}
+          </div>
+        ) : (
+          <div className="w-20 h-20 flex-shrink-0 rounded-lg bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
+            <span className="text-3xl">{getCategoryIcon(item.category)}</span>
           </div>
         )}
+
+        {/* Content Section */}
+        <div className="flex-1 min-w-0 flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-start gap-2 mb-1">
+              <h3 className="text-base font-bold text-gray-900 leading-tight">{item.name}</h3>
+              {item.popular && !item.image && (
+                <span className="text-xs">⭐</span>
+              )}
+            </div>
+            <p className="text-xs text-gray-600 leading-snug line-clamp-2 mb-2">{item.description}</p>
+          </div>
+
+          <div className="flex justify-between items-center gap-2">
+            <span className="text-lg font-bold text-red-600">
+              {item.price.toFixed(2)}€
+            </span>
+
+            {!showCustomizations ? (
+              <button
+                onClick={handleAddToCart}
+                className={`px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 font-bold text-sm ${
+                  justAdded
+                    ? 'bg-green-600 text-white scale-105'
+                    : 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
+                }`}
+              >
+                {justAdded ? (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="hidden sm:inline">Hinzugefügt</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span className="hidden sm:inline">Hinzufügen</span>
+                  </>
+                )}
+              </button>
+            ) : null}
+          </div>
+        </div>
       </div>
+
+      {/* Customization Options - Expanded Section */}
+      {showCustomizations && item.customizations && (
+        <div className="px-3 pb-3 border-t border-gray-200 pt-3 space-y-3 bg-gray-50">
+          <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+            <span>⚙️</span> Bestellung anpassen
+          </h4>
+
+          {item.customizations.map((custom) => (
+            <div key={custom.label}>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                {custom.label}
+              </label>
+              <select
+                value={customizations[custom.label] || custom.options[0]}
+                onChange={(e) => handleCustomizationChange(custom.label, e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white"
+              >
+                {custom.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
+
+          <div className="flex gap-2 pt-2">
+            <button
+              onClick={() => {
+                setShowCustomizations(false)
+                setCustomizations({})
+              }}
+              className="flex-1 border border-gray-300 bg-white text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition font-bold text-sm"
+              disabled={justAdded}
+            >
+              Abbrechen
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className={`flex-1 px-4 py-2 rounded-lg transition-all font-bold text-sm flex items-center justify-center gap-1.5 ${
+                justAdded
+                  ? 'bg-green-600 text-white scale-105'
+                  : 'bg-red-600 text-white hover:bg-red-700'
+              }`}
+              disabled={justAdded}
+            >
+              {justAdded ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Hinzugefügt
+                </>
+              ) : (
+                'Hinzufügen'
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
