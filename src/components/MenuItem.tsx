@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MenuItem as MenuItemType } from '@/lib/menuData'
 import { useCart } from '@/context/CartContext'
+import { PlusIcon, CheckIcon } from './Icons'
 
 interface MenuItemProps {
   item: MenuItemType
@@ -45,23 +46,13 @@ export default function MenuItem({ item }: MenuItemProps) {
   }
 
   const getCategoryIcon = (category: string) => {
-    switch(category) {
-      case 'pho': return '🍜'
-      case 'sushi': return '🍣'
-      case 'appetizers': return '🥟'
-      case 'drinks': return '🥤'
-      default: return '🍽️'
+    const icons: Record<string, string> = {
+      pho: '🍜',
+      sushi: '🍣',
+      appetizers: '🥟',
+      drinks: '🥤'
     }
-  }
-
-  const getCategoryColor = (category: string) => {
-    switch(category) {
-      case 'pho': return 'from-orange-50 to-red-50 border-red-600'
-      case 'sushi': return 'from-blue-50 to-cyan-50 border-cyan-600'
-      case 'appetizers': return 'from-amber-50 to-yellow-50 border-yellow-600'
-      case 'drinks': return 'from-purple-50 to-pink-50 border-pink-600'
-      default: return 'from-gray-50 to-gray-100 border-gray-600'
-    }
+    return icons[category] || '🍽️'
   }
 
   return (
@@ -116,16 +107,12 @@ export default function MenuItem({ item }: MenuItemProps) {
               >
                 {justAdded ? (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <CheckIcon />
                     <span className="hidden sm:inline">Hinzugefügt</span>
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
+                    <PlusIcon />
                     <span className="hidden sm:inline">Hinzufügen</span>
                   </>
                 )}
@@ -183,9 +170,7 @@ export default function MenuItem({ item }: MenuItemProps) {
             >
               {justAdded ? (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
+                  <CheckIcon />
                   Hinzugefügt
                 </>
               ) : (

@@ -197,7 +197,6 @@ export default function ReservationsPage() {
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-2xl">{icon}</span>
                 <h3 className="font-semibold text-gray-900">{label}</h3>
-                <div className="flex-1 h-px bg-gray-200 ml-2"></div>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
