@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import "@/lib/supabase-error-handler"; // Suppress Supabase auth errors for guest users
 
 const inter = Inter({
   variable: "--font-inter",

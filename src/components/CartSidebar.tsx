@@ -1,15 +1,14 @@
 'use client'
 
 import { useCart } from '@/context/CartContext'
+import { useRouter } from 'next/navigation'
 import CartItem from './CartItem'
-import CheckoutModal from './CheckoutModal'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 
 export default function CartSidebar() {
+  const router = useRouter()
   const { items, isCartOpen, setIsCartOpen, subtotal, tax, total, itemCount } = useCart()
-  const [showCheckout, setShowCheckout] = useState(false)
   const [touchStart, setTouchStart] = useState(0)
-  const [touchEnd, setTouchEnd] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState(0)
   const cartRef = useRef<HTMLDivElement>(null)
@@ -42,7 +41,6 @@ export default function CartSidebar() {
     // Reset
     setDragOffset(0)
     setTouchStart(0)
-    setTouchEnd(0)
   }
 
   // Close on backdrop click
@@ -50,6 +48,12 @@ export default function CartSidebar() {
     if (e.target === e.currentTarget) {
       setIsCartOpen(false)
     }
+  }
+
+  // Navigate to checkout page
+  const handleCheckout = () => {
+    setIsCartOpen(false)
+    router.push('/checkout')
   }
 
   return (
@@ -137,26 +141,18 @@ export default function CartSidebar() {
               </div>
 
               <button
-                onClick={() => {
-                  setShowCheckout(true)
-                  setIsCartOpen(false)
-                }}
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
+                onClick={handleCheckout}
+                className="w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white py-4 rounded-xl hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] active:scale-95 transition-all font-bold text-lg shadow-lg flex items-center justify-center gap-2"
               >
-                Zur Kasse →
+                <span>Zur Kasse</span>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </button>
             </div>
           )}
         </div>
       </div>
-
-      {/* Checkout Modal */}
-      {showCheckout && (
-        <CheckoutModal
-          onClose={() => setShowCheckout(false)}
-          total={total}
-        />
-      )}
     </>
   )
 }

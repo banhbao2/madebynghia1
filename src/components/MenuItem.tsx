@@ -15,7 +15,10 @@ export default function MenuItem({ item }: MenuItemProps) {
   const [imageError, setImageError] = useState(false)
 
   const handleAddToCart = () => {
-    if (item.customizations && !showCustomizations) {
+    // Check if item has customizations AND they are not empty
+    const hasCustomizations = item.customizations && item.customizations.length > 0
+
+    if (hasCustomizations && !showCustomizations) {
       // Show customization options first
       setShowCustomizations(true)
       // Initialize default selections
