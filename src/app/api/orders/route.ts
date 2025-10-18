@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
           customer_email: body.customer_email || null,
           delivery_address: body.delivery_address || null,
           order_type: body.order_type,
+          scheduled_time: body.scheduled_time || null,
           special_notes: body.special_notes || null,
           items: body.items,
           subtotal: body.subtotal,

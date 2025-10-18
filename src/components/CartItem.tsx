@@ -20,7 +20,10 @@ export default function CartItem({ item }: CartItemProps) {
       {/* Item details */}
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-gray-900 truncate">{item.name}</h4>
-        <p className="text-sm text-gray-600">${item.price.toFixed(2)}</p>
+        {item.description && (
+          <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{item.description}</p>
+        )}
+        <p className="text-sm text-gray-600 mt-1">${item.price.toFixed(2)}</p>
 
         {/* Customizations */}
         {item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0 && (

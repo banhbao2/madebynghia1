@@ -40,6 +40,18 @@ export const contactInfo = {
   ],
 }
 
+// Structured opening hours for time slot generation
+export const operatingHours = {
+  // Monday = 1, Tuesday = 2, ..., Sunday = 0
+  1: { open: '11:00', close: '21:00' }, // Monday
+  2: { open: '11:00', close: '21:00' }, // Tuesday
+  3: { open: '11:00', close: '21:00' }, // Wednesday
+  4: { open: '11:00', close: '21:00' }, // Thursday
+  5: { open: '11:00', close: '22:00' }, // Friday
+  6: { open: '11:00', close: '22:00' }, // Saturday
+  0: { open: '12:00', close: '20:00' }, // Sunday
+}
+
 export const howItWorksSteps = [
   {
     id: 'browse',

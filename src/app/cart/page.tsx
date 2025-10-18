@@ -78,10 +78,17 @@ export default function CartPage() {
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1">
                         <h3 className="font-bold text-lg text-gray-900 mb-1">{item.name}</h3>
+                        {item.description && (
+                          <p className="text-sm text-gray-500 mb-2 line-clamp-2">{item.description}</p>
+                        )}
                         {item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0 && (
-                          <div className="text-sm text-gray-600 mb-2">
+                          <div className="text-sm text-gray-700 bg-gray-50 rounded-lg p-2 mb-2">
+                            <div className="font-semibold text-xs text-gray-500 uppercase mb-1">Ihre Auswahl:</div>
                             {Object.entries(item.selectedCustomizations).map(([key, value]) => (
-                              <div key={key}>
+                              <div key={key} className="flex items-center gap-1">
+                                <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
                                 <span className="font-medium">{key}:</span> {value}
                               </div>
                             ))}

@@ -17,6 +17,7 @@ export interface Order {
   customer_email: string | null
   delivery_address: string | null
   order_type: OrderType
+  scheduled_time: string | null
   special_notes: string | null
   items: CartItem[]
   subtotal: number
@@ -33,6 +34,7 @@ export interface CreateOrderRequest {
   customer_email?: string
   delivery_address?: string
   order_type: OrderType
+  scheduled_time?: string
   special_notes?: string
   items: CartItem[]
   subtotal: number

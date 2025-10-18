@@ -6,11 +6,13 @@ import { useCart } from '@/context/CartContext'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import { operatingHours } from '@/lib/constants'
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, clearCart, subtotal, tax, total, itemCount } = useCart()
   const [orderType, setOrderType] = useState<'delivery' | 'pickup'>('delivery')
+  const [selectedTime, setSelectedTime] = useState<string>('')
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -27,6 +29,144 @@ export default function CheckoutPage() {
 
   // Track if order was submitted to prevent redirect after clearing cart
   const [orderSubmitted, setOrderSubmitted] = useState(false)
+
+  // Helper function to parse time string (e.g., "11:00") and set it to a specific date
+  const setTimeOnDate = (date: Date, timeString: string): Date => {
+    const [hours, minutes] = timeString.split(':').map(Number)
+    const newDate = new Date(date)
+    newDate.setHours(hours, minutes, 0, 0)
+    return newDate
+  }
+
+  // Check if a time is within operating hours for a given day
+  const isWithinOperatingHours = (date: Date): boolean => {
+    const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, etc.
+    const hours = operatingHours[dayOfWeek as keyof typeof operatingHours]
+
+    if (!hours) return false
+
+    const openTime = setTimeOnDate(date, hours.open)
+    const closeTime = setTimeOnDate(date, hours.close)
+
+    return date >= openTime && date <= closeTime
+  }
+
+  // Generate time slots starting 20 minutes from now, only during operating hours
+  const generateTimeSlots = () => {
+    const slots: { value: string; label: string; date: Date }[] = []
+    const now = new Date()
+    const minTime = new Date(now.getTime() + 20 * 60000) // 20 minutes from now
+
+    // Round up to next 15-minute interval
+    const roundedMinutes = Math.ceil(minTime.getMinutes() / 15) * 15
+    minTime.setMinutes(roundedMinutes)
+    minTime.setSeconds(0)
+    minTime.setMilliseconds(0)
+
+    // Generate slots for the next 7 days
+    const daysToCheck = 7
+    let currentDay = new Date(minTime)
+    currentDay.setHours(0, 0, 0, 0)
+
+    for (let dayOffset = 0; dayOffset < daysToCheck; dayOffset++) {
+      const checkDate = new Date(currentDay.getTime() + dayOffset * 24 * 60 * 60000)
+      const dayOfWeek = checkDate.getDay()
+      const hours = operatingHours[dayOfWeek as keyof typeof operatingHours]
+
+      if (!hours) continue // Skip if restaurant is closed this day
+
+      // Get opening and closing times for this day
+      const openTime = setTimeOnDate(checkDate, hours.open)
+      const closeTime = setTimeOnDate(checkDate, hours.close)
+
+      // For today, start from minTime or opening time (whichever is later)
+      let startTime: Date
+      if (dayOffset === 0) {
+        startTime = minTime > openTime ? minTime : openTime
+      } else {
+        startTime = openTime
+      }
+
+      // Generate 15-minute slots from opening to closing
+      let currentSlot = new Date(startTime)
+
+      // Round to next 15-minute interval
+      const minutes = currentSlot.getMinutes()
+      const roundedMinutes = Math.ceil(minutes / 15) * 15
+      currentSlot.setMinutes(roundedMinutes)
+      currentSlot.setSeconds(0)
+      currentSlot.setMilliseconds(0)
+
+      while (currentSlot <= closeTime) {
+        const value = currentSlot.toISOString()
+        const isToday = currentSlot.toDateString() === now.toDateString()
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60000)
+        const isTomorrow = currentSlot.toDateString() === tomorrow.toDateString()
+
+        let label = currentSlot.toLocaleTimeString('de-DE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+
+        if (isToday) {
+          label += ' (Heute)'
+        } else if (isTomorrow) {
+          label += ' (Morgen)'
+        } else {
+          label += ` (${currentSlot.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' })})`
+        }
+
+        slots.push({ value, label, date: new Date(currentSlot) })
+        currentSlot = new Date(currentSlot.getTime() + 15 * 60000) // Add 15 minutes
+      }
+    }
+
+    return slots
+  }
+
+  const [timeSlots, setTimeSlots] = useState<{ value: string; label: string; date: Date }[]>([])
+  const [closedMessage, setClosedMessage] = useState<string>('')
+
+  // Initialize time slots and set default selection
+  useEffect(() => {
+    const slots = generateTimeSlots()
+    setTimeSlots(slots)
+
+    if (slots.length > 0 && !selectedTime) {
+      setSelectedTime(slots[0].value)
+      setClosedMessage('')
+    } else if (slots.length === 0) {
+      // Check if we're currently closed or opening soon
+      const now = new Date()
+      const dayOfWeek = now.getDay()
+      const todayHours = operatingHours[dayOfWeek as keyof typeof operatingHours]
+
+      if (todayHours) {
+        const openTime = setTimeOnDate(now, todayHours.open)
+        const closeTime = setTimeOnDate(now, todayHours.close)
+
+        if (now < openTime) {
+          setClosedMessage(`Wir öffnen heute um ${todayHours.open} Uhr. Bestellungen können ab dann aufgegeben werden.`)
+        } else if (now > closeTime) {
+          // Find next opening day
+          let nextDay = (dayOfWeek + 1) % 7
+          let daysChecked = 0
+          while (daysChecked < 7) {
+            const nextDayHours = operatingHours[nextDay as keyof typeof operatingHours]
+            if (nextDayHours) {
+              const dayName = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][nextDay]
+              setClosedMessage(`Wir haben heute geschlossen. Nächste Öffnung: ${dayName} um ${nextDayHours.open} Uhr.`)
+              break
+            }
+            nextDay = (nextDay + 1) % 7
+            daysChecked++
+          }
+        }
+      } else {
+        setClosedMessage('Wir haben heute geschlossen. Bitte versuchen Sie es an einem anderen Tag.')
+      }
+    }
+  }, [])
 
   // Redirect if cart is empty (but not if order was just submitted)
   useEffect(() => {
@@ -76,6 +216,7 @@ export default function CheckoutPage() {
             ? `${formData.street} ${formData.houseNumber}, ${formData.city}`.trim()
             : undefined,
           order_type: orderType,
+          scheduled_time: selectedTime,
           special_notes: formData.notes || undefined,
           items: items,
           subtotal: subtotal,
@@ -101,10 +242,14 @@ export default function CheckoutPage() {
             minute: '2-digit'
           })
 
-          const estimatedTime = new Date(Date.now() + (orderType === 'delivery' ? 45 : 30) * 60000).toLocaleString('de-DE', {
+          const scheduledTimeFormatted = selectedTime ? new Date(selectedTime).toLocaleString('de-DE', {
+            weekday: 'long',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
-          })
+          }) : undefined
 
           await fetch('/api/send-order-email', {
             method: 'POST',
@@ -119,12 +264,13 @@ export default function CheckoutPage() {
               items: items.map(item => ({
                 name: item.name,
                 quantity: item.quantity,
-                price: item.price
+                price: item.price,
+                customizations: item.selectedCustomizations
               })),
               subtotal,
               tax,
               total,
-              estimatedTime,
+              scheduledTime: scheduledTimeFormatted,
               deliveryAddress: orderType === 'delivery'
                 ? `${formData.street} ${formData.houseNumber}, ${formData.city}`.trim()
                 : undefined,
@@ -268,10 +414,70 @@ export default function CheckoutPage() {
                       </div>
                     </div>
 
+                    {/* Time Selection */}
+                    <div>
+                      <label className="block text-lg font-bold text-gray-900 mb-4">
+                        2. {orderType === 'delivery' ? 'Lieferzeit' : 'Abholzeit'} wählen
+                      </label>
+
+                      {closedMessage ? (
+                        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 flex items-start gap-3">
+                          <svg className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <div>
+                            <p className="font-semibold text-yellow-800 mb-1">Restaurant geschlossen</p>
+                            <p className="text-sm text-yellow-700">{closedMessage}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="relative">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <select
+                              value={selectedTime}
+                              onChange={(e) => setSelectedTime(e.target.value)}
+                              required
+                              disabled={timeSlots.length === 0}
+                              className="w-full border-2 border-gray-300 rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-base appearance-none bg-white cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            >
+                              {timeSlots.length === 0 ? (
+                                <option value="">Keine verfügbaren Zeitfenster</option>
+                              ) : (
+                                timeSlots.map((slot) => (
+                                  <option key={slot.value} value={slot.value}>
+                                    {slot.label}
+                                  </option>
+                                ))
+                              )}
+                            </select>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-2 flex items-start gap-2">
+                            <svg className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            <span>
+                              Nur Zeiten während der Öffnungszeiten verfügbar (mindestens 20 Minuten im Voraus).
+                              {orderType === 'delivery' ? ' Lieferzeit: 30-45 Minuten.' : ' Vorbereitungszeit: 20-30 Minuten.'}
+                            </span>
+                          </p>
+                        </>
+                      )}
+                    </div>
+
                     {/* Contact Information */}
                     <div>
                       <label className="block text-lg font-bold text-gray-900 mb-4">
-                        2. Kontaktinformationen
+                        3. Kontaktinformationen
                       </label>
                       <div className="space-y-4">
                         <div>
@@ -341,7 +547,7 @@ export default function CheckoutPage() {
                     {orderType === 'delivery' && (
                       <div>
                         <label className="block text-lg font-bold text-gray-900 mb-4">
-                          3. Lieferadresse
+                          4. Lieferadresse
                         </label>
                         <div className="space-y-4">
                           <div className="grid grid-cols-3 gap-4">
