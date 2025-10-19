@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import { MenuItem } from '@/lib/menuData'
 
 export interface CartItem extends MenuItem {
@@ -115,11 +115,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems([])
   }, [])
 
-  // Calculate totals
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const tax = subtotal * TAX_RATE
-  const total = subtotal + tax
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  // Calculate totals - memoized to prevent unnecessary recalculations
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [items]
+  )
+
+  const tax = useMemo(
+    () => subtotal * TAX_RATE,
+    [subtotal]
+  )
+
+  const total = useMemo(
+    () => subtotal + tax,
+    [subtotal, tax]
+  )
+
+  const itemCount = useMemo(
+    () => items.reduce((sum, item) => sum + item.quantity, 0),
+    [items]
+  )
 
   return (
     <CartContext.Provider

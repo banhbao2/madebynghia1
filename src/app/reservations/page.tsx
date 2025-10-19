@@ -7,6 +7,10 @@ import Footer from '@/components/Footer'
 import TimeSlotPicker from '@/components/TimeSlotPicker'
 import { createClient } from '@/lib/supabase-browser'
 import { ReservationFormData, TimeSlot } from '@/types/reservation'
+import { api } from '@/lib/api-client'
+import { toast } from 'sonner'
+import { getUserErrorMessage } from '@/lib/errors'
+import { logger } from '@/lib/logger'
 
 export default function ReservationsPage() {
   const router = useRouter()
@@ -102,11 +106,15 @@ export default function ReservationsPage() {
         setShowTimeSlots(true)
       } else {
         console.error('API Error:', data.error)
-        alert(`Fehler beim Laden der Zeitfenster: ${data.error || 'Unbekannter Fehler'}`)
+        toast.error(`Fehler beim Laden der Zeitfenster: ${data.error || 'Unbekannter Fehler'}`)
       }
     } catch (error) {
-      console.error('Error fetching slots:', error)
-      alert('Verfügbare Zeitfenster konnten nicht geladen werden. Bitte versuchen Sie es erneut.')
+      logger.error('Failed to fetch time slots', error, {
+        date: formData.reservation_date,
+        partySize: formData.party_size
+      })
+      const userMessage = getUserErrorMessage(error)
+      toast.error(userMessage || 'Verfügbare Zeitfenster konnten nicht geladen werden. Bitte versuchen Sie es erneut.')
     } finally {
       setLoading(false)
     }
@@ -117,34 +125,51 @@ export default function ReservationsPage() {
 
     // Validation
     if (!formData.reservation_date || !formData.reservation_time || !formData.party_size) {
-      alert('Bitte füllen Sie alle erforderlichen Felder aus.')
+      toast.error('Bitte füllen Sie alle erforderlichen Felder aus.')
       return
     }
 
     if (!formData.customer_name || !formData.customer_email || !formData.customer_phone) {
-      alert('Bitte geben Sie Ihre Kontaktdaten ein.')
+      toast.error('Bitte geben Sie Ihre Kontaktdaten ein.')
       return
     }
 
     setSubmitting(true)
     try {
-      const response = await fetch('/api/reservations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+      // Log reservation attempt
+      logger.info('Submitting reservation', {
+        date: formData.reservation_date,
+        time: formData.reservation_time,
+        partySize: formData.party_size
       })
 
-      const data = await response.json()
+      // Submit reservation with automatic retry
+      const data = await api.post('/api/reservations', formData, {
+        retry: {
+          maxRetries: 3,
+          retryDelay: 1000
+        },
+        timeout: 30000
+      })
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Fehler beim Erstellen der Reservierung')
-      }
+      logger.info('Reservation created successfully', {
+        reservationId: data.reservation.id
+      })
 
       // Redirect to confirmation page
       router.push(`/reservations/confirmation?id=${data.reservation.id}`)
     } catch (error) {
-      console.error('Error creating reservation:', error)
-      alert(error instanceof Error ? error.message : 'Fehler beim Erstellen der Reservierung')
+      // Log detailed error information
+      logger.error('Reservation creation failed', error, {
+        date: formData.reservation_date,
+        time: formData.reservation_time,
+        partySize: formData.party_size,
+        customerEmail: formData.customer_email
+      })
+
+      // Get user-friendly error message
+      const userMessage = getUserErrorMessage(error)
+      toast.error(userMessage)
     } finally {
       setSubmitting(false)
     }

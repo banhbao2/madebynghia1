@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { RestaurantSettings } from '@/types/settings'
+import { toast } from 'sonner'
 
 const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
@@ -31,7 +32,7 @@ export default function AdminSettingsPage() {
       setSettings(data)
     } catch (error) {
       console.error('Error fetching settings:', error)
-      alert('Failed to load settings')
+      toast.error('Failed to load settings')
     } finally {
       setLoading(false)
     }
@@ -49,10 +50,10 @@ export default function AdminSettingsPage() {
 
       if (error) throw error
 
-      alert('Settings saved successfully!')
+      toast.success('Settings saved successfully!')
     } catch (error) {
       console.error('Error saving settings:', error)
-      alert('Failed to save settings')
+      toast.error('Failed to save settings')
     } finally {
       setSaving(false)
     }

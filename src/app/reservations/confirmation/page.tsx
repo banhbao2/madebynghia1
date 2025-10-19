@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 import { Reservation } from '@/types/reservation'
+import { formatDateTimeLong, formatTime as formatTimeUtil } from '@/lib/formatters'
 
 function ConfirmationContent() {
   const router = useRouter()
@@ -66,20 +67,15 @@ function ConfirmationContent() {
   }
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
+    return formatDateTimeLong(new Date(date))
   }
 
   const formatTime = (time: string) => {
+    // Parse time string (HH:MM) and create a Date object for formatting
     const [hours, minutes] = time.split(':')
-    const hour = parseInt(hours)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour % 12 || 12
-    return `${displayHour}:${minutes} ${ampm}`
+    const date = new Date()
+    date.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+    return formatTimeUtil(date)
   }
 
   return (

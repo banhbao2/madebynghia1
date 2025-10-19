@@ -1,6 +1,6 @@
 export default function About() {
   return (
-    <section id="about" className="relative py-24 bg-gradient-to-b from-white via-teal-50/20 to-white overflow-hidden">
+    <section id="about" className="relative py-24 bg-gradient-to-b from-white via-teal-50/20 to-white overflow-hidden scroll-mt-24">
       {/* Decorative elements */}
       <div className="absolute top-10 left-0 w-full h-full pattern-grid opacity-20" />
       <div className="absolute top-32 left-20 w-72 h-72 bg-gradient-to-br from-teal-200/30 to-emerald-200/30 rounded-full blur-3xl animate-float" />

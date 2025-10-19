@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { Reservation, ReservationStatus } from '@/types/reservation'
+import { toast } from 'sonner'
 
 export default function AdminReservationsPage() {
   const [reservations, setReservations] = useState<Reservation[]>([])
@@ -91,6 +92,12 @@ export default function AdminReservationsPage() {
     filterReservations()
   }, [reservations, selectedStatus, selectedDate])
 
+  // Update page title with pending count
+  useEffect(() => {
+    const pendingCount = reservations.filter(r => r.status === 'pending').length
+    document.title = `Reservations (${pendingCount}) - Admin Panel`
+  }, [reservations])
+
   const showNotification = (message: string) => {
     // Simple browser notification
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -136,7 +143,7 @@ export default function AdminReservationsPage() {
       setReservations(data || [])
     } catch (error) {
       console.error('Error fetching reservations:', error)
-      alert('Failed to load reservations')
+      toast.error('Failed to load reservations')
     } finally {
       setLoading(false)
     }
@@ -173,10 +180,10 @@ export default function AdminReservationsPage() {
         setSelectedReservation({ ...selectedReservation, status })
       }
 
-      alert('Reservation status updated successfully!')
+      toast.success('Reservation status updated successfully!')
     } catch (error) {
       console.error('Error updating reservation:', error)
-      alert('Failed to update reservation')
+      toast.error('Failed to update reservation')
     }
   }
 
@@ -193,10 +200,10 @@ export default function AdminReservationsPage() {
         setSelectedReservation(null)
       }
 
-      alert('Reservation deleted successfully!')
+      toast.success('Reservation deleted successfully!')
     } catch (error) {
       console.error('Error deleting reservation:', error)
-      alert('Failed to delete reservation')
+      toast.error('Failed to delete reservation')
     }
   }
 
@@ -272,7 +279,7 @@ export default function AdminReservationsPage() {
       const reservation = reservations.find(r => r.id === id)
       if (!reservation) {
         console.error('Reservation not found:', id)
-        alert('Reservation not found')
+        toast.error('Reservation not found')
         return
       }
 
@@ -285,15 +292,15 @@ export default function AdminReservationsPage() {
       try {
         await sendReservationEmail(reservation, 'confirmed')
         console.log('Confirmation email sent successfully')
-        alert('Reservation accepted and confirmation email sent!')
+        toast.success('Reservation accepted and confirmation email sent!')
       } catch (emailError) {
         console.error('Email sending failed:', emailError)
-        alert('Reservation accepted successfully, but email notification failed to send')
+        toast.success('Reservation accepted successfully, but email notification failed to send')
       }
     } catch (error) {
       console.error('Error accepting reservation:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      alert(`Failed to accept reservation: ${errorMessage}`)
+      toast.success(`Failed to accept reservation: ${errorMessage}`)
     }
   }
 
@@ -302,7 +309,7 @@ export default function AdminReservationsPage() {
       const reservation = reservations.find(r => r.id === id)
       if (!reservation) {
         console.error('Reservation not found:', id)
-        alert('Reservation not found')
+        toast.error('Reservation not found')
         return
       }
 
@@ -340,15 +347,15 @@ export default function AdminReservationsPage() {
       try {
         await sendReservationEmail(reservation, 'declined', reason)
         console.log('Decline email sent successfully')
-        alert('Reservation declined and notification email sent!')
+        toast.success('Reservation declined and notification email sent!')
       } catch (emailError) {
         console.error('Email sending failed:', emailError)
-        alert('Reservation declined successfully, but email notification failed to send')
+        toast.success('Reservation declined successfully, but email notification failed to send')
       }
     } catch (error) {
       console.error('Error declining reservation:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      alert(`Failed to decline reservation: ${errorMessage}`)
+      toast.success(`Failed to decline reservation: ${errorMessage}`)
     }
   }
 
@@ -402,7 +409,7 @@ export default function AdminReservationsPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 py-2 px-2">
       {/* New Data Badge */}
       {showNewDataBadge && (
         <div
@@ -440,33 +447,23 @@ export default function AdminReservationsPage() {
         }
       `}</style>
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Reservations</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <p className="text-gray-600">Manage restaurant reservations</p>
-            <span className="text-xs text-green-600 flex items-center gap-1">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Live updates
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
-              clearNewDataBadge()
-              fetchReservations()
-            }}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
-          >
-            🔄 Refresh
-          </button>
-        </div>
-      </div>
+      {/* Floating Refresh Button - Bottom Right */}
+      <button
+        onClick={() => {
+          clearNewDataBadge()
+          fetchReservations()
+        }}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition-all duration-200 group"
+        title="Refresh reservations"
+      >
+        <svg className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span className="font-medium text-sm">Refresh</span>
+      </button>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+      <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-100">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Date Filter */}
           <div className="flex-1">
@@ -498,26 +495,26 @@ export default function AdminReservationsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-          <p className="text-sm text-gray-600">Total Reservations</p>
-          <p className="text-2xl font-bold text-gray-900">{reservations.length}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-100">
+          <p className="text-xs text-gray-600">Total</p>
+          <p className="text-xl font-bold text-gray-900">{reservations.length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-          <p className="text-sm text-gray-600">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-100">
+          <p className="text-xs text-gray-600">Pending</p>
+          <p className="text-xl font-bold text-yellow-600">
             {reservations.filter((r) => r.status === 'pending').length}
           </p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-          <p className="text-sm text-gray-600">Confirmed</p>
-          <p className="text-2xl font-bold text-green-600">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-100">
+          <p className="text-xs text-gray-600">Confirmed</p>
+          <p className="text-xl font-bold text-green-600">
             {reservations.filter((r) => r.status === 'confirmed').length}
           </p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-          <p className="text-sm text-gray-600">Today</p>
-          <p className="text-2xl font-bold text-blue-600">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-100">
+          <p className="text-xs text-gray-600">Today</p>
+          <p className="text-xl font-bold text-blue-600">
             {
               reservations.filter(
                 (r) => r.reservation_date === new Date().toISOString().split('T')[0]
@@ -528,24 +525,24 @@ export default function AdminReservationsPage() {
       </div>
 
       {/* Reservations List */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date & Time
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Customer
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Party Size
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -570,7 +567,7 @@ export default function AdminReservationsPage() {
                       }
                     }}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {formatDate(reservation.reservation_date)}
                       </div>
@@ -578,7 +575,7 @@ export default function AdminReservationsPage() {
                         {formatTime(reservation.reservation_time)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {reservation.customer_name}
                       </div>
@@ -586,13 +583,13 @@ export default function AdminReservationsPage() {
                         {reservation.customer_phone}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         {reservation.party_size}{' '}
                         {reservation.party_size === 1 ? 'guest' : 'guests'}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
                           reservation.status
@@ -601,7 +598,7 @@ export default function AdminReservationsPage() {
                         {reservation.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm">
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
@@ -674,7 +671,7 @@ function ReservationDetailModal({
       setDeclineReason('')
       onClose()
     } else {
-      alert('Please provide a reason for declining')
+      toast.error('Please provide a reason for declining')
     }
   }
 

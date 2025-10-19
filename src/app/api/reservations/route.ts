@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { CreateReservationSchema, sanitizeString } from '@/lib/validation'
+import { checkRateLimit, getClientIp } from '@/lib/auth'
+import { z } from 'zod'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,43 +11,38 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    // Rate limiting: 3 reservations per hour per IP
+    const clientIp = getClientIp(request)
+    const rateLimitCheck = checkRateLimit(`reservation:${clientIp}`, 3, 3600000)
 
-    const {
-      customer_name,
-      customer_email,
-      customer_phone,
-      reservation_date,
-      reservation_time,
-      party_size,
-      special_requests,
-    } = body
-
-    // Validation
-    if (
-      !customer_name ||
-      !customer_email ||
-      !customer_phone ||
-      !reservation_date ||
-      !reservation_time ||
-      !party_size
-    ) {
+    if (!rateLimitCheck.allowed) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
+        { error: 'Too many reservation attempts. Please try again later.' },
+        { status: 429 }
       )
     }
 
-    // Check if party size is within limits
-    if (party_size < 1 || party_size > 20) {
-      return NextResponse.json(
-        { error: 'Party size must be between 1 and 20' },
-        { status: 400 }
-      )
+    const body = await request.json()
+
+    // ✅ SECURITY FIX: Validate and sanitize input using Zod
+    let validatedData
+    try {
+      validatedData = CreateReservationSchema.parse(body)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          {
+            error: 'Validation failed',
+            details: error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+          },
+          { status: 400 }
+        )
+      }
+      throw error
     }
 
     // Check if reservation is in the future
-    const reservationDateTime = new Date(`${reservation_date}T${reservation_time}`)
+    const reservationDateTime = new Date(`${validatedData.reservation_date}T${validatedData.reservation_time}`)
     const now = new Date()
 
     if (reservationDateTime <= now) {
@@ -81,21 +79,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ✅ SECURITY FIX: Sanitize inputs to prevent XSS
+    const sanitizedData = {
+      customer_name: sanitizeString(validatedData.customer_name),
+      customer_email: sanitizeString(validatedData.customer_email),
+      customer_phone: sanitizeString(validatedData.customer_phone),
+      reservation_date: validatedData.reservation_date,
+      reservation_time: validatedData.reservation_time,
+      party_size: validatedData.party_size,
+      special_requests: validatedData.special_requests ? sanitizeString(validatedData.special_requests) : null,
+      status: settings?.auto_confirm ? 'confirmed' : 'pending',
+    }
+
     // Create reservation
     const { data: reservation, error } = await supabase
       .from('reservations')
-      .insert([
-        {
-          customer_name,
-          customer_email,
-          customer_phone,
-          reservation_date,
-          reservation_time,
-          party_size,
-          special_requests,
-          status: settings?.auto_confirm ? 'confirmed' : 'pending',
-        },
-      ])
+      .insert([sanitizedData])
       .select()
       .single()
 
@@ -123,8 +122,23 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// GET /api/reservations - Get all reservations (ADMIN ONLY)
 export async function GET(request: NextRequest) {
   try {
+    // ✅ CRITICAL SECURITY FIX: Require authentication
+    const { validateAdminAuth } = await import('@/lib/auth')
+    const isAuthenticated = await validateAdminAuth(request)
+
+    if (!isAuthenticated) {
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          message: 'Admin authentication required. Please log in to the admin panel.'
+        },
+        { status: 401 }
+      )
+    }
+
     const searchParams = request.nextUrl.searchParams
     const date = searchParams.get('date')
     const status = searchParams.get('status')

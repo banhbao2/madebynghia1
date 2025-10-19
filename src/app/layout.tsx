@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { Toaster } from 'sonner';
 import "@/lib/supabase-error-handler"; // Suppress Supabase auth errors for guest users
 
 const inter = Inter({
@@ -42,6 +43,7 @@ export default function RootLayout({
         <CartProvider>
           {children}
         </CartProvider>
+        <Toaster position="top-right" richColors closeButton expand={false} />
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { MenuItem, MenuCategory } from '@/types/menu'
+import { toast } from 'sonner'
 
 export default function AdminMenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
@@ -65,7 +66,7 @@ export default function AdminMenuPage() {
       setCategories(cats)
     } catch (error) {
       console.error('Error fetching menu items:', error)
-      alert('Failed to load menu items')
+      toast.error('Failed to load menu items')
     } finally {
       setLoading(false)
     }
@@ -83,10 +84,10 @@ export default function AdminMenuPage() {
       if (error) throw error
 
       setMenuItems(prev => prev.filter(item => item.id !== id))
-      alert('Menu item deleted successfully!')
+      toast.success('Menu item deleted successfully!')
     } catch (error) {
       console.error('Error deleting menu item:', error)
-      alert('Failed to delete menu item')
+      toast.error('Failed to delete menu item')
     }
   }
 
@@ -104,7 +105,7 @@ export default function AdminMenuPage() {
       )
     } catch (error) {
       console.error('Error updating availability:', error)
-      alert('Failed to update availability')
+      toast.error('Failed to update availability')
     }
   }
 
@@ -315,7 +316,7 @@ function MenuItemModal({
           .eq('id', item.id)
 
         if (error) throw error
-        alert('Menu item updated successfully!')
+        toast.success('Menu item updated successfully!')
       } else {
         // Create new item
         const { error } = await supabase
@@ -323,14 +324,14 @@ function MenuItemModal({
           .insert([formData])
 
         if (error) throw error
-        alert('Menu item created successfully!')
+        toast.success('Menu item created successfully!')
       }
 
       onSave()
       onClose()
     } catch (error) {
       console.error('Error saving menu item:', error)
-      alert('Failed to save menu item')
+      toast.error('Failed to save menu item')
     } finally {
       setSaving(false)
     }

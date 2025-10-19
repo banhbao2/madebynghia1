@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useRouter } from 'next/navigation'
+import { formatTime, formatDateTime } from '@/lib/formatters'
 
 function ConfirmationContent() {
   const searchParams = useSearchParams()
@@ -20,10 +21,7 @@ function ConfirmationContent() {
   // Calculate estimated time
   const estimatedMinutes = orderType === 'delivery' ? 45 : 30
   const estimatedTime = new Date(Date.now() + estimatedMinutes * 60000)
-  const estimatedTimeString = estimatedTime.toLocaleString('de-DE', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  const estimatedTimeString = formatTime(estimatedTime)
 
   // Redirect if no order ID
   useEffect(() => {
@@ -147,13 +145,7 @@ function ConfirmationContent() {
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-600 font-medium">Bestelldatum</span>
                   <span className="font-semibold text-gray-900">
-                    {new Date().toLocaleDateString('de-DE', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                    {formatDateTime(new Date())}
                   </span>
                 </div>
 

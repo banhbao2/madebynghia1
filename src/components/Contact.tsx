@@ -2,7 +2,7 @@ import { contactInfo } from '@/lib/constants'
 
 export default function Contact() {
   return (
-    <section id="contact" className="relative py-24 bg-gradient-to-br from-white via-pink-50/30 to-orange-50 overflow-hidden">
+    <section id="contact" className="relative py-24 bg-gradient-to-br from-white via-pink-50/30 to-orange-50 overflow-hidden scroll-mt-24">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full pattern-grid opacity-10" />
       <div className="absolute top-20 left-10 w-80 h-80 bg-gradient-to-br from-pink-200/40 to-orange-200/40 rounded-full blur-3xl animate-float" />

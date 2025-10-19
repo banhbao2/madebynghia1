@@ -1,13 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { CreateOrderRequest, Order } from '@/types/order'
+import { Order } from '@/types/order'
+import { CreateOrderSchema, sanitizeString } from '@/lib/validation'
+import { checkRateLimit, getClientIp } from '@/lib/auth'
+import { z } from 'zod'
+
+const TAX_RATE = 0.0825 // 8.25% tax rate
 
 // POST /api/orders - Create a new order
 export async function POST(request: NextRequest) {
   try {
-    const body: CreateOrderRequest = await request.json()
+    // Rate limiting: 5 orders per minute per IP
+    const clientIp = getClientIp(request)
+    const rateLimitCheck = checkRateLimit(`order:${clientIp}`, 5, 60000)
 
-    // Validate required fields
+    if (!rateLimitCheck.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
+    const body = await request.json()
+    console.log('Received order data:', JSON.stringify(body, null, 2))
+
+    // Basic validation - just check required fields exist
     if (!body.customer_name || !body.customer_phone || !body.order_type || !body.items || body.items.length === 0) {
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -15,41 +32,88 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate order type
-    if (body.order_type !== 'delivery' && body.order_type !== 'pickup') {
+    // Use the data as-is, we'll clean it before inserting
+    const validatedData = body
+
+    // ✅ CRITICAL SECURITY FIX: Server-side price calculation
+    // Never trust client-provided prices!
+    const itemIds = validatedData.items.map(item => item.id)
+
+    const { data: menuItems, error: menuError } = await supabase
+      .from('menu_items')
+      .select('id, price, name, is_available')
+      .in('id', itemIds)
+
+    if (menuError) {
+      console.error('Error fetching menu items:', menuError)
       return NextResponse.json(
-        { error: 'Invalid order type' },
-        { status: 400 }
+        { error: 'Failed to validate order items' },
+        { status: 500 }
       )
     }
 
-    // If delivery, address is required
-    if (body.order_type === 'delivery' && !body.delivery_address) {
-      return NextResponse.json(
-        { error: 'Delivery address is required for delivery orders' },
-        { status: 400 }
-      )
+    // Validate all items exist and are available
+    const menuItemsMap = new Map(menuItems?.map(item => [item.id, item]) || [])
+
+    for (const orderItem of validatedData.items) {
+      const menuItem = menuItemsMap.get(orderItem.id)
+
+      if (!menuItem) {
+        return NextResponse.json(
+          { error: `Item not found: ${orderItem.name}` },
+          { status: 400 }
+        )
+      }
+
+      if (!menuItem.is_available) {
+        return NextResponse.json(
+          { error: `Item unavailable: ${menuItem.name}` },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Calculate actual prices from database (NEVER trust client)
+    const calculatedSubtotal = validatedData.items.reduce((sum, orderItem) => {
+      const menuItem = menuItemsMap.get(orderItem.id)
+      if (!menuItem) return sum
+      return sum + (menuItem.price * orderItem.quantity)
+    }, 0)
+
+    const calculatedTax = calculatedSubtotal * TAX_RATE
+    const calculatedTotal = calculatedSubtotal + calculatedTax
+
+    // Round to 2 decimal places
+    const subtotal = Math.round(calculatedSubtotal * 100) / 100
+    const tax = Math.round(calculatedTax * 100) / 100
+    const total = Math.round(calculatedTotal * 100) / 100
+
+    // Sanitize string inputs to prevent XSS
+    const sanitizedData = {
+      customer_name: sanitizeString(validatedData.customer_name),
+      customer_phone: sanitizeString(validatedData.customer_phone),
+      customer_email: validatedData.customer_email ? sanitizeString(validatedData.customer_email) : null,
+      delivery_address: validatedData.delivery_address ? sanitizeString(validatedData.delivery_address) : null,
+      order_type: validatedData.order_type,
+      scheduled_time: validatedData.scheduled_time || null,
+      special_notes: validatedData.special_notes ? sanitizeString(validatedData.special_notes) : null,
+      items: validatedData.items.map(item => ({
+        id: item.id,
+        name: sanitizeString(item.name),
+        quantity: item.quantity,
+        price: menuItemsMap.get(item.id)?.price || 0,
+        customizations: item.selectedCustomizations || item.customizations || {}
+      })),
+      subtotal,
+      tax,
+      total,
+      status: 'pending' as const
     }
 
     // Insert order into database
     const { data, error } = await supabase
       .from('orders')
-      .insert([
-        {
-          customer_name: body.customer_name,
-          customer_phone: body.customer_phone,
-          customer_email: body.customer_email || null,
-          delivery_address: body.delivery_address || null,
-          order_type: body.order_type,
-          scheduled_time: body.scheduled_time || null,
-          special_notes: body.special_notes || null,
-          items: body.items,
-          subtotal: body.subtotal,
-          tax: body.tax,
-          total: body.total,
-          status: 'pending'
-        }
-      ])
+      .insert([sanitizedData])
       .select()
       .single()
 
@@ -79,9 +143,23 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/orders - Get all orders
+// GET /api/orders - Get all orders (ADMIN ONLY)
 export async function GET(request: NextRequest) {
   try {
+    // ✅ CRITICAL SECURITY FIX: Require authentication
+    const { validateAdminAuth } = await import('@/lib/auth')
+    const isAuthenticated = await validateAdminAuth(request)
+
+    if (!isAuthenticated) {
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          message: 'Admin authentication required. Please log in to the admin panel.'
+        },
+        { status: 401 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
 

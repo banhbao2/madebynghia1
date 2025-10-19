@@ -32,27 +32,41 @@ export default function Header() {
   }, [mobileMenuOpen])
 
   const smoothScrollTo = (element: HTMLElement) => {
+    // Get the fixed header height for proper offset
+    const headerHeight = 68 // md:pt-[68px] from the layout
+    const additionalOffset = 24 // Extra spacing for better UX (breathing room)
+
     const targetPosition = element.getBoundingClientRect().top + window.pageYOffset
     const startPosition = window.pageYOffset
-    const distance = targetPosition - startPosition
-    const duration = 1200 // milliseconds
+    const distance = targetPosition - startPosition - headerHeight - additionalOffset
+    const duration = 600 // Optimal duration: 600ms (industry standard for smooth UX)
     let start: number | null = null
 
-    // Easing function: ease-in-out-cubic (starts fast, ends slow)
-    const easeInOutCubic = (t: number): number => {
-      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
+    // Easing function: ease-out-quart (fast start, smooth deceleration)
+    // Research shows this feels more natural and responsive than ease-in-out
+    const easeOutQuart = (t: number): number => {
+      return 1 - Math.pow(1 - t, 4)
     }
 
     const animation = (currentTime: number) => {
       if (start === null) start = currentTime
       const timeElapsed = currentTime - start
       const progress = Math.min(timeElapsed / duration, 1)
-      const easeProgress = easeInOutCubic(progress)
+      const easeProgress = easeOutQuart(progress)
 
-      window.scrollTo(0, startPosition + distance * easeProgress)
+      window.scrollTo({
+        top: startPosition + distance * easeProgress,
+        behavior: 'auto' // Use our custom animation instead of browser's
+      })
 
       if (timeElapsed < duration) {
         requestAnimationFrame(animation)
+      } else {
+        // Ensure we end at exact position (prevents sub-pixel issues)
+        window.scrollTo({
+          top: startPosition + distance,
+          behavior: 'auto'
+        })
       }
     }
 

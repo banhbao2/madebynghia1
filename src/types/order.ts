@@ -3,12 +3,10 @@ import { CartItem } from '@/context/CartContext'
 export type OrderType = 'delivery' | 'pickup'
 
 export type OrderStatus =
-  | 'pending'
-  | 'accepted'
-  | 'preparing'
-  | 'ready'
-  | 'completed'
-  | 'cancelled'
+  | 'pending'     // New order - needs to be accepted
+  | 'preparing'   // Accepted and cooking
+  | 'completed'   // Customer picked up / delivered
+  | 'cancelled'   // Cancelled
 
 export interface Order {
   id: string
