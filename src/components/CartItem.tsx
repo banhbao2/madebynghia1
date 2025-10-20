@@ -23,7 +23,7 @@ export default function CartItem({ item }: CartItemProps) {
         {item.description && (
           <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{item.description}</p>
         )}
-        <p className="text-sm text-gray-600 mt-1">${item.price.toFixed(2)}</p>
+        <p className="text-sm text-gray-600 mt-1">{item.price.toFixed(2)}€</p>
 
         {/* Customizations */}
         {item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0 && (
@@ -36,34 +36,34 @@ export default function CartItem({ item }: CartItemProps) {
           </div>
         )}
 
-        {/* Quantity controls */}
+        {/* Quantity controls - WCAG AAA compliant 44x44px touch targets */}
         <div className="flex items-center gap-2 mt-2">
           <button
             onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
-            className="w-7 h-7 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
-            aria-label="Decrease quantity"
+            className="min-w-11 min-h-11 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition touch-manipulation active:scale-90"
+            aria-label={`Decrease quantity of ${item.name}`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
             </svg>
           </button>
 
-          <span className="w-8 text-center font-medium">{item.quantity}</span>
+          <span className="min-w-8 text-center font-medium" aria-live="polite">{item.quantity}</span>
 
           <button
             onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
-            className="w-7 h-7 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
-            aria-label="Increase quantity"
+            className="min-w-11 min-h-11 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition touch-manipulation active:scale-90"
+            aria-label={`Increase quantity of ${item.name}`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
           </button>
 
           <button
             onClick={() => removeFromCart(item.cartItemId)}
-            className="ml-auto text-red-600 hover:text-red-700 transition"
-            aria-label="Remove item"
+            className="ml-auto text-red-600 hover:text-red-700 transition min-w-11 min-h-11 flex items-center justify-center touch-manipulation active:scale-90"
+            aria-label={`Remove ${item.name} from cart`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -74,7 +74,7 @@ export default function CartItem({ item }: CartItemProps) {
 
       {/* Item total */}
       <div className="font-semibold text-gray-900">
-        ${(item.price * item.quantity).toFixed(2)}
+        {(item.price * item.quantity).toFixed(2)}€
       </div>
     </div>
   )

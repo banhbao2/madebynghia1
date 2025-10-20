@@ -84,7 +84,7 @@ export const CreateReservationSchema = z.object({
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name must not exceed 100 characters')
     .trim()
-    .regex(/^[a-zA-Z\s'-]+$/, 'Name contains invalid characters'),
+    .regex(/^[\p{L}\s'-]+$/u, 'Name contains invalid characters'),
 
   customer_email: z
     .string()
@@ -104,7 +104,7 @@ export const CreateReservationSchema = z.object({
 
   reservation_time: z
     .string()
-    .regex(/^\d{2}:\d{2}$/, 'Time must be in HH:MM format'),
+    .regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Time must be in HH:MM or HH:MM:SS format'),
 
   party_size: z
     .number()

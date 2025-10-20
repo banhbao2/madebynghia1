@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
       customerEmail,
       customerName,
       orderNumber,
+      orderId,
       orderType,
       items,
       subtotal,
@@ -180,6 +181,19 @@ export async function POST(request: NextRequest) {
                     </td>
                   </tr>
 
+                  <!-- Tracking Button -->
+                  <tr>
+                    <td style="padding: 0 40px 32px 40px; text-align: center;">
+                      <a href="${request.nextUrl.origin}/checkout/confirmation?orderId=${orderId || orderNumber}&email=${encodeURIComponent(customerEmail)}&name=${encodeURIComponent(customerName)}&orderType=${orderType}&total=${total.toFixed(2)}"
+                         style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        📍 Bestellung verfolgen
+                      </a>
+                      <p style="margin: 12px 0 0 0; font-size: 13px; color: #6b7280;">
+                        Verfolgen Sie den Status Ihrer Bestellung in Echtzeit
+                      </p>
+                    </td>
+                  </tr>
+
                   <!-- Restaurant Info -->
                   <tr>
                     <td style="padding: 0 40px 32px 40px;">
@@ -287,6 +301,19 @@ export async function POST(request: NextRequest) {
                           You can try ordering again later, or feel free to contact us directly at <strong>${restaurantPhone}</strong> to discuss your order.
                         </p>
                       </div>
+                    </td>
+                  </tr>
+
+                  <!-- Tracking Button -->
+                  <tr>
+                    <td style="padding: 0 40px 32px 40px; text-align: center;">
+                      <a href="${request.nextUrl.origin}/checkout/confirmation?orderId=${orderId || orderNumber}&email=${encodeURIComponent(customerEmail)}&name=${encodeURIComponent(customerName)}&orderType=${orderType}&total=${total.toFixed(2)}"
+                         style="display: inline-block; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        📍 Bestelldetails ansehen
+                      </a>
+                      <p style="margin: 12px 0 0 0; font-size: 13px; color: #6b7280;">
+                        Sehen Sie Ihre Bestelldetails ein
+                      </p>
                     </td>
                   </tr>
 

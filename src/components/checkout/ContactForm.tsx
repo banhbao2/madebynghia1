@@ -1,3 +1,5 @@
+import TrustSignal from '@/components/TrustSignal'
+
 interface ContactFormProps {
   formData: {
     name: string
@@ -15,6 +17,13 @@ export default function ContactForm({ formData, onChange, disabled = false }: Co
       <label className="block text-lg font-bold text-gray-900 mb-4">
         3. Kontaktinformationen
       </label>
+
+      {/* Trust Signals - Critical Moment */}
+      <div className="space-y-2 mb-4">
+        <TrustSignal variant="data-protection" size="sm" />
+        <TrustSignal variant="no-spam" size="sm" />
+      </div>
+
       <div className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">

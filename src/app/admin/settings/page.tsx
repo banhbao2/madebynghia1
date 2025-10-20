@@ -80,15 +80,15 @@ export default function AdminSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Restaurant Settings</h1>
-          <p className="text-gray-600 mt-1">Configure your restaurant information and preferences</p>
+          <h1 className="text-3xl font-bold text-gray-900">Restaurant-Einstellungen</h1>
+          <p className="text-gray-600 mt-1">Konfigurieren Sie Ihre Restaurantinformationen und Präferenzen</p>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
           className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition font-semibold disabled:bg-gray-400"
         >
-          {saving ? 'Saving...' : 'Save Changes'}
+          {saving ? 'Wird gespeichert...' : 'Änderungen speichern'}
         </button>
       </div>
 
@@ -97,10 +97,10 @@ export default function AdminSettingsPage() {
         <div className="border-b border-gray-200">
           <div className="flex overflow-x-auto">
             {[
-              { id: 'general', label: 'General Info', icon: '🏪' },
-              { id: 'hours', label: 'Business Hours', icon: '🕐' },
-              { id: 'delivery', label: 'Delivery & Tax', icon: '🚚' },
-              { id: 'social', label: 'Social Media', icon: '📱' },
+              { id: 'general', label: 'Allgemeine Infos', icon: '🏪' },
+              { id: 'hours', label: 'Öffnungszeiten', icon: '🕐' },
+              { id: 'delivery', label: 'Lieferung & Steuer', icon: '🚚' },
+              { id: 'social', label: 'Soziale Medien', icon: '📱' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -418,7 +418,7 @@ function DeliveryTaxTab({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Delivery Fee ($)
+              Delivery Fee (€)
             </label>
             <input
               type="number"
@@ -434,7 +434,7 @@ function DeliveryTaxTab({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Minimum Order ($)
+              Minimum Order (€)
             </label>
             <input
               type="number"
@@ -450,7 +450,7 @@ function DeliveryTaxTab({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Free Delivery Threshold ($)
+              Free Delivery Threshold (€)
             </label>
             <input
               type="number"

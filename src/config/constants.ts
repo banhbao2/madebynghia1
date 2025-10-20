@@ -1,6 +1,6 @@
-// Tax and Pricing
-export const TAX_RATE = 0.0875 // 8.75%
-export const FREE_DELIVERY_THRESHOLD = 30
+// Tax and Pricing (German Standards)
+export const TAX_RATE = 0.19 // 19% MwSt (Mehrwertsteuer - German VAT)
+export const FREE_DELIVERY_THRESHOLD = 30 // €30 minimum for free delivery
 
 // Order Configuration
 export const ORDER_SUCCESS_DISPLAY_DURATION = 3000 // milliseconds

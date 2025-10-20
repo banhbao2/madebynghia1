@@ -31,6 +31,17 @@ export default function Header() {
     }
   }, [mobileMenuOpen])
 
+  // Close mobile menu with ESC key for accessibility
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleEsc)
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [mobileMenuOpen])
+
   const smoothScrollTo = (element: HTMLElement) => {
     // Get the fixed header height for proper offset
     const headerHeight = 68 // md:pt-[68px] from the layout

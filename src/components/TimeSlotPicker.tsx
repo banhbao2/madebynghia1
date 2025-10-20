@@ -1,6 +1,7 @@
 'use client'
 
 import { TimeSlot } from '@/types/reservation'
+import SmartLoading from '@/components/SmartLoading'
 
 interface TimeSlotPickerProps {
   slots: TimeSlot[]
@@ -45,12 +46,7 @@ export default function TimeSlotPicker({ slots, selectedTime, onSelectTime, load
   }
 
   if (loading) {
-    return (
-      <div className="text-center py-12">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600 mb-4" />
-        <p className="text-gray-600">Verfügbare Zeiten werden geladen...</p>
-      </div>
-    )
+    return <SmartLoading context="availability" size="md" className="py-8" />
   }
 
   if (slots.length === 0) {

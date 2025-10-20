@@ -8,7 +8,7 @@ const INFO_ITEMS: InfoItem[] = [
   {
     emoji: '🚚',
     title: 'Free Delivery',
-    description: 'On orders over $30',
+    description: 'On orders over 30€',
   },
   {
     emoji: '⏱️',

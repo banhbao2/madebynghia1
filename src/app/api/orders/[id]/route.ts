@@ -107,86 +107,26 @@ export async function PATCH(
 
     const updatedOrder = data as Order
 
-    // EMAIL WORKFLOW: Only send emails on specific status transitions
-    // Customer should receive emails ONLY when:
-    // 1. Order is accepted (pending → preparing)
-    // 2. Order is cancelled from any status (any → cancelled)
-    // 3. Already accepted order is cancelled (preparing/ready/completed → cancelled)
+    // NO EMAILS ON STATUS CHANGES (Industry Best Practice)
+    //
+    // Reason: Customer already received confirmation email with tracking link
+    // They can monitor status in real-time via tracking page (polls every 10 seconds)
+    //
+    // Benefits:
+    // ✅ Prevents email spam (1 email instead of 3-4)
+    // ✅ Admin mistakes don't trigger unwanted emails
+    // ✅ Cleaner customer experience
+    // ✅ Follows Amazon/DoorDash/Uber Eats pattern
+    //
+    // Email Flow:
+    // 1. Order submitted → Immediate confirmation email with tracking link ✉️
+    // 2. Status changes → Customer checks tracking page (no new email) 📱
+    // 3. Customer has permanent access to order details via tracking link
+    //
+    // If you need to re-enable status update emails, see:
+    // /api/send-order-status-email/route.ts (still available but not called)
 
-    const shouldSendEmail = (prevStatus: string, newStatus: string): boolean => {
-      // Case 1: Order accepted (pending → preparing)
-      if (prevStatus === 'pending' && newStatus === 'preparing') {
-        console.log('✅ Email trigger: Order accepted (pending → preparing)')
-        return true
-      }
-
-      // Case 2: Order cancelled from pending (pending → cancelled)
-      if (prevStatus === 'pending' && newStatus === 'cancelled') {
-        console.log('✅ Email trigger: Order declined (pending → cancelled)')
-        return true
-      }
-
-      // Case 3: Order cancelled after being accepted (preparing/ready/completed → cancelled)
-      if (['preparing', 'ready', 'completed'].includes(prevStatus) && newStatus === 'cancelled') {
-        console.log('✅ Email trigger: Accepted order cancelled (', prevStatus, '→ cancelled)')
-        return true
-      }
-
-      // Case 4: Moving backwards (completed/ready → preparing) = NO EMAIL
-      if (['completed', 'ready'].includes(prevStatus) && newStatus === 'preparing') {
-        console.log('⛔ Email blocked: Backwards transition (', prevStatus, '→ preparing)')
-        return false
-      }
-
-      // Case 5: Internal status changes (preparing → ready, ready → completed) = NO EMAIL
-      if (prevStatus === 'preparing' && newStatus === 'ready') {
-        console.log('⛔ Email blocked: Internal transition (preparing → ready)')
-        return false
-      }
-
-      if (prevStatus === 'ready' && newStatus === 'completed') {
-        console.log('⛔ Email blocked: Internal transition (ready → completed)')
-        return false
-      }
-
-      // Default: no email for other transitions
-      console.log('⛔ Email blocked: Unhandled transition (', prevStatus, '→', newStatus, ')')
-      return false
-    }
-
-    // Send email if transition requires it
-    if (shouldSendEmail(previousStatus, body.status) && updatedOrder.customer_email) {
-      try {
-        const emailResponse = await fetch(`${request.nextUrl.origin}/api/send-order-status-email`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            customerEmail: updatedOrder.customer_email,
-            customerName: updatedOrder.customer_name,
-            orderNumber: updatedOrder.id.slice(-8),
-            orderType: updatedOrder.order_type,
-            items: updatedOrder.items,
-            subtotal: updatedOrder.subtotal,
-            tax: updatedOrder.tax,
-            total: updatedOrder.total,
-            scheduledTime: updatedOrder.scheduled_time,
-            deliveryAddress: updatedOrder.delivery_address,
-            status: body.status
-          })
-        })
-
-        if (!emailResponse.ok) {
-          console.error('Failed to send status email:', await emailResponse.text())
-        } else {
-          console.log(`📧 Status email sent to ${updatedOrder.customer_email} for order ${updatedOrder.id}`)
-        }
-      } catch (emailError) {
-        // Log error but don't fail the status update
-        console.error('Error sending status email:', emailError)
-      }
-    }
+    console.log(`✅ Order ${updatedOrder.id} status updated: ${previousStatus} → ${body.status} (no email sent)`)
 
     return NextResponse.json(
       {

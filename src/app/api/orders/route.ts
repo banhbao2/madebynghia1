@@ -5,7 +5,7 @@ import { CreateOrderSchema, sanitizeString } from '@/lib/validation'
 import { checkRateLimit, getClientIp } from '@/lib/auth'
 import { z } from 'zod'
 
-const TAX_RATE = 0.0825 // 8.25% tax rate
+const TAX_RATE = 0.19 // 19% MwSt (German VAT for food services)
 
 // POST /api/orders - Create a new order
 export async function POST(request: NextRequest) {
@@ -125,10 +125,47 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const createdOrder = data as Order
+
+    // IMMEDIATE CONFIRMATION EMAIL (Industry Standard: Amazon, DoorDash, Uber Eats)
+    // Send email right away with tracking link
+    // Customer can track status via link, no need for additional emails
+    if (createdOrder.customer_email) {
+      try {
+        const emailResponse = await fetch(`${request.nextUrl.origin}/api/send-order-confirmation-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerEmail: createdOrder.customer_email,
+            customerName: createdOrder.customer_name,
+            orderId: createdOrder.id,
+            orderNumber: createdOrder.id.slice(-8).toUpperCase(),
+            orderType: createdOrder.order_type,
+            items: createdOrder.items,
+            subtotal: createdOrder.subtotal,
+            tax: createdOrder.tax,
+            total: createdOrder.total,
+            scheduledTime: createdOrder.scheduled_time,
+            deliveryAddress: createdOrder.delivery_address,
+          })
+        })
+
+        if (emailResponse.ok) {
+          console.log(`📧 Confirmation email sent to ${createdOrder.customer_email} for order ${createdOrder.id}`)
+        } else {
+          // Don't fail order if email fails
+          console.error('Failed to send confirmation email:', await emailResponse.text())
+        }
+      } catch (emailError) {
+        // Don't fail order if email fails
+        console.error('Error sending confirmation email:', emailError)
+      }
+    }
+
     return NextResponse.json(
       {
         success: true,
-        order: data as Order,
+        order: createdOrder,
         message: 'Order placed successfully'
       },
       { status: 201 }

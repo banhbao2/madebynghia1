@@ -113,37 +113,37 @@ export default function AdminDashboard() {
 
   const statCards = [
     {
-      title: "Today's Orders",
+      title: "Heutige Bestellungen",
       value: stats.todayOrders,
       icon: '📝',
       color: 'bg-blue-50 text-blue-600',
     },
     {
-      title: "Today's Revenue",
-      value: `$${stats.todayRevenue.toFixed(2)}`,
+      title: "Heutiger Umsatz",
+      value: `${stats.todayRevenue.toFixed(2)}€`,
       icon: '💰',
       color: 'bg-green-50 text-green-600',
     },
     {
-      title: 'Pending Orders',
+      title: 'Ausstehende Bestellungen',
       value: stats.pendingOrders,
       icon: '⏱️',
       color: 'bg-orange-50 text-orange-600',
     },
     {
-      title: "Today's Reservations",
+      title: "Heutige Reservierungen",
       value: stats.todayReservations,
       icon: '📅',
       color: 'bg-purple-50 text-purple-600',
     },
     {
-      title: 'Pending Reservations',
+      title: 'Ausstehende Reservierungen',
       value: stats.pendingReservations,
       icon: '🔔',
       color: 'bg-yellow-50 text-yellow-600',
     },
     {
-      title: 'Menu Items',
+      title: 'Menüpositionen',
       value: stats.menuItems,
       icon: '🍽️',
       color: 'bg-pink-50 text-pink-600',
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Welcome back! Here's what's happening today.</p>
+        <p className="text-gray-600 mt-1">Willkommen zurück! Hier ist, was heute passiert.</p>
       </div>
 
       {/* Stats Grid */}
@@ -186,12 +186,12 @@ export default function AdminDashboard() {
         {/* Recent Orders */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Recent Orders</h2>
+            <h2 className="text-xl font-bold text-gray-900">Aktuelle Bestellungen</h2>
             <Link
               href="/admin/orders"
               className="text-sm text-red-600 hover:text-red-700 font-medium"
             >
-              View All →
+              Alle anzeigen →
             </Link>
           </div>
           <div className="p-6">
@@ -205,18 +205,21 @@ export default function AdminDashboard() {
                     <div>
                       <p className="font-semibold text-gray-900">{order.customer_name}</p>
                       <p className="text-sm text-gray-600">
-                        {order.order_type === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}
+                        {order.order_type === 'delivery' ? '🚚 Lieferung' : '🏪 Abholung'}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-gray-900">${order.total?.toFixed(2)}</p>
+                      <p className="font-bold text-gray-900">{order.total?.toFixed(2)}€</p>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                         order.status === 'confirmed' ? 'bg-blue-100 text-blue-700' :
                         order.status === 'ready' ? 'bg-green-100 text-green-700' :
                         'bg-gray-100 text-gray-700'
                       }`}>
-                        {order.status || 'Pending'}
+                        {order.status === 'pending' ? 'Ausstehend' :
+                         order.status === 'confirmed' ? 'Bestätigt' :
+                         order.status === 'ready' ? 'Bereit' :
+                         order.status || 'Ausstehend'}
                       </span>
                     </div>
                   </div>
@@ -224,7 +227,7 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500">No orders yet today</p>
+                <p className="text-gray-500">Heute noch keine Bestellungen</p>
               </div>
             )}
           </div>
@@ -233,7 +236,7 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-bold text-gray-900">Quick Actions</h2>
+            <h2 className="text-xl font-bold text-gray-900">Schnellzugriff</h2>
           </div>
           <div className="p-6 space-y-3">
             <Link
@@ -242,8 +245,8 @@ export default function AdminDashboard() {
             >
               <span className="text-2xl">➕</span>
               <div>
-                <p className="font-semibold text-gray-900 group-hover:text-red-600">Add Menu Item</p>
-                <p className="text-sm text-gray-600">Create new dish</p>
+                <p className="font-semibold text-gray-900 group-hover:text-red-600">Menüposition hinzufügen</p>
+                <p className="text-sm text-gray-600">Neues Gericht erstellen</p>
               </div>
             </Link>
 
@@ -253,8 +256,8 @@ export default function AdminDashboard() {
             >
               <span className="text-2xl">📋</span>
               <div>
-                <p className="font-semibold text-gray-900 group-hover:text-blue-600">View Orders</p>
-                <p className="text-sm text-gray-600">Manage all orders</p>
+                <p className="font-semibold text-gray-900 group-hover:text-blue-600">Bestellungen anzeigen</p>
+                <p className="text-sm text-gray-600">Alle Bestellungen verwalten</p>
               </div>
             </Link>
 
@@ -264,8 +267,8 @@ export default function AdminDashboard() {
             >
               <span className="text-2xl">📅</span>
               <div>
-                <p className="font-semibold text-gray-900 group-hover:text-purple-600">Reservations</p>
-                <p className="text-sm text-gray-600">Manage bookings</p>
+                <p className="font-semibold text-gray-900 group-hover:text-purple-600">Reservierungen</p>
+                <p className="text-sm text-gray-600">Buchungen verwalten</p>
               </div>
             </Link>
 
@@ -275,8 +278,8 @@ export default function AdminDashboard() {
             >
               <span className="text-2xl">⚙️</span>
               <div>
-                <p className="font-semibold text-gray-900 group-hover:text-orange-600">Settings</p>
-                <p className="text-sm text-gray-600">Restaurant info</p>
+                <p className="font-semibold text-gray-900 group-hover:text-orange-600">Einstellungen</p>
+                <p className="text-sm text-gray-600">Restaurant-Informationen</p>
               </div>
             </Link>
 
@@ -287,8 +290,8 @@ export default function AdminDashboard() {
             >
               <span className="text-2xl">🌐</span>
               <div>
-                <p className="font-semibold text-gray-900 group-hover:text-green-600">View Website</p>
-                <p className="text-sm text-gray-600">See customer view</p>
+                <p className="font-semibold text-gray-900 group-hover:text-green-600">Website ansehen</p>
+                <p className="text-sm text-gray-600">Kundenansicht anzeigen</p>
               </div>
             </a>
           </div>

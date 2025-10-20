@@ -4,6 +4,7 @@ import { useCart } from '@/context/CartContext'
 import { useRouter } from 'next/navigation'
 import CartItem from './CartItem'
 import { useState, useRef } from 'react'
+import { Button } from '@/components/ui'
 
 export default function CartSidebar() {
   const router = useRouter()
@@ -142,15 +143,18 @@ export default function CartSidebar() {
                 </div>
               </div>
 
-              <button
+              <Button
                 onClick={handleCheckout}
-                className="w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white py-4 md:py-5 rounded-xl hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] active:scale-95 transition-all font-bold text-lg md:text-xl shadow-lg flex items-center justify-center gap-2 touch-manipulation"
+                variant="primary"
+                size="lg"
+                fullWidth
+                className="shadow-lg touch-manipulation"
               >
                 <span>Zur Kasse</span>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-              </button>
+              </Button>
             </div>
           )}
         </div>

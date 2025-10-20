@@ -132,15 +132,15 @@ export default function AdminMenuPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Menu Management</h1>
-          <p className="text-gray-600 mt-1">Manage your restaurant menu items</p>
+          <h1 className="text-3xl font-bold text-gray-900">Menüverwaltung</h1>
+          <p className="text-gray-600 mt-1">Verwalten Sie Ihre Restaurantmenüpositionen</p>
         </div>
         <button
           onClick={() => openModal()}
           className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition font-semibold flex items-center gap-2"
         >
           <span className="text-xl">+</span>
-          Add Menu Item
+          Menüposition hinzufügen
         </button>
       </div>
 
@@ -151,7 +151,7 @@ export default function AdminMenuPage() {
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Search menu items..."
+              placeholder="Menüpositionen suchen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -168,7 +168,7 @@ export default function AdminMenuPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              All ({menuItems.length})
+              Alle ({menuItems.length})
             </button>
             {categories.map((cat) => (
               <button
@@ -191,7 +191,7 @@ export default function AdminMenuPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.length === 0 ? (
           <div className="col-span-full text-center py-12">
-            <p className="text-gray-500 text-lg">No menu items found</p>
+            <p className="text-gray-500 text-lg">Keine Menüpositionen gefunden</p>
           </div>
         ) : (
           filteredItems.map((item) => (
@@ -209,17 +209,17 @@ export default function AdminMenuPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    No Image
+                    Kein Bild
                   </div>
                 )}
                 {item.popular && (
                   <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                    Popular
+                    Beliebt
                   </span>
                 )}
                 {!item.available && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">Out of Stock</span>
+                    <span className="text-white font-bold text-lg">Nicht verfügbar</span>
                   </div>
                 )}
               </div>
@@ -231,7 +231,7 @@ export default function AdminMenuPage() {
                     <h3 className="font-bold text-gray-900 text-lg">{item.name}</h3>
                     <p className="text-sm text-gray-500">{item.category}</p>
                   </div>
-                  <p className="text-lg font-bold text-red-600">${item.price.toFixed(2)}</p>
+                  <p className="text-lg font-bold text-red-600">{item.price.toFixed(2)}€</p>
                 </div>
 
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">{item.description}</p>
@@ -242,7 +242,7 @@ export default function AdminMenuPage() {
                     onClick={() => openModal(item)}
                     className="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-100 transition text-sm font-medium"
                   >
-                    Edit
+                    Bearbeiten
                   </button>
                   <button
                     onClick={() => handleToggleAvailability(item)}
@@ -252,13 +252,13 @@ export default function AdminMenuPage() {
                         : 'bg-green-50 text-green-600 hover:bg-green-100'
                     }`}
                   >
-                    {item.available ? 'Mark Unavailable' : 'Mark Available'}
+                    {item.available ? 'Nicht verfügbar' : 'Verfügbar'}
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}
                     className="bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition text-sm font-medium"
                   >
-                    Delete
+                    Löschen
                   </button>
                 </div>
               </div>
@@ -343,7 +343,7 @@ function MenuItemModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-bold text-gray-900">
-            {item ? 'Edit Menu Item' : 'Add New Menu Item'}
+            {item ? 'Menüposition bearbeiten' : 'Neue Menüposition hinzufügen'}
           </h2>
           <button
             onClick={onClose}
@@ -360,7 +360,7 @@ function MenuItemModal({
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Item Name *
+              Name des Artikels *
             </label>
             <input
               type="text"
@@ -374,7 +374,7 @@ function MenuItemModal({
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description *
+              Beschreibung *
             </label>
             <textarea
               value={formData.description}
@@ -389,7 +389,7 @@ function MenuItemModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price ($) *
+                Preis (€) *
               </label>
               <input
                 type="number"
@@ -404,7 +404,7 @@ function MenuItemModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category *
+                Kategorie *
               </label>
               <select
                 value={formData.category}
@@ -424,7 +424,7 @@ function MenuItemModal({
           {/* Image URL */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Image URL
+              Bild-URL
             </label>
             <input
               type="url"
@@ -438,7 +438,7 @@ function MenuItemModal({
           {/* Sort Order */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sort Order
+              Sortierreihenfolge
             </label>
             <input
               type="number"
@@ -447,7 +447,7 @@ function MenuItemModal({
               onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
             />
-            <p className="text-xs text-gray-500 mt-1">Lower numbers appear first</p>
+            <p className="text-xs text-gray-500 mt-1">Niedrigere Zahlen erscheinen zuerst</p>
           </div>
 
           {/* Checkboxes */}
@@ -459,7 +459,7 @@ function MenuItemModal({
                 onChange={(e) => setFormData({ ...formData, popular: e.target.checked })}
                 className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
               />
-              <span className="text-sm font-medium text-gray-700">Mark as Popular</span>
+              <span className="text-sm font-medium text-gray-700">Als beliebt markieren</span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -469,7 +469,7 @@ function MenuItemModal({
                 onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
                 className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
               />
-              <span className="text-sm font-medium text-gray-700">Available (In Stock)</span>
+              <span className="text-sm font-medium text-gray-700">Verfügbar (auf Lager)</span>
             </label>
           </div>
 
@@ -481,14 +481,14 @@ function MenuItemModal({
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
               disabled={saving}
             >
-              Cancel
+              Abbrechen
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium disabled:bg-gray-400"
               disabled={saving}
             >
-              {saving ? 'Saving...' : item ? 'Update Item' : 'Create Item'}
+              {saving ? 'Wird gespeichert...' : item ? 'Artikel aktualisieren' : 'Artikel erstellen'}
             </button>
           </div>
         </form>

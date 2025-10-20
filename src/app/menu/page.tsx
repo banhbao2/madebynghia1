@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import FloatingCartButton from '@/components/FloatingCartButton'
 import MenuItem from '@/components/MenuItem'
 import { MenuGridSkeleton } from '@/components/MenuItemSkeleton'
+import SmartLoading from '@/components/SmartLoading'
 import { MenuItem as MenuItemType, Category } from '@/lib/menuData'
 import { supabase } from '@/lib/supabase'
 
@@ -93,30 +94,16 @@ function MenuPageContent() {
     }
   }, [tableNumber])
 
-  // Show loading state with skeleton
+  // Show loading state with smart loading component
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <Header />
         <div className="pt-[60px] md:pt-[68px]">
-        <main className="container mx-auto px-4 py-16">
-          {/* Header Skeleton */}
-          <div className="text-center mb-16">
-            <div className="h-12 bg-gray-200 rounded-lg w-1/2 mx-auto mb-4 animate-pulse"></div>
-            <div className="h-6 bg-gray-200 rounded w-2/3 mx-auto animate-pulse"></div>
-          </div>
-
-          {/* Category Skeleton */}
-          <div className="mb-12 flex gap-4 justify-center">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-12 w-32 bg-gray-200 rounded-xl animate-pulse"></div>
-            ))}
-          </div>
-
-          {/* Menu Items Skeleton */}
-          <MenuGridSkeleton count={6} />
-        </main>
-        <Footer />
+          <main className="container mx-auto px-4">
+            <SmartLoading context="menu" size="lg" />
+          </main>
+          <Footer />
         </div>
       </div>
     )
@@ -156,7 +143,7 @@ function MenuPageContent() {
 
       <div className="pt-[60px] md:pt-[68px]">
 
-      <main className="container mx-auto px-4 py-16 pb-32">
+      <main id="main" className="container mx-auto px-4 py-16 pb-32">
         {/* Header */}
         <div className="text-center mb-12">
           {tableNumber && (

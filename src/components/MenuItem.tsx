@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { MenuItem as MenuItemType } from '@/lib/menuData'
 import { useCart } from '@/context/CartContext'
 import { PlusIcon, CheckIcon } from './Icons'
+import { Button } from '@/components/ui'
+import { useConfetti } from '@/hooks/useConfetti'
 
 interface MenuItemProps {
   item: MenuItemType
@@ -11,6 +13,8 @@ interface MenuItemProps {
 
 export default function MenuItem({ item }: MenuItemProps) {
   const { addToCart } = useCart()
+  const { fromElement } = useConfetti()
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const [showCustomizations, setShowCustomizations] = useState(false)
   const [customizations, setCustomizations] = useState<Record<string, string>>({})
   const [imageError, setImageError] = useState(false)
@@ -30,14 +34,19 @@ export default function MenuItem({ item }: MenuItemProps) {
       })
       setCustomizations(defaults)
     } else {
-      // Add to cart with or without customizations
+      // OPTIMISTIC UI: Add to cart instantly (no waiting!)
       addToCart(item, Object.keys(customizations).length > 0 ? customizations : undefined)
       setShowCustomizations(false)
       setCustomizations({})
 
-      // Show success feedback (1.5s is optimal - noticeable but not blocking)
+      // Celebration confetti from button position (dopamine hit!)
+      if (buttonRef.current) {
+        fromElement(buttonRef.current, 'subtle')
+      }
+
+      // Show success feedback (reduced from 1.5s to 800ms - faster perceived performance)
       setJustAdded(true)
-      setTimeout(() => setJustAdded(false), 1500)
+      setTimeout(() => setJustAdded(false), 800)
     }
   }
 
@@ -97,13 +106,12 @@ export default function MenuItem({ item }: MenuItemProps) {
             </span>
 
             {!showCustomizations ? (
-              <button
+              <Button
+                ref={buttonRef}
                 onClick={handleAddToCart}
-                className={`px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 font-bold text-sm ${
-                  justAdded
-                    ? 'bg-green-600 text-white scale-105'
-                    : 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
-                }`}
+                variant={justAdded ? 'success' : 'primary'}
+                size="sm"
+                className={justAdded ? 'scale-105' : ''}
               >
                 {justAdded ? (
                   <>
@@ -116,7 +124,7 @@ export default function MenuItem({ item }: MenuItemProps) {
                     <span className="hidden sm:inline">Hinzufügen</span>
                   </>
                 )}
-              </button>
+              </Button>
             ) : null}
           </div>
         </div>
@@ -149,24 +157,25 @@ export default function MenuItem({ item }: MenuItemProps) {
           ))}
 
           <div className="flex gap-2 pt-2">
-            <button
+            <Button
               onClick={() => {
                 setShowCustomizations(false)
                 setCustomizations({})
               }}
-              className="flex-1 border border-gray-300 bg-white text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition font-bold text-sm"
+              variant="secondary"
+              size="sm"
+              fullWidth
               disabled={justAdded}
             >
               Abbrechen
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleAddToCart}
-              className={`flex-1 px-4 py-2 rounded-lg transition-all font-bold text-sm flex items-center justify-center gap-1.5 ${
-                justAdded
-                  ? 'bg-green-600 text-white scale-105'
-                  : 'bg-red-600 text-white hover:bg-red-700'
-              }`}
+              variant={justAdded ? 'success' : 'primary'}
+              size="sm"
+              fullWidth
               disabled={justAdded}
+              className={justAdded ? 'scale-105' : ''}
             >
               {justAdded ? (
                 <>
@@ -176,7 +185,7 @@ export default function MenuItem({ item }: MenuItemProps) {
               ) : (
                 'Hinzufügen'
               )}
-            </button>
+            </Button>
           </div>
         </div>
       )}

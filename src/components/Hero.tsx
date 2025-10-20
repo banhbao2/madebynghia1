@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { Button } from '@/components/ui'
 
 export default function Hero() {
   return (
@@ -58,24 +59,21 @@ export default function Hero() {
 
         {/* CTA Buttons - Enhanced with gradients and glow effects */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center animate-fade-in-up animation-delay-400 max-w-lg mx-auto sm:max-w-none">
-          <Link
-            href="/menu"
-            className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white px-8 sm:px-10 py-4 rounded-xl text-base sm:text-lg font-bold hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] active:scale-95 transition-all shadow-2xl touch-manipulation overflow-hidden"
-          >
-            <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <span className="relative">Jetzt bestellen</span>
-            <svg className="relative w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
+          <Link href="/menu">
+            <Button variant="primary" size="lg" className="group shadow-2xl touch-manipulation w-full sm:w-auto">
+              <span>Jetzt bestellen</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Button>
           </Link>
-          <Link
-            href="/reservations"
-            className="group inline-flex items-center justify-center gap-2 glass border-2 border-white/40 text-white px-8 sm:px-10 py-4 rounded-xl text-base sm:text-lg font-bold hover:bg-white/25 hover:border-white/60 active:scale-95 transition-all shadow-xl touch-manipulation"
-          >
-            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Tisch reservieren</span>
+          <Link href="/reservations">
+            <Button variant="secondary" size="lg" className="group glass border-2 border-white/40 text-white hover:bg-white/25 hover:border-white/60 shadow-xl touch-manipulation w-full sm:w-auto">
+              <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Tisch reservieren</span>
+            </Button>
           </Link>
         </div>
 

@@ -173,131 +173,155 @@ export default function AdminOrdersPage() {
     }
   }
 
-  // Compact Order Card Component
+  // Clean Minimal Order Card Component
   const OrderCard = ({ order }: { order: Order }) => {
-    const minutesUntil = getTimeUntilPickup(order.scheduled_time)
+    // Only calculate time for active orders (not completed/cancelled)
+    const isActiveOrder = order.status === 'pending' || order.status === 'preparing'
+    const minutesUntil = isActiveOrder ? getTimeUntilPickup(order.scheduled_time) : null
     const isUrgent = minutesUntil !== null && minutesUntil < 30
     const isExpanded = expandedOrders.has(order.id)
     const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0)
 
+    // Clean visual distinction
+    const isCancelled = order.status === 'cancelled'
+    const isCompleted = order.status === 'completed'
+
     return (
-      <div className={`bg-white rounded-lg shadow border-l-4 mb-2 transition-all hover:shadow-md ${
-        isUrgent ? 'border-red-500' : 'border-gray-300'
-      }`}>
-        {/* Compact Header - Always Visible */}
-        <div className="p-2">
-          <div className="flex items-center justify-between gap-2">
-            {/* Time */}
-            <div className="flex-shrink-0">
-              {order.scheduled_time ? (
-                <div>
-                  <p className="text-lg font-black text-gray-900 leading-none">
-                    {formatTime(order.scheduled_time) || 'ASAP'}
-                  </p>
-                  <p className="text-xs text-gray-500">{formatDate(order.scheduled_time)}</p>
-                </div>
-              ) : (
-                <p className="text-base font-bold text-gray-900">ASAP</p>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-3 overflow-hidden transition-all hover:shadow-md">
+        {/* Compact Header - Always Visible - REDESIGNED */}
+        <div className="p-4">
+          {/* Top Row: Customer, Type, Total */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1">
+              <h3 className="font-bold text-base text-gray-900 mb-1">{order.customer_name}</h3>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span>{order.order_type === 'delivery' ? '🚚 Lieferung' : '🏪 Abholung'}</span>
+                <span>•</span>
+                <span>{itemCount} Artikel</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-xl font-bold text-gray-900">{order.total.toFixed(2)}€</p>
+            </div>
+          </div>
+
+          {/* Timestamps Row - VISIBLE WITHOUT EXPANDING */}
+          <div className="grid grid-cols-2 gap-3 mb-3 p-3 bg-gray-50 rounded-lg">
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-1">📥 Eingegangen</p>
+              <p className="text-sm font-medium text-gray-900">
+                {order.created_at ? new Date(order.created_at).toLocaleString('de-DE', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }) : 'N/A'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-1">
+                {order.order_type === 'delivery' ? '🚚 Lieferung bis' : '🏪 Bereit bis'}
+              </p>
+              <p className="text-sm font-bold text-gray-900">
+                {order.scheduled_time ? new Date(order.scheduled_time).toLocaleString('de-DE', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }) : 'ASAP'}
+              </p>
+              {isActiveOrder && minutesUntil !== null && (
+                <p className={`text-xs font-semibold mt-1 ${
+                  minutesUntil < 0 ? 'text-red-600' :
+                  minutesUntil < 15 ? 'text-orange-600' :
+                  minutesUntil < 30 ? 'text-yellow-600' :
+                  'text-green-600'
+                }`}>
+                  {minutesUntil < 0 ? `${Math.abs(minutesUntil)}m überfällig` : `in ${minutesUntil}m`}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Status & Actions Row */}
+          <div className="flex items-center gap-2">
+            {/* Status Badge */}
+            <div className="flex-1">
+              {order.status === 'pending' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
+                  <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                  Ausstehend
+                </span>
+              )}
+              {order.status === 'preparing' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                  <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                  In Zubereitung
+                </span>
+              )}
+              {order.status === 'completed' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                  ✓ Abgeschlossen
+                </span>
+              )}
+              {order.status === 'cancelled' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-100 text-red-800 rounded-full text-sm font-semibold">
+                  ✗ Storniert
+                </span>
               )}
             </div>
 
-            {/* Customer & Type */}
-            <div className="flex-1 min-w-0">
-              <p className="font-bold text-sm text-gray-900 truncate">{order.customer_name}</p>
-              <p className="text-xs text-gray-600">{order.order_type === 'delivery' ? '🚚' : '🏪'} • {itemCount} items</p>
-            </div>
+            {/* Quick Actions */}
+            <div className="flex gap-2">
+              {order.status === 'pending' && (
+                <>
+                  <button
+                    onClick={() => updateStatus(order.id, 'preparing')}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm"
+                  >
+                    Annehmen
+                  </button>
+                  <button
+                    onClick={() => updateStatus(order.id, 'cancelled')}
+                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm"
+                  >
+                    Ablehnen
+                  </button>
+                </>
+              )}
 
-            {/* Total */}
-            <div className="flex-shrink-0 text-right">
-              <p className="text-lg font-black text-gray-900">${order.total.toFixed(2)}</p>
-              {getUrgencyBadge(minutesUntil)}
-            </div>
-
-            {/* Expand Button */}
-            <button
-              onClick={() => toggleExpand(order.id)}
-              className="flex-shrink-0 p-1 hover:bg-gray-100 rounded transition"
-            >
-              <svg className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Quick Actions - Always Visible */}
-          <div className="mt-2 flex gap-1">
-            {order.status === 'pending' && (
-              <>
-                <button
-                  onClick={() => updateStatus(order.id, 'preparing')}
-                  className="flex-1 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-bold text-xs"
-                >
-                  ✅ Accept
-                </button>
-                <button
-                  onClick={() => updateStatus(order.id, 'cancelled')}
-                  className="px-3 py-1.5 bg-red-100 text-red-700 rounded hover:bg-red-200 transition text-xs font-medium"
-                >
-                  ❌
-                </button>
-              </>
-            )}
-
-            {order.status === 'preparing' && (
-              <>
+              {order.status === 'preparing' && (
                 <button
                   onClick={() => updateStatus(order.id, 'completed')}
-                  className="flex-1 px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700 transition font-bold text-xs"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm"
                 >
-                  ✓ Done
+                  Fertig
                 </button>
-                <button
-                  onClick={() => updateStatus(order.id, 'pending')}
-                  className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition text-xs"
-                >
-                  ←
-                </button>
-                <button
-                  onClick={() => updateStatus(order.id, 'cancelled')}
-                  className="px-3 py-1.5 bg-red-100 text-red-700 rounded hover:bg-red-200 transition text-xs"
-                >
-                  ❌
-                </button>
-              </>
-            )}
+              )}
 
-            {order.status === 'completed' && (
+              {/* Expand/Details Button - Always Visible */}
               <button
-                onClick={() => updateStatus(order.id, 'preparing')}
-                className="flex-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition text-xs"
+                onClick={() => toggleExpand(order.id)}
+                className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
               >
-                ← Back
+                {isExpanded ? 'Weniger' : 'Details'}
               </button>
-            )}
-
-            {order.status === 'cancelled' && (
-              <button
-                onClick={() => updateStatus(order.id, 'pending')}
-                className="flex-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition text-xs"
-              >
-                ← Restore
-              </button>
-            )}
+            </div>
           </div>
         </div>
 
         {/* Expanded Details - Collapsible */}
         {isExpanded && (
-          <div className="border-t bg-gray-50 p-3 space-y-2">
+          <div className="border-t bg-gray-50 p-4 space-y-3">
             {/* Phone */}
             <div>
-              <p className="text-xs text-gray-500 font-medium">PHONE</p>
+              <p className="text-xs text-gray-500 font-medium">TELEFON</p>
               <p className="text-sm text-gray-900">{order.customer_phone}</p>
             </div>
 
             {/* Items */}
             <div>
-              <p className="text-xs text-gray-500 font-medium mb-1">ITEMS</p>
+              <p className="text-xs text-gray-500 font-medium mb-1">ARTIKEL</p>
               <div className="space-y-1">
                 {order.items.map((item: any, idx: number) => (
                   <div key={idx} className="text-sm text-gray-800">
@@ -312,7 +336,7 @@ export default function AdminOrdersPage() {
                           </div>
                         )}
                       </div>
-                      <span className="font-bold text-gray-900 flex-shrink-0">${item.price.toFixed(2)}</span>
+                      <span className="font-bold text-gray-900 flex-shrink-0">{item.price.toFixed(2)}€</span>
                     </div>
                   </div>
                 ))}
@@ -322,7 +346,7 @@ export default function AdminOrdersPage() {
             {/* Special Notes */}
             {order.special_notes && (
               <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                <p className="text-xs font-bold text-yellow-800">📝 SPECIAL REQUEST</p>
+                <p className="text-xs font-bold text-yellow-800">📝 SONDERWUNSCH</p>
                 <p className="text-sm text-yellow-900 mt-1">{order.special_notes}</p>
               </div>
             )}
@@ -330,7 +354,7 @@ export default function AdminOrdersPage() {
             {/* Delivery Address */}
             {order.delivery_address && (
               <div>
-                <p className="text-xs text-gray-500 font-medium">DELIVERY ADDRESS</p>
+                <p className="text-xs text-gray-500 font-medium">LIEFERADRESSE</p>
                 <p className="text-sm text-gray-900">📍 {order.delivery_address}</p>
               </div>
             )}
@@ -351,12 +375,12 @@ export default function AdminOrdersPage() {
       <button
         onClick={fetchOrders}
         className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition-all duration-200 group"
-        title="Refresh orders"
+        title="Bestellungen aktualisieren"
       >
         <svg className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
-        <span className="font-medium text-sm">Refresh</span>
+        <span className="font-medium text-sm">Aktualisieren</span>
       </button>
 
       {/* Loading */}
@@ -384,12 +408,12 @@ export default function AdminOrdersPage() {
               {/* Column 1: New Orders */}
               <div>
                 <div className="bg-red-600 text-white rounded-t-md px-2 py-1 flex items-center justify-between text-sm font-bold">
-                  <span>🔔 New</span>
+                  <span>🔔 Neu</span>
                   <span className="bg-white text-red-600 px-1.5 py-0.5 rounded-full text-xs">{newOrders.length}</span>
                 </div>
                 <div className="bg-red-50 rounded-b-md p-2 min-h-[calc(100vh-60px)] max-h-[calc(100vh-60px)] overflow-y-auto">
                   {newOrders.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8 text-sm">No new orders</p>
+                    <p className="text-center text-gray-500 py-8 text-sm">Keine neuen Bestellungen</p>
                   ) : (
                     newOrders.map(order => <OrderCard key={order.id} order={order} />)
                   )}
@@ -399,12 +423,12 @@ export default function AdminOrdersPage() {
               {/* Column 2: Preparing */}
               <div>
                 <div className="bg-blue-600 text-white rounded-t-md px-2 py-1 flex items-center justify-between text-sm font-bold">
-                  <span>👨‍🍳 Preparing</span>
+                  <span>👨‍🍳 In Zubereitung</span>
                   <span className="bg-white text-blue-600 px-1.5 py-0.5 rounded-full text-xs">{preparingOrders.length}</span>
                 </div>
                 <div className="bg-blue-50 rounded-b-md p-2 min-h-[calc(100vh-60px)] max-h-[calc(100vh-60px)] overflow-y-auto">
                   {preparingOrders.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8 text-sm">No orders preparing</p>
+                    <p className="text-center text-gray-500 py-8 text-sm">Keine Bestellungen in Zubereitung</p>
                   ) : (
                     preparingOrders.map(order => <OrderCard key={order.id} order={order} />)
                   )}
@@ -414,12 +438,12 @@ export default function AdminOrdersPage() {
               {/* Column 3: Done & Cancelled */}
               <div>
                 <div className="bg-green-600 text-white rounded-t-md px-2 py-1 flex items-center justify-between text-sm font-bold">
-                  <span>✅ Done</span>
+                  <span>✅ Fertig</span>
                   <span className="bg-white text-green-600 px-1.5 py-0.5 rounded-full text-xs">{completedOrders.length + cancelledOrders.length}</span>
                 </div>
                 <div className="bg-green-50 rounded-b-md p-2 min-h-[calc(100vh-60px)] max-h-[calc(100vh-60px)] overflow-y-auto">
                   {completedOrders.length === 0 && cancelledOrders.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8 text-sm">No completed orders</p>
+                    <p className="text-center text-gray-500 py-8 text-sm">Keine abgeschlossenen Bestellungen</p>
                   ) : (
                     <>
                       {completedOrders.map(order => (
@@ -445,12 +469,12 @@ export default function AdminOrdersPage() {
               {/* New Orders */}
               <div className="flex-shrink-0 w-[90vw] snap-center">
                 <div className="bg-red-600 text-white rounded-t-md px-2 py-1 flex items-center justify-between text-sm font-bold">
-                  <span>🔔 New</span>
+                  <span>🔔 Neu</span>
                   <span className="bg-white text-red-600 px-1.5 py-0.5 rounded-full text-xs">{newOrders.length}</span>
                 </div>
                 <div className="bg-red-50 rounded-b-md p-2 max-h-[calc(100vh-80px)] overflow-y-auto">
                   {newOrders.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8 text-sm">No new orders</p>
+                    <p className="text-center text-gray-500 py-8 text-sm">Keine neuen Bestellungen</p>
                   ) : (
                     newOrders.map(order => <OrderCard key={order.id} order={order} />)
                   )}
@@ -460,12 +484,12 @@ export default function AdminOrdersPage() {
               {/* Preparing */}
               <div className="flex-shrink-0 w-[90vw] snap-center">
                 <div className="bg-blue-600 text-white rounded-t-md px-2 py-1 flex items-center justify-between text-sm font-bold">
-                  <span>👨‍🍳 Preparing</span>
+                  <span>👨‍🍳 In Zubereitung</span>
                   <span className="bg-white text-blue-600 px-1.5 py-0.5 rounded-full text-xs">{preparingOrders.length}</span>
                 </div>
                 <div className="bg-blue-50 rounded-b-md p-2 max-h-[calc(100vh-80px)] overflow-y-auto">
                   {preparingOrders.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8 text-sm">No orders preparing</p>
+                    <p className="text-center text-gray-500 py-8 text-sm">Keine Bestellungen in Zubereitung</p>
                   ) : (
                     preparingOrders.map(order => <OrderCard key={order.id} order={order} />)
                   )}
@@ -475,12 +499,12 @@ export default function AdminOrdersPage() {
               {/* Done & Cancelled */}
               <div className="flex-shrink-0 w-[90vw] snap-center">
                 <div className="bg-green-600 text-white rounded-t-md px-2 py-1 flex items-center justify-between text-sm font-bold">
-                  <span>✅ Done</span>
+                  <span>✅ Fertig</span>
                   <span className="bg-white text-green-600 px-1.5 py-0.5 rounded-full text-xs">{completedOrders.length + cancelledOrders.length}</span>
                 </div>
                 <div className="bg-green-50 rounded-b-md p-2 max-h-[calc(100vh-80px)] overflow-y-auto">
                   {completedOrders.length === 0 && cancelledOrders.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8 text-sm">No completed orders</p>
+                    <p className="text-center text-gray-500 py-8 text-sm">Keine abgeschlossenen Bestellungen</p>
                   ) : (
                     <>
                       {completedOrders.map(order => (

@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-[60px] md:pt-[68px]">
+      <main id="main" className="pt-[60px] md:pt-[68px]">
         <Hero />
       <TrustBadges />
       <Specialties />

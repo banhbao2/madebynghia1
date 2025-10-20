@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import TimeSlotPicker from '@/components/TimeSlotPicker'
+import TrustSignal from '@/components/TrustSignal'
+import SmartLoading from '@/components/SmartLoading'
 import { createClient } from '@/lib/supabase-browser'
 import { ReservationFormData, TimeSlot } from '@/types/reservation'
 import { api } from '@/lib/api-client'
@@ -22,10 +24,13 @@ export default function ReservationsPage() {
     setMounted(true)
   }, [])
 
-  // Get today's date (for default value)
+  // Get today's date in local timezone (for default value)
   const getTodayDate = () => {
     const today = new Date()
-    return today.toISOString().split('T')[0]
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   }
 
   // Form state
@@ -45,17 +50,23 @@ export default function ReservationsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [showTimeSlots, setShowTimeSlots] = useState(false)
 
-  // Get minimum date (today)
+  // Get minimum date (today) in local timezone
   const getMinDate = () => {
     const today = new Date()
-    return today.toISOString().split('T')[0]
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   }
 
-  // Get maximum date (30 days from now)
+  // Get maximum date (30 days from now) in local timezone
   const getMaxDate = () => {
     const maxDate = new Date()
     maxDate.setDate(maxDate.getDate() + 30)
-    return maxDate.toISOString().split('T')[0]
+    const year = maxDate.getFullYear()
+    const month = String(maxDate.getMonth() + 1).padStart(2, '0')
+    const day = String(maxDate.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   }
 
   // Check if a time slot is in the future
@@ -293,6 +304,12 @@ export default function ReservationsPage() {
                   <span className="bg-red-600 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg font-bold flex-shrink-0">3</span>
                   <span>Ihre Kontaktdaten</span>
                 </h2>
+
+                {/* Trust Signals - Reduce form abandonment */}
+                <div className="space-y-2 mb-6">
+                  <TrustSignal variant="privacy" size="sm" />
+                  <TrustSignal variant="no-spam" size="sm" />
+                </div>
 
                 <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
                   <div className="md:col-span-2">
