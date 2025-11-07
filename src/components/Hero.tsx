@@ -1,18 +1,18 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui'
 
 export default function Hero() {
   return (
     <section className="relative min-h-[calc(100svh-60px)] sm:min-h-[650px] md:min-h-[750px] flex items-center justify-center overflow-hidden -mt-[60px] md:-mt-[68px] pt-[60px] md:pt-[68px]">
-      <Image
-        src="/hero-placeholder.jpg"
-        alt="Nghia Demo Restaurant"
-        fill
-        className="object-cover"
-        priority
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-red-900/60 via-black/70 to-orange-900/60" />
+      {/* Placeholder background with gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-black to-orange-900" />
+
+      {/* Placeholder text overlay */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-10">
+        <p className="text-white text-6xl font-bold text-center px-4">
+          YOUR CUSTOM<br />PICTURE HERE
+        </p>
+      </div>
 
       {/* Decorative floating elements */}
       <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full blur-xl animate-float" />

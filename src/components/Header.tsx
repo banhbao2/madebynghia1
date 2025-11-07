@@ -121,6 +121,12 @@ export default function Header() {
             Speisekarte
           </Link>
           <Link
+            href="/menu2"
+            className="text-gray-700 hover:text-gray-900 font-medium transition"
+          >
+            Speisekarte 2
+          </Link>
+          <Link
             href="/reservations"
             className="text-gray-700 hover:text-gray-900 font-medium transition"
           >
@@ -210,6 +216,14 @@ export default function Header() {
                 >
                   <span className="text-3xl">🍽️</span>
                   <span className="text-xl">Speisekarte</span>
+                </Link>
+                <Link
+                  href="/menu2"
+                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span className="text-3xl">📋</span>
+                  <span className="text-xl">Speisekarte 2</span>
                 </Link>
                 <Link
                   href="/reservations"

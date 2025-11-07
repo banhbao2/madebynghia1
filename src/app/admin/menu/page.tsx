@@ -200,7 +200,7 @@ export default function AdminMenuPage() {
               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition"
             >
               {/* Image */}
-              <div className="relative h-48 bg-gray-200">
+              <div className="relative h-48 bg-gradient-to-br from-gray-300 to-gray-400">
                 {item.image ? (
                   <img
                     src={item.image}
@@ -208,8 +208,11 @@ export default function AdminMenuPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    Kein Bild
+                  <div className="w-full h-full flex items-center justify-center text-gray-600 font-semibold text-center px-4">
+                    <div>
+                      <div className="text-sm">YOUR CUSTOM</div>
+                      <div className="text-sm">PICTURE HERE</div>
+                    </div>
                   </div>
                 )}
                 {item.popular && (

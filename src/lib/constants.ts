@@ -4,7 +4,7 @@ export const specialties = [
     title: 'Demo-Feature 1',
     description:
       'Dies ist eine Demonstration eines Spezialitätenbereichs. Auf einer echten Restaurant-Website würden hier Signature-Gerichte und einzigartige Angebote mit schönen Bildern und überzeugenden Beschreibungen präsentiert.',
-    image: '/vietnamese-placeholder.jpg',
+    image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect width="600" height="400" fill="%23e74c3c"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" opacity="0.7"%3EYOUR CUSTOM%3C/text%3E%3Ctext x="50%25" y="60%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" opacity="0.7"%3EPICTURE HERE%3C/text%3E%3C/svg%3E',
     link: '/menu',
   },
   {
@@ -12,7 +12,7 @@ export const specialties = [
     title: 'Demo-Feature 2',
     description:
       'Ein weiterer Demonstrationsbereich, der zeigt, wie Spezialitäten angezeigt werden können. Diese Vorlage kann einfach für jede Art von Restaurant oder Gastronomieunternehmen angepasst werden.',
-    image: '/sushi-placeholder.jpg',
+    image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect width="600" height="400" fill="%23f39c12"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" opacity="0.7"%3EYOUR CUSTOM%3C/text%3E%3Ctext x="50%25" y="60%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" opacity="0.7"%3EPICTURE HERE%3C/text%3E%3C/svg%3E',
     link: '/menu',
   },
 ]
@@ -24,8 +24,12 @@ export const navLinks = [
 ]
 
 export const contactInfo = {
-  address: 'Hauptstraße 123, 10115 Berlin',
-  addressLink: 'https://maps.google.com/?q=Hauptstra%C3%9Fe+123+Berlin',
+  address: 'Torstraße 125, 10119 Berlin',
+  coordinates: {
+    lat: 52.5297,
+    lng: 13.4019
+  },
+  addressLink: 'https://maps.google.com/?q=Torstra%C3%9Fe+125,+10119+Berlin',
   phone: '+49 30 12345678',
   email: 'hallo@nghiademo.com',
   social: [

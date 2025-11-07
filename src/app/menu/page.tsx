@@ -17,7 +17,6 @@ function MenuPageContent() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
   const searchParams = useSearchParams()
 
   // QR Code support: Get table number from URL
@@ -61,26 +60,13 @@ function MenuPageContent() {
     fetchMenuData()
   }, [])
 
-  // Advanced filtering with search
+  // Category filtering
   const filteredItems = useMemo(() => {
-    let items = menuItems
-
-    // Category filter
-    if (selectedCategory !== 'all') {
-      items = items.filter(item => item.category === selectedCategory)
+    if (selectedCategory === 'all') {
+      return menuItems
     }
-
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      items = items.filter(item =>
-        item.name.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query)
-      )
-    }
-
-    return items
-  }, [menuItems, selectedCategory, searchQuery])
+    return menuItems.filter(item => item.category === selectedCategory)
+  }, [menuItems, selectedCategory])
 
   const popularItems = useMemo(() =>
     menuItems.filter(item => item.popular),
@@ -156,45 +142,8 @@ function MenuPageContent() {
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Entdecken Sie unsere Demo-Speisekarte mit einem vollwertigen Restaurant-Bestellsystem
-            mit Suche, Filtern und Warenkorbfunktion
+            mit Filtern und Warenkorbfunktion
           </p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="mb-8 max-w-2xl mx-auto">
-          <div className="relative">
-            <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <input
-              type="text"
-              placeholder="Menüartikel suchen..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                aria-label="Suche löschen"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Category Filter */}
