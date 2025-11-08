@@ -65,43 +65,43 @@ export default function MenuItem({ item }: MenuItemProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 overflow-hidden">
-      <div className="flex gap-3 p-3">
-        {/* Image Section - Compact square on left */}
+    <div className="bg-white rounded-xl shadow-luxury hover:shadow-luxury-lg transition-luxury border border-[var(--neutral-100)] overflow-hidden group">
+      <div className="flex gap-4 p-4 md:p-5">
+        {/* Image Section - Luxury square on left */}
         {item.image && !imageError ? (
-          <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+          <div className="relative w-24 h-24 md:w-28 md:h-28 flex-shrink-0 rounded-lg overflow-hidden bg-[var(--neutral-100)]">
             <img
               src={item.image}
               alt={item.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               onError={() => setImageError(true)}
             />
             {item.popular && (
-              <div className="absolute top-1 left-1 bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">
+              <div className="absolute top-2 left-2 bg-gradient-to-r from-[var(--gold)] to-[var(--gold-light)] text-[var(--primary)] px-2 py-1 rounded text-xs font-poppins font-semibold shadow-gold">
                 ⭐
               </div>
             )}
           </div>
         ) : (
-          <div className="w-20 h-20 flex-shrink-0 rounded-lg bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
-            <span className="text-3xl">{getCategoryIcon(item.category)}</span>
+          <div className="w-24 h-24 md:w-28 md:h-28 flex-shrink-0 rounded-lg bg-gradient-to-br from-[var(--neutral-50)] to-[var(--neutral-100)] flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+            <span className="text-4xl">{getCategoryIcon(item.category)}</span>
           </div>
         )}
 
-        {/* Content Section */}
+        {/* Content Section - Luxury */}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
-            <div className="flex justify-between items-start gap-2 mb-1">
-              <h3 className="text-base font-bold text-gray-900 leading-tight">{item.name}</h3>
+            <div className="flex justify-between items-start gap-2 mb-2">
+              <h3 className="text-base md:text-lg font-playfair font-semibold text-[var(--primary)] leading-tight">{item.name}</h3>
               {item.popular && !item.image && (
-                <span className="text-xs">⭐</span>
+                <span className="text-[var(--gold)] text-sm">⭐</span>
               )}
             </div>
-            <p className="text-xs text-gray-600 leading-snug line-clamp-2 mb-2">{item.description}</p>
+            <p className="text-xs md:text-sm text-[var(--foreground-muted)] font-inter leading-relaxed line-clamp-2 mb-3">{item.description}</p>
           </div>
 
           <div className="flex justify-between items-center gap-2">
-            <span className="text-lg font-bold text-red-600">
+            <span className="text-lg md:text-xl font-playfair font-semibold text-[var(--gold)]">
               {item.price.toFixed(2)}€
             </span>
 
@@ -130,22 +130,22 @@ export default function MenuItem({ item }: MenuItemProps) {
         </div>
       </div>
 
-      {/* Customization Options - Expanded Section */}
+      {/* Customization Options - Luxury Expanded Section */}
       {showCustomizations && item.customizations && (
-        <div className="px-3 pb-3 border-t border-gray-200 pt-3 space-y-3 bg-gray-50">
-          <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-            <span>⚙️</span> Bestellung anpassen
+        <div className="px-4 md:px-5 pb-4 md:pb-5 border-t border-[var(--neutral-200)] pt-4 md:pt-5 space-y-4 bg-[var(--neutral-50)]">
+          <h4 className="font-playfair font-semibold text-[var(--primary)] text-sm md:text-base flex items-center gap-2">
+            <span className="text-[var(--gold)]">⚙️</span> Bestellung anpassen
           </h4>
 
           {item.customizations.map((custom) => (
             <div key={custom.label}>
-              <label className="block text-xs font-bold text-gray-700 mb-1">
+              <label className="block text-xs md:text-sm font-poppins font-medium text-[var(--foreground-muted)] mb-2">
                 {custom.label}
               </label>
               <select
                 value={customizations[custom.label] || custom.options[0]}
                 onChange={(e) => handleCustomizationChange(custom.label, e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white"
+                className="w-full border border-[var(--neutral-200)] rounded-lg px-4 py-3 text-sm font-inter focus:outline-none focus:ring-2 focus:ring-[var(--gold)] focus:border-[var(--gold)] bg-white transition-luxury shadow-sm"
               >
                 {custom.options.map((option) => (
                   <option key={option} value={option}>

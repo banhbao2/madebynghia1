@@ -101,73 +101,92 @@ export default function Header() {
   }
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-luxury ${
       isScrolled
-        ? 'bg-white/98 backdrop-blur-lg shadow-lg border-b border-orange-200'
-        : 'bg-white/95 backdrop-blur-md shadow-md border-b border-orange-100'
+        ? 'bg-white/98 backdrop-blur-xl shadow-luxury border-b border-[var(--neutral-200)]'
+        : 'bg-white/90 backdrop-blur-lg border-b border-[var(--neutral-100)]'
     }`}>
-      <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
-        {/* Logo - Mobile optimized */}
-        <Link href="/" className="text-xl md:text-2xl font-extrabold text-gray-900 hover:text-red-600 transition touch-manipulation">
-          🍜 Nghia Demo
+      <div className="container mx-auto px-6 lg:px-8 py-4 lg:py-5 flex items-center justify-between">
+        {/* Logo - Luxury Typography */}
+        <Link
+          href="/"
+          className="text-xl md:text-2xl font-playfair font-semibold tracking-tight text-[var(--foreground)] hover:text-[var(--gold)] transition-luxury touch-manipulation group"
+        >
+          <span className="inline-flex items-center gap-2">
+            <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform">🍜</span>
+            <span>Nghia Demo</span>
+          </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+        {/* Desktop Navigation - Minimalist & Sophisticated */}
+        <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
           <Link
             href="/menu"
-            className="text-gray-700 hover:text-gray-900 font-medium transition"
+            className="text-[var(--foreground-muted)] hover:text-[var(--foreground)] font-poppins font-medium text-sm tracking-wide uppercase transition-luxury relative group"
           >
             Speisekarte
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--gold)] group-hover:w-full transition-all duration-300"></span>
           </Link>
           <Link
             href="/menu2"
-            className="text-gray-700 hover:text-gray-900 font-medium transition"
+            className="text-[var(--foreground-muted)] hover:text-[var(--foreground)] font-poppins font-medium text-sm tracking-wide uppercase transition-luxury relative group"
           >
-            Speisekarte 2
+            Menu 2
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--gold)] group-hover:w-full transition-all duration-300"></span>
           </Link>
           <Link
             href="/reservations"
-            className="text-gray-700 hover:text-gray-900 font-medium transition"
+            className="text-[var(--foreground-muted)] hover:text-[var(--foreground)] font-poppins font-medium text-sm tracking-wide uppercase transition-luxury relative group"
           >
             Reservierung
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--gold)] group-hover:w-full transition-all duration-300"></span>
           </Link>
           <Link
             href="/#about"
             onClick={(e) => handleScrollToSection(e, '/#about')}
-            className="text-gray-700 hover:text-gray-900 font-medium transition"
+            className="text-[var(--foreground-muted)] hover:text-[var(--foreground)] font-poppins font-medium text-sm tracking-wide uppercase transition-luxury relative group"
           >
             Über uns
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--gold)] group-hover:w-full transition-all duration-300"></span>
           </Link>
           <Link
             href="/#contact"
             onClick={(e) => handleScrollToSection(e, '/#contact')}
-            className="text-gray-700 hover:text-gray-900 font-medium transition"
+            className="text-[var(--foreground-muted)] hover:text-[var(--foreground)] font-poppins font-medium text-sm tracking-wide uppercase transition-luxury relative group"
           >
             Kontakt
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--gold)] group-hover:w-full transition-all duration-300"></span>
           </Link>
+
+          {/* Luxury CTA Button */}
           <Link
             href="/menu"
-            className="bg-red-600 text-white px-6 lg:px-8 py-3 rounded-xl font-bold hover:bg-red-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-red-500/50"
+            className="bg-[var(--primary)] text-white px-6 xl:px-8 py-3 rounded-lg font-poppins font-medium text-sm tracking-wide uppercase hover:bg-[var(--primary-hover)] transition-luxury transform hover:-translate-y-0.5 shadow-luxury hover:shadow-luxury-lg relative overflow-hidden group"
           >
-            Jetzt bestellen →
+            <span className="relative z-10 flex items-center gap-2">
+              Jetzt bestellen
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--gold)] to-[var(--gold-light)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           </Link>
         </nav>
 
-        {/* Mobile Menu Button - Larger touch target */}
+        {/* Mobile Menu Button - Minimalist */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-gray-900 p-2 -mr-2 touch-manipulation active:scale-95 transition-transform"
+          className="lg:hidden text-[var(--foreground)] p-2 -mr-2 touch-manipulation active:scale-95 transition-transform"
           aria-label="Toggle menu"
           aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? (
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}
         </button>
@@ -183,97 +202,133 @@ export default function Header() {
           onClick={() => setMobileMenuOpen(false)}
         />
 
-        {/* Menu Panel with slide-in animation - Full Width */}
+        {/* Luxury Mobile Menu Panel */}
         <div
-          className={`fixed inset-0 bg-white z-50 md:hidden transition-transform duration-300 ease-in-out ${
+          className={`fixed inset-0 bg-[var(--background)] z-50 lg:hidden transition-transform duration-500 ease-out ${
             mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-            <div className="flex flex-col h-full bg-white">
-              {/* Header with gradient */}
-              <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-red-600 to-orange-500 flex-shrink-0">
+            <div className="flex flex-col h-full">
+              {/* Elegant Header */}
+              <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-hover)] flex-shrink-0">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">🍜</span>
-                  <span className="text-xl font-bold text-white">Menü</span>
+                  <span className="text-3xl">🍜</span>
+                  <span className="text-xl font-playfair font-semibold text-white tracking-tight">Navigation</span>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2.5 text-white/90 hover:text-white touch-manipulation active:scale-95 transition rounded-lg hover:bg-white/10"
+                  className="p-2 text-white/80 hover:text-white touch-manipulation active:scale-95 transition rounded-lg hover:bg-white/10"
                   aria-label="Close menu"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
 
-              {/* Navigation Links - Spacious */}
-              <nav className="flex flex-col justify-center flex-1 px-6 py-8 space-y-3 bg-white">
+              {/* Minimalist Navigation Links */}
+              <nav className="flex flex-col justify-center flex-1 px-6 py-8 space-y-1">
                 <Link
                   href="/menu"
-                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
+                  className="group py-5 px-5 rounded-lg hover:bg-[var(--background-alt)] active:bg-[var(--neutral-100)] transition-luxury touch-manipulation border-b border-[var(--neutral-200)] last:border-0"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span className="text-3xl">🍽️</span>
-                  <span className="text-xl">Speisekarte</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity">🍽️</span>
+                      <span className="text-lg font-poppins font-medium text-[var(--foreground)] tracking-wide">Speisekarte</span>
+                    </div>
+                    <svg className="w-5 h-5 text-[var(--gold)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </Link>
                 <Link
                   href="/menu2"
-                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
+                  className="group py-5 px-5 rounded-lg hover:bg-[var(--background-alt)] active:bg-[var(--neutral-100)] transition-luxury touch-manipulation border-b border-[var(--neutral-200)] last:border-0"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span className="text-3xl">📋</span>
-                  <span className="text-xl">Speisekarte 2</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity">📋</span>
+                      <span className="text-lg font-poppins font-medium text-[var(--foreground)] tracking-wide">Menu 2</span>
+                    </div>
+                    <svg className="w-5 h-5 text-[var(--gold)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </Link>
                 <Link
                   href="/reservations"
-                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
+                  className="group py-5 px-5 rounded-lg hover:bg-[var(--background-alt)] active:bg-[var(--neutral-100)] transition-luxury touch-manipulation border-b border-[var(--neutral-200)] last:border-0"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span className="text-3xl">📅</span>
-                  <span className="text-xl">Reservierung</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity">📅</span>
+                      <span className="text-lg font-poppins font-medium text-[var(--foreground)] tracking-wide">Reservierung</span>
+                    </div>
+                    <svg className="w-5 h-5 text-[var(--gold)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </Link>
                 <Link
                   href="/#about"
                   onClick={(e) => handleScrollToSection(e, '/#about')}
-                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
+                  className="group py-5 px-5 rounded-lg hover:bg-[var(--background-alt)] active:bg-[var(--neutral-100)] transition-luxury touch-manipulation border-b border-[var(--neutral-200)] last:border-0"
                 >
-                  <span className="text-3xl">ℹ️</span>
-                  <span className="text-xl">Über uns</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity">ℹ️</span>
+                      <span className="text-lg font-poppins font-medium text-[var(--foreground)] tracking-wide">Über uns</span>
+                    </div>
+                    <svg className="w-5 h-5 text-[var(--gold)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </Link>
                 <Link
                   href="/#contact"
                   onClick={(e) => handleScrollToSection(e, '/#contact')}
-                  className="flex items-center gap-4 text-gray-900 font-bold py-4 px-5 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation border-2 border-gray-200"
+                  className="group py-5 px-5 rounded-lg hover:bg-[var(--background-alt)] active:bg-[var(--neutral-100)] transition-luxury touch-manipulation border-b border-[var(--neutral-200)] last:border-0"
                 >
-                  <span className="text-3xl">📞</span>
-                  <span className="text-xl">Kontakt</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity">📞</span>
+                      <span className="text-lg font-poppins font-medium text-[var(--foreground)] tracking-wide">Kontakt</span>
+                    </div>
+                    <svg className="w-5 h-5 text-[var(--gold)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </Link>
 
-                {/* Primary CTA */}
-                <div className="pt-4">
+                {/* Luxury CTA */}
+                <div className="pt-6">
                   <Link
                     href="/menu"
-                    className="flex items-center justify-center gap-3 bg-gradient-to-r from-red-600 to-orange-500 text-white py-5 px-6 rounded-xl font-bold text-xl shadow-xl active:scale-[0.98] transition-transform touch-manipulation"
+                    className="flex items-center justify-center gap-3 bg-[var(--primary)] text-white py-5 px-6 rounded-lg font-poppins font-medium text-base tracking-wide uppercase shadow-luxury-lg active:scale-[0.98] transition-luxury touch-manipulation relative overflow-hidden group"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <span>Jetzt bestellen</span>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    <span className="relative z-10">Jetzt bestellen</span>
+                    <svg className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--gold)] to-[var(--gold-light)] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   </Link>
                 </div>
               </nav>
 
-              {/* Contact Info */}
-              <div className="border-t-2 border-gray-200 px-6 py-5 bg-gray-50 flex-shrink-0">
-                <p className="text-xs uppercase tracking-wide text-gray-500 font-bold mb-3">Kontakt</p>
-                <a href="tel:+493012345678" className="flex items-center gap-3 text-base text-gray-900 mb-3 font-semibold touch-manipulation py-2">
-                  <span className="text-2xl">📞</span>
+              {/* Refined Contact Info */}
+              <div className="border-t border-[var(--neutral-200)] px-6 py-6 bg-[var(--background-alt)] flex-shrink-0">
+                <p className="text-xs uppercase tracking-widest text-[var(--foreground-muted)] font-poppins font-medium mb-4">Kontakt</p>
+                <a href="tel:+493012345678" className="flex items-center gap-3 text-base text-[var(--foreground)] mb-3 font-poppins font-medium touch-manipulation py-2 hover:text-[var(--gold)] transition-luxury">
+                  <span className="text-xl">📞</span>
                   <span>+49 30 12345678</span>
                 </a>
-                <a href="mailto:hallo@nghiademo.com" className="flex items-center gap-3 text-base text-gray-900 font-semibold touch-manipulation py-2">
-                  <span className="text-2xl">✉️</span>
+                <a href="mailto:hallo@nghiademo.com" className="flex items-center gap-3 text-base text-[var(--foreground)] font-poppins font-medium touch-manipulation py-2 hover:text-[var(--gold)] transition-luxury">
+                  <span className="text-xl">✉️</span>
                   <span>hallo@nghiademo.com</span>
                 </a>
               </div>
